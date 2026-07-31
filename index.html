@@ -123,6 +123,10 @@
     display:flex; align-items:center; gap:10px; margin-bottom:26px;
   }
   .eyebrow-dot{width:8px; height:8px; background:var(--laranja); border-radius:50%;}
+  .eyebrow-avatar{
+    width:30px; height:30px; border-radius:50%; object-fit:cover;
+    border:1.5px solid var(--preto);
+  }
   .eyebrow span{font-family:'Space Mono', monospace; font-size:0.78rem; text-transform:uppercase; letter-spacing:0.08em; opacity:0.75;}
 
   .hero h1{
@@ -133,7 +137,8 @@
 
   .hero-banner-row{margin:22px 0 30px; display:flex; align-items:center; gap:14px; flex-wrap:wrap;}
   .hero-banner-row .tag-banner{font-size:1.5rem; padding:8px 22px;}
-  .cursor-icon{font-size:1.4rem; transform:rotate(-8deg) translateY(4px);}
+  .cursor-icon{display:inline-flex; transform:rotate(-6deg) translateY(6px);}
+  .cursor-icon svg{width:34px; height:34px; display:block;}
 
   .hero p.lede{
     font-size:1.12rem; line-height:1.6; max-width:520px; opacity:0.85; margin-bottom:36px;
@@ -219,6 +224,50 @@
   .company-chip:hover{transform:translateY(-3px); background:var(--laranja);}
   .cred-footnote{margin-top:16px; font-family:'Space Mono'; font-size:0.72rem; opacity:0.6;}
 
+  /* ---------- about the mentor section ---------- */
+  .about-mentor{background:var(--bege-medio); overflow:hidden;}
+  .about-grid{display:grid; grid-template-columns:0.95fr 1.05fr; gap:40px; align-items:center;}
+  @media (max-width:900px){.about-grid{grid-template-columns:1fr;}}
+  .about-photo{
+    position:relative; max-width:420px; margin:0 auto;
+    display:flex; align-items:flex-end; justify-content:center;
+    min-height:440px;
+  }
+  .about-photo .dzti-bg{
+    position:absolute; top:50%; left:50%;
+    transform:translate(-50%,-50%) rotate(-90deg);
+    font-family:'Fraunces', serif; font-weight:900; font-style:italic;
+    font-size:clamp(4.5rem, 11vw, 7rem);
+    letter-spacing:0.05em;
+    color:transparent;
+    -webkit-text-stroke:2px var(--preto);
+    line-height:1;
+    white-space:nowrap;
+    z-index:1;
+    user-select:none;
+    opacity:0.9;
+  }
+  .about-photo img{
+    position:relative; z-index:2;
+    max-height:460px; width:auto; max-width:100%;
+    display:block; margin:0 auto;
+    filter:drop-shadow(6px 10px 18px rgba(0,0,0,0.18));
+  }
+  .about-photo-tag{
+    position:absolute; bottom:6px; left:50%; transform:translateX(-50%);
+    background:var(--rosa); color:var(--bege-claro);
+    padding:8px 18px; font-family:'Space Mono'; font-size:0.7rem;
+    z-index:3; white-space:nowrap;
+  }
+  .about-text .kicker{color:var(--azul);}
+  .about-text h2{font-size:clamp(1.9rem,3.4vw,2.6rem); margin-bottom:20px;}
+  .about-text p{font-size:1.02rem; line-height:1.65; opacity:0.85; margin-bottom:16px; max-width:520px;}
+  .about-credentials{display:flex; flex-wrap:wrap; gap:10px; margin-top:26px;}
+  .credential-chip{
+    border:1.5px solid var(--preto); padding:9px 16px; font-size:0.8rem;
+    font-family:'Space Mono'; background:var(--bege-claro);
+  }
+
   /* ---------- section generic ---------- */
   section{padding:110px 0;}
   .section-head{max-width:640px; margin-bottom:60px;}
@@ -274,6 +323,10 @@
   .positioning .section-head .kicker{color:var(--laranja);}
   .pos-grid{display:grid; grid-template-columns:0.9fr 1.1fr; gap:60px; align-items:center;}
   @media (max-width:860px){.pos-grid{grid-template-columns:1fr;}}
+  .pos-left{display:flex; gap:22px; align-items:flex-end;}
+  .pos-photo{flex-shrink:0; width:130px;}
+  .pos-photo img{width:100%; display:block; filter:drop-shadow(4px 8px 14px rgba(0,0,0,0.3));}
+  @media (max-width:560px){.pos-left{flex-direction:column; align-items:flex-start;} .pos-photo{width:110px;}}
   .pos-quote{
     font-family:'Fraunces', serif; font-style:italic; font-weight:500;
     font-size:clamp(1.4rem,2.6vw,2rem); line-height:1.35;
@@ -309,6 +362,8 @@
   /* ---------- testimonials (chat style, dark) ---------- */
   .testimonials{background:var(--preto); color:var(--bege-claro);}
   .testimonials .kicker{color:var(--laranja);}
+  .testi-header-row{display:flex; align-items:center; gap:14px; margin-bottom:6px;}
+  .testi-avatar{width:36px; height:36px; border-radius:50%; object-fit:cover; border:1.5px solid var(--bege-claro);}
   .testi-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:26px;}
   @media (max-width:940px){.testi-grid{grid-template-columns:1fr; max-width:480px; margin:0 auto;}}
   .chat-card{
@@ -341,6 +396,13 @@
   .final-cta p{font-size:1.05rem; opacity:0.9; max-width:520px; margin:0 auto 40px;}
   .final-cta .btn-primary{background:var(--preto); color:var(--bege-claro);}
   .final-cta .btn-primary:hover{box-shadow:5px 5px 0 var(--bege-claro);}
+  .final-cta-photo{
+    position:absolute; bottom:0; right:2%;
+    width:260px; z-index:1; pointer-events:none;
+  }
+  .final-cta-photo img{width:100%; display:block; filter:drop-shadow(-6px 8px 16px rgba(0,0,0,0.25));}
+  .final-cta .wrap{position:relative; z-index:2;}
+  @media (max-width:900px){.final-cta-photo{display:none;}}
   .gift-note{
     margin-top:22px; font-family:'Space Mono'; font-size:0.78rem; opacity:0.85;
   }
@@ -370,11 +432,15 @@
 <section class="hero">
   <div class="wrap hero-grid">
     <div>
-      <div class="eyebrow"><span class="eyebrow-dot"></span><span>@alanarocha_it — Alana Rocha, Senior Data Engineer</span></div>
+      <div class="eyebrow"><img src="assets/avatar-alana.jpg" alt="Alana Rocha" class="eyebrow-avatar"><span>@alanarocha_it — Alana Rocha, Senior Data Engineer</span></div>
       <h1>Do zero à TI,<br>ou da estagnação<br>ao <em>próximo nível.</em></h1>
       <div class="hero-banner-row">
         <span class="tag-banner">Mentoria DZTI</span>
-        <span class="cursor-icon">🖱️</span>
+        <span class="cursor-icon">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 2L4 18.5L8.2 14.7L10.8 21L13.6 19.8L11 13.6L17 13.6L4 2Z" fill="black" stroke="black" stroke-width="1.2" stroke-linejoin="round"/>
+          </svg>
+        </span>
       </div>
       <p class="lede">Um programa para quem quer entrar ou crescer na área de dados. Você aprende a se posicionar na tecnologia com confiança — alinhando sua identidade profissional à nova carreira, sem depender de mais um curso técnico pago.</p>
       <div class="btn-row">
@@ -429,7 +495,29 @@
         <span class="company-chip">Paramount</span>
         <span class="company-chip">Abercrombie & Fitch</span>
       </div>
-      <div class="cred-footnote">*com base no histórico de contatos e propostas recebidas em 2025, via LinkedIn.</div>
+      <div class="cred-footnote">*com base no histórico de contatos e propostas recebidas em 2025, via LinkedIn e InMail.</div>
+    </div>
+  </div>
+</section>
+
+<section class="about-mentor">
+  <div class="wrap about-grid">
+    <div class="about-photo reveal">
+      <span class="dzti-bg">DZTI</span>
+      <img src="assets/alana-cutout.png" alt="Alana Rocha, Senior Data Engineer e mentora da Mentoria DZTI">
+      <div class="about-photo-tag">@alanarocha_it</div>
+    </div>
+    <div class="about-text reveal">
+      <span class="kicker">Quem está do outro lado</span>
+      <h2>Alana Rocha, a pessoa por trás do método.</h2>
+      <p>Sou Senior Data Engineer há mais de 6 anos, atuo remotamente para clientes internacionais e criei a Mentoria DZTI depois de ver o mesmo padrão se repetir: gente talentosa presa em cursos soltos, com um LinkedIn que não trabalha a favor dela.</p>
+      <p>Os números que você viu acima não vieram de sorte — vieram do mesmo processo de posicionamento que eu uso com cada mentorado, adaptado pra realidade de cada um.</p>
+      <div class="about-credentials">
+        <span class="credential-chip">Senior Data Engineer</span>
+        <span class="credential-chip">+6 anos em dados</span>
+        <span class="credential-chip">Mentora de carreira</span>
+        <span class="credential-chip">Curitiba, Brasil</span>
+      </div>
     </div>
   </div>
 </section>
@@ -494,7 +582,10 @@
       <h2 style="color:var(--bege-claro);">Acompanhamento de perto, não um PDF genérico.</h2>
     </div>
     <div class="pos-grid">
-      <p class="pos-quote reveal">"Você recebe <span class="hl">direcionamento estratégico</span> e um plano pensado para a sua realidade — não caminha sozinho."</p>
+      <div class="pos-left">
+        <div class="pos-photo reveal"><img src="assets/alana-cutout-2.png" alt="Alana Rocha"></div>
+        <p class="pos-quote reveal">"Você recebe <span class="hl">direcionamento estratégico</span> e um plano pensado para a sua realidade — não caminha sozinho."</p>
+      </div>
       <ul class="checklist reveal">
         <li><span class="check-icon">✓</span>Reuniões individuais com direcionamento estratégico e updates constantes sobre seus processos seletivos.</li>
         <li><span class="check-icon">✓</span>Ajuste completo de currículo, LinkedIn e portfólio — feito com você, não para você.</li>
@@ -533,7 +624,7 @@
 <section class="testimonials" id="depoimentos">
   <div class="wrap">
     <div class="section-head reveal">
-      <span class="kicker">Depoimentos</span>
+      <div class="testi-header-row"><img src="assets/avatar-alana.jpg" alt="Alana Rocha" class="testi-avatar"><span class="kicker" style="margin:0;">Depoimentos</span></div>
       <h2 style="color:var(--bege-claro);">O que muda quando alguém te puxa pela mão.</h2>
     </div>
     <div class="testi-grid">
@@ -576,6 +667,7 @@
 </section>
 
 <section class="final-cta" id="cta">
+  <div class="final-cta-photo reveal"><img src="assets/alana-cutout-3.png" alt="Alana Rocha"></div>
   <div class="wrap reveal">
     <span class="tag-banner" style="background:var(--preto);">Primeira etapa gratuita</span>
     <h2 style="margin-top:24px;">Pare de esperar o<br>momento certo.</h2>
@@ -596,7 +688,7 @@
   }, {threshold:0.15});
   items.forEach(i=>obs.observe(i));
 
-  document.querySelectorAll('.problem-card, .chat-card, .result-item, .method-item, .cred-stat, .company-chip').forEach(el=>{
+  document.querySelectorAll('.problem-card, .chat-card, .result-item, .method-item, .cred-stat, .company-chip, .about-photo').forEach(el=>{
     el.classList.add('bracketed');
     el.insertAdjacentHTML('beforeend', '<span class="bl"></span><span class="br"></span>');
   });
