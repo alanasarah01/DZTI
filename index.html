@@ -229,15 +229,15 @@
   .about-grid{display:grid; grid-template-columns:0.95fr 1.05fr; gap:40px; align-items:center;}
   @media (max-width:900px){.about-grid{grid-template-columns:1fr;}}
   .about-photo{
-    position:relative; max-width:420px; margin:0 auto;
+    position:relative; max-width:460px; margin:0 auto;
     display:flex; align-items:flex-end; justify-content:center;
-    min-height:440px;
+    min-height:480px;
   }
   .about-photo .dzti-bg{
-    position:absolute; top:50%; left:50%;
+    position:absolute; top:50%; left:22%;
     transform:translate(-50%,-50%) rotate(-90deg);
     font-family:'Fraunces', serif; font-weight:900; font-style:italic;
-    font-size:clamp(4.5rem, 11vw, 7rem);
+    font-size:clamp(6rem, 16vw, 10.5rem);
     letter-spacing:0.05em;
     color:transparent;
     -webkit-text-stroke:2px var(--preto);
@@ -319,19 +319,31 @@
   /* ---------- how / positioning section ---------- */
   .positioning{
     background:var(--azul); color:var(--bege-claro);
+    display:flex; align-items:stretch; overflow:hidden;
+  }
+  .positioning-photo{
+    flex:0 0 auto; display:flex; align-items:flex-end; justify-content:flex-start;
+    pointer-events:none; margin-left:-1%;
+  }
+  .positioning-photo img{
+    height:96%; width:auto; display:block; max-width:none; align-self:flex-end;
+    filter:drop-shadow(-8px 10px 18px rgba(0,0,0,0.3));
+  }
+  .positioning .wrap{
+    flex:1; padding-top:110px; padding-bottom:110px;
   }
   .positioning .section-head .kicker{color:var(--laranja);}
-  .pos-grid{display:grid; grid-template-columns:0.9fr 1.1fr; gap:60px; align-items:center;}
-  @media (max-width:860px){.pos-grid{grid-template-columns:1fr;}}
-  .pos-left{display:flex; gap:22px; align-items:flex-end;}
-  .pos-photo{flex-shrink:0; width:130px;}
-  .pos-photo img{width:100%; display:block; filter:drop-shadow(4px 8px 14px rgba(0,0,0,0.3));}
-  @media (max-width:560px){.pos-left{flex-direction:column; align-items:flex-start;} .pos-photo{width:110px;}}
+  .pos-grid{display:grid; grid-template-columns:1fr; gap:36px;}
   .pos-quote{
     font-family:'Fraunces', serif; font-style:italic; font-weight:500;
-    font-size:clamp(1.4rem,2.6vw,2rem); line-height:1.35;
+    font-size:clamp(1.3rem,2vw,1.7rem); line-height:1.35; max-width:520px;
   }
   .pos-quote .hl{background:var(--laranja); color:var(--preto); padding:0 6px;}
+  @media (max-width:900px){
+    .positioning{display:block;}
+    .positioning-photo{display:none;}
+    .positioning .wrap{padding-top:90px; padding-bottom:90px;}
+  }
   .checklist{list-style:none; display:flex; flex-direction:column; gap:18px;}
   .checklist li{
     display:flex; gap:14px; align-items:flex-start; font-size:1.02rem; line-height:1.5;
@@ -389,20 +401,33 @@
 
   /* ---------- final CTA ---------- */
   .final-cta{
-    background:var(--rosa); color:var(--bege-claro); text-align:center; padding:130px 0;
+    background:var(--rosa); color:var(--bege-claro); padding:0;
     position:relative; overflow:hidden;
+    min-height:620px; display:flex; align-items:stretch;
   }
-  .final-cta h2{font-size:clamp(2.2rem,5vw,4rem); margin-bottom:22px;}
-  .final-cta p{font-size:1.05rem; opacity:0.9; max-width:520px; margin:0 auto 40px;}
+  .final-cta h2{font-size:clamp(2.2rem,4vw,3.4rem); margin-bottom:22px;}
+  .final-cta p{font-size:1.05rem; opacity:0.9; max-width:460px; margin:0 0 40px;}
   .final-cta .btn-primary{background:var(--preto); color:var(--bege-claro);}
   .final-cta .btn-primary:hover{box-shadow:5px 5px 0 var(--bege-claro);}
   .final-cta-photo{
-    position:absolute; bottom:0; right:2%;
-    width:260px; z-index:1; pointer-events:none;
+    flex:0 0 auto; display:flex; align-items:flex-end; justify-content:flex-start;
+    pointer-events:none; margin-left:-2%;
   }
-  .final-cta-photo img{width:100%; display:block; filter:drop-shadow(-6px 8px 16px rgba(0,0,0,0.25));}
-  .final-cta .wrap{position:relative; z-index:2;}
-  @media (max-width:900px){.final-cta-photo{display:none;}}
+  .final-cta-photo img{
+    height:96%; width:auto; display:block; max-width:none;
+    filter:drop-shadow(-8px 10px 18px rgba(0,0,0,0.3));
+  }
+  .final-cta .wrap{
+    position:relative; z-index:2; text-align:left;
+    flex:1; display:flex; flex-direction:column; justify-content:center;
+    max-width:none; margin:0; padding:60px 64px;
+  }
+  @media (max-width:900px){
+    .final-cta{min-height:0; padding:90px 0; display:block;}
+    .final-cta-photo{display:none;}
+    .final-cta .wrap{width:100%; max-width:640px; margin:0 auto; padding:0 32px; text-align:center;}
+    .final-cta p{margin:0 auto 40px;}
+  }
   .gift-note{
     margin-top:22px; font-family:'Space Mono'; font-size:0.78rem; opacity:0.85;
   }
@@ -576,16 +601,14 @@
 </section>
 
 <section class="positioning">
+  <div class="positioning-photo reveal"><img src="assets/alana-reading-cutout.png" alt="Alana Rocha estudando Data Science"></div>
   <div class="wrap">
     <div class="section-head reveal">
       <span class="kicker">Como funciona na prática</span>
       <h2 style="color:var(--bege-claro);">Acompanhamento de perto, não um PDF genérico.</h2>
     </div>
     <div class="pos-grid">
-      <div class="pos-left">
-        <div class="pos-photo reveal"><img src="assets/alana-cutout-2.png" alt="Alana Rocha"></div>
-        <p class="pos-quote reveal">"Você recebe <span class="hl">direcionamento estratégico</span> e um plano pensado para a sua realidade — não caminha sozinho."</p>
-      </div>
+      <p class="pos-quote reveal">"Você recebe <span class="hl">direcionamento estratégico</span> e um plano pensado para a sua realidade — não caminha sozinho."</p>
       <ul class="checklist reveal">
         <li><span class="check-icon">✓</span>Reuniões individuais com direcionamento estratégico e updates constantes sobre seus processos seletivos.</li>
         <li><span class="check-icon">✓</span>Ajuste completo de currículo, LinkedIn e portfólio — feito com você, não para você.</li>
@@ -667,7 +690,7 @@
 </section>
 
 <section class="final-cta" id="cta">
-  <div class="final-cta-photo reveal"><img src="assets/alana-cutout-3.png" alt="Alana Rocha"></div>
+  <div class="final-cta-photo reveal"><img src="assets/alana-cta-cutout.png" alt="Alana Rocha"></div>
   <div class="wrap reveal">
     <span class="tag-banner" style="background:var(--preto);">Primeira etapa gratuita</span>
     <h2 style="margin-top:24px;">Pare de esperar o<br>momento certo.</h2>
