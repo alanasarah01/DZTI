@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mentoria DZTI — Do Zero à TI | Alana Rocha</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,500;1,9..144,600&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bege-claro:#ebe8e3;
+    --bege-medio:#ddcfc7;
+    --rosa:#bb2649;
+    --laranja:#fd7528;
+    --azul:#344c92;
+    --preto:#000000;
+    --ink: #1a1512;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bege-claro);
+    color:var(--preto);
+    font-family:'Space Grotesk', sans-serif;
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--rosa); color:var(--bege-claro);}
+
+  h1,h2,h3,.display{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    letter-spacing:-0.02em;
+    line-height:0.98;
+  }
+  .mono{
+    font-family:'Space Mono', monospace;
+    letter-spacing:0.02em;
+  }
+  a{color:inherit; text-decoration:none;}
+  img{max-width:100%; display:block;}
+  .wrap{max-width:1180px; margin:0 auto; padding:0 32px;}
+
+  /* ---------- signature element: corner brackets (selection-box motif) ---------- */
+  .bracketed{position:relative;}
+  .bracketed::before, .bracketed::after,
+  .bracketed .bl, .bracketed .br{
+    content:'';
+    position:absolute;
+    width:16px; height:16px;
+    border:2.5px solid var(--preto);
+    opacity:0;
+    transform:scale(0.6);
+    transition:opacity .35s ease, transform .35s ease;
+  }
+  .bracketed::before{top:-8px; left:-8px; border-right:none; border-bottom:none;}
+  .bracketed::after{top:-8px; right:-8px; border-left:none; border-bottom:none;}
+  .bracketed .bl{bottom:-8px; left:-8px; border-right:none; border-top:none;}
+  .bracketed .br{bottom:-8px; right:-8px; border-left:none; border-top:none;}
+  .bracketed:hover::before, .bracketed:hover::after,
+  .bracketed:hover .bl, .bracketed:hover .br{opacity:1; transform:scale(1);}
+
+  .tag-banner{
+    display:inline-block;
+    background:var(--rosa);
+    color:var(--bege-claro);
+    padding:6px 18px;
+    transform:rotate(-2deg);
+    font-family:'Fraunces', serif;
+    font-weight:700;
+    font-style:italic;
+  }
+
+  .underline-mark{
+    background-image:linear-gradient(transparent 68%, rgba(253,117,40,0.55) 68%);
+    padding:0 2px;
+  }
+  .underline-mark.blue{background-image:linear-gradient(transparent 68%, rgba(52,76,146,0.35) 68%);}
+  .underline-mark.pink{background-image:linear-gradient(transparent 68%, rgba(187,38,73,0.28) 68%);}
+
+  /* ---------- nav ---------- */
+  header{
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    background:rgba(235,232,227,0.86);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid rgba(0,0,0,0.08);
+  }
+  nav{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 32px; max-width:1180px; margin:0 auto;
+  }
+  .logo{
+    display:flex; align-items:center; gap:10px;
+    font-family:'Fraunces', serif; font-weight:700; font-size:1.15rem;
+  }
+  .logo-mark{
+    width:34px; height:34px; background:var(--preto); color:var(--bege-claro);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Space Mono', monospace; font-size:0.75rem; font-weight:700;
+    transform:rotate(-6deg);
+  }
+  .nav-cta{
+    background:var(--preto); color:var(--bege-claro);
+    padding:10px 20px; font-size:0.85rem; font-weight:600;
+    font-family:'Space Grotesk';
+    transition:background .25s ease, transform .25s ease;
+  }
+  .nav-cta:hover{background:var(--rosa); transform:translateY(-2px);}
+  .nav-links{display:flex; gap:28px; font-size:0.9rem;}
+  @media (max-width:760px){ .nav-links{display:none;} }
+
+  /* ---------- hero ---------- */
+  .hero{
+    padding:170px 0 90px;
+    position:relative;
+  }
+  .hero-grid{
+    display:grid; grid-template-columns:1.15fr 0.85fr; gap:60px; align-items:center;
+  }
+  @media (max-width:900px){ .hero-grid{grid-template-columns:1fr;} }
+
+  .eyebrow{
+    display:flex; align-items:center; gap:10px; margin-bottom:26px;
+  }
+  .eyebrow-dot{width:8px; height:8px; background:var(--laranja); border-radius:50%;}
+  .eyebrow span{font-family:'Space Mono', monospace; font-size:0.78rem; text-transform:uppercase; letter-spacing:0.08em; opacity:0.75;}
+
+  .hero h1{
+    font-size:clamp(2.6rem, 5.4vw, 4.4rem);
+    margin-bottom:6px;
+  }
+  .hero h1 em{font-style:italic; font-weight:500; color:var(--rosa);}
+
+  .hero-banner-row{margin:22px 0 30px; display:flex; align-items:center; gap:14px; flex-wrap:wrap;}
+  .hero-banner-row .tag-banner{font-size:1.5rem; padding:8px 22px;}
+  .cursor-icon{font-size:1.4rem; transform:rotate(-8deg) translateY(4px);}
+
+  .hero p.lede{
+    font-size:1.12rem; line-height:1.6; max-width:520px; opacity:0.85; margin-bottom:36px;
+  }
+  .btn-row{display:flex; gap:16px; flex-wrap:wrap;}
+  .btn{
+    padding:16px 30px; font-weight:600; font-size:0.95rem;
+    display:inline-flex; align-items:center; gap:10px;
+    transition:transform .25s ease, box-shadow .25s ease, background .25s ease;
+  }
+  .btn-primary{background:var(--rosa); color:var(--bege-claro);}
+  .btn-primary:hover{transform:translate(-3px,-3px); box-shadow:5px 5px 0 var(--preto);}
+  .btn-ghost{border:1.6px solid var(--preto); color:var(--preto);}
+  .btn-ghost:hover{background:var(--preto); color:var(--bege-claro);}
+
+  /* hero visual: phone mock with recruiter message */
+  .phone-mock{
+    background:var(--preto); border-radius:26px; padding:14px;
+    box-shadow:14px 14px 0 var(--laranja);
+    max-width:320px; margin-left:auto; position:relative;
+  }
+  .phone-screen{
+    background:#151515; border-radius:16px; padding:20px 16px 26px; min-height:400px;
+    display:flex; flex-direction:column; gap:12px;
+  }
+  .phone-topbar{display:flex; justify-content:space-between; color:#8a8a8a; font-family:'Space Mono'; font-size:0.65rem; margin-bottom:8px;}
+  .bubble{
+    padding:12px 14px; border-radius:14px; font-size:0.82rem; line-height:1.45; max-width:88%;
+  }
+  .bubble.in{background:#262626; color:#eee; border-bottom-left-radius:4px;}
+  .bubble.out{background:var(--rosa); color:#fff; align-self:flex-end; border-bottom-right-radius:4px;}
+  .bubble-time{font-family:'Space Mono'; font-size:0.6rem; color:#7a7a7a; margin-top:4px;}
+  .bubble.out .bubble-time{color:rgba(255,255,255,0.65); text-align:right;}
+  .floating-tag{
+    position:absolute; bottom:-18px; left:-18px;
+    background:var(--bege-claro); border:2px solid var(--preto);
+    padding:10px 14px; font-family:'Space Mono'; font-size:0.68rem;
+    transform:rotate(-4deg);
+  }
+
+  /* ---------- real screenshot frame (hero) ---------- */
+  .shot-frame{
+    max-width:300px; margin-left:auto; position:relative;
+  }
+  .shot-frame img{
+    border-radius:22px; border:1px solid #e4e4e4;
+    box-shadow:14px 14px 0 var(--laranja);
+    display:block; width:100%;
+  }
+
+  /* ---------- marquee ---------- */
+  .marquee-strip{
+    background:var(--preto); color:var(--bege-claro);
+    padding:16px 0; overflow:hidden; white-space:nowrap;
+    border-top:1px solid rgba(255,255,255,0.1); border-bottom:1px solid rgba(255,255,255,0.1);
+  }
+  .marquee-track{display:inline-block; animation:scroll-left 32s linear infinite;}
+  .marquee-track span{
+    font-family:'Space Mono', monospace; font-size:0.85rem; letter-spacing:0.05em;
+    margin-right:40px; text-transform:uppercase;
+  }
+  .marquee-track span.accent{color:var(--laranja);}
+  @keyframes scroll-left{ from{transform:translateX(0);} to{transform:translateX(-50%);} }
+
+  /* ---------- credibility / authority section ---------- */
+  .credibility{background:var(--bege-claro); padding:90px 0;}
+  .cred-top{max-width:680px; margin-bottom:50px;}
+  .cred-top p{font-size:1.15rem; line-height:1.55; opacity:0.85; margin-top:14px;}
+  .cred-grid{display:grid; grid-template-columns:1fr 1fr; gap:0; border-top:1.5px solid var(--preto); border-bottom:1.5px solid var(--preto);}
+  @media (max-width:760px){.cred-grid{grid-template-columns:1fr;}}
+  .cred-stat{padding:38px 34px; border-right:1.5px solid var(--preto); position:relative;}
+  .cred-grid .cred-stat:nth-child(2){border-right:none;}
+  @media (max-width:760px){.cred-stat{border-right:none !important; border-bottom:1.5px solid var(--preto);} .cred-stat:last-child{border-bottom:none;}}
+  .cred-stat .result-num{color:var(--azul);}
+  .cred-companies{margin-top:50px;}
+  .cred-companies .kicker{display:block; margin-bottom:18px;}
+  .company-chips{display:flex; flex-wrap:wrap; gap:12px;}
+  .company-chip{
+    border:1.5px solid var(--preto); padding:12px 22px;
+    font-family:'Fraunces', serif; font-weight:600; font-size:1.1rem;
+    background:var(--bege-medio); transition:transform .25s ease, background .25s ease; position:relative;
+  }
+  .company-chip:hover{transform:translateY(-3px); background:var(--laranja);}
+  .cred-footnote{margin-top:16px; font-family:'Space Mono'; font-size:0.72rem; opacity:0.6;}
+
+  /* ---------- section generic ---------- */
+  section{padding:110px 0;}
+  .section-head{max-width:640px; margin-bottom:60px;}
+  .kicker{
+    font-family:'Space Mono', monospace; font-size:0.78rem; text-transform:uppercase;
+    letter-spacing:0.1em; color:var(--azul); margin-bottom:14px; display:block;
+  }
+  .section-head h2{font-size:clamp(2rem,3.6vw,2.9rem);}
+
+  .reveal{opacity:0; transform:translateY(28px); transition:opacity .7s ease, transform .7s ease;}
+  .reveal.in{opacity:1; transform:translateY(0);}
+
+  /* ---------- problem section ---------- */
+  .problem{background:var(--bege-medio);}
+  .problem-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:18px;}
+  @media (max-width:700px){.problem-grid{grid-template-columns:1fr;}}
+  .problem-card{
+    background:var(--bege-claro); border:1.5px solid var(--preto);
+    padding:24px 26px; position:relative;
+  }
+  .problem-card .strike{
+    text-decoration:line-through; text-decoration-color:var(--rosa); text-decoration-thickness:2px;
+    font-weight:600; font-size:1.05rem; display:block; margin-bottom:6px;
+  }
+  .problem-card p{font-size:0.92rem; opacity:0.75; line-height:1.5;}
+  .problem-lead{
+    grid-column:1 / -1; font-family:'Fraunces', serif; font-size:clamp(1.4rem,2.6vw,1.9rem);
+    font-weight:500; font-style:italic; margin-bottom:6px; line-height:1.3;
+  }
+
+  /* ---------- method section ---------- */
+  .method-grid{
+    display:grid; grid-template-columns:repeat(4,1fr); gap:0;
+    border-top:1.5px solid var(--preto);
+  }
+  @media (max-width:900px){.method-grid{grid-template-columns:repeat(2,1fr);}}
+  @media (max-width:560px){.method-grid{grid-template-columns:1fr;}}
+  .method-item{
+    border-right:1.5px solid var(--preto); border-bottom:1.5px solid var(--preto);
+    padding:34px 26px; min-height:230px; display:flex; flex-direction:column; justify-content:space-between;
+    transition:background .3s ease;
+  }
+  .method-item:hover{background:var(--bege-medio);}
+  .method-item:last-child{border-right:none;}
+  .method-num{font-family:'Space Mono'; font-size:0.75rem; color:var(--rosa); font-weight:700;}
+  .method-item h3{font-size:1.2rem; margin:18px 0 10px; font-weight:600;}
+  .method-item p{font-size:0.88rem; opacity:0.72; line-height:1.5;}
+
+  /* ---------- how / positioning section ---------- */
+  .positioning{
+    background:var(--azul); color:var(--bege-claro);
+  }
+  .positioning .section-head .kicker{color:var(--laranja);}
+  .pos-grid{display:grid; grid-template-columns:0.9fr 1.1fr; gap:60px; align-items:center;}
+  @media (max-width:860px){.pos-grid{grid-template-columns:1fr;}}
+  .pos-quote{
+    font-family:'Fraunces', serif; font-style:italic; font-weight:500;
+    font-size:clamp(1.4rem,2.6vw,2rem); line-height:1.35;
+  }
+  .pos-quote .hl{background:var(--laranja); color:var(--preto); padding:0 6px;}
+  .checklist{list-style:none; display:flex; flex-direction:column; gap:18px;}
+  .checklist li{
+    display:flex; gap:14px; align-items:flex-start; font-size:1.02rem; line-height:1.5;
+    border-bottom:1px solid rgba(235,232,227,0.2); padding-bottom:18px;
+  }
+  .check-icon{
+    width:22px; height:22px; border:1.6px solid var(--laranja); flex-shrink:0; margin-top:2px;
+    display:flex; align-items:center; justify-content:center; font-size:0.7rem; color:var(--laranja);
+  }
+
+  /* ---------- results strip ---------- */
+  .results{background:var(--bege-claro);}
+  .results-grid{
+    display:grid; grid-template-columns:repeat(3,1fr); gap:0;
+    border-top:1.5px solid var(--preto); border-bottom:1.5px solid var(--preto);
+  }
+  @media (max-width:760px){.results-grid{grid-template-columns:1fr;}}
+  .result-item{
+    padding:44px 30px; border-right:1.5px solid var(--preto); text-align:left;
+  }
+  .result-item:last-child{border-right:none;}
+  .result-num{
+    font-family:'Fraunces', serif; font-weight:700; font-size:clamp(2.6rem,4.5vw,3.6rem);
+    color:var(--rosa); line-height:1;
+  }
+  .result-item p{margin-top:12px; font-size:0.92rem; opacity:0.75; max-width:240px;}
+
+  /* ---------- testimonials (chat style, dark) ---------- */
+  .testimonials{background:var(--preto); color:var(--bege-claro);}
+  .testimonials .kicker{color:var(--laranja);}
+  .testi-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:26px;}
+  @media (max-width:940px){.testi-grid{grid-template-columns:1fr; max-width:480px; margin:0 auto;}}
+  .chat-card{
+    background:#131313; border:1px solid #2a2a2a; border-radius:18px; padding:20px; display:flex; flex-direction:column; gap:12px;
+  }
+  .chat-top{
+    display:flex; align-items:center; justify-content:space-between;
+    font-family:'Space Mono'; font-size:0.65rem; color:#8a8a8a; padding-bottom:10px; border-bottom:1px solid #262626; margin-bottom:4px;
+  }
+  .chat-name{font-family:'Space Grotesk'; font-weight:600; font-size:0.95rem; color:var(--bege-claro);}
+  .chat-role{font-size:0.72rem; color:#8a8a8a; font-family:'Space Grotesk';}
+  .msg{background:#232323; border-radius:14px; border-bottom-left-radius:4px; padding:13px 15px; font-size:0.85rem; line-height:1.55; color:#e8e5e0;}
+  .msg + .msg{margin-top:-2px;}
+  .msg-reply{
+    background:var(--rosa); color:#fff; border-radius:14px; border-bottom-right-radius:4px;
+    padding:13px 15px; font-size:0.85rem; line-height:1.5; align-self:flex-end; max-width:92%;
+  }
+  .result-chip{
+    margin-top:6px; display:inline-flex; align-self:flex-start; align-items:center; gap:8px;
+    background:transparent; border:1px solid var(--laranja); color:var(--laranja);
+    font-family:'Space Mono'; font-size:0.68rem; padding:7px 12px; border-radius:20px;
+  }
+
+  /* ---------- final CTA ---------- */
+  .final-cta{
+    background:var(--rosa); color:var(--bege-claro); text-align:center; padding:130px 0;
+    position:relative; overflow:hidden;
+  }
+  .final-cta h2{font-size:clamp(2.2rem,5vw,4rem); margin-bottom:22px;}
+  .final-cta p{font-size:1.05rem; opacity:0.9; max-width:520px; margin:0 auto 40px;}
+  .final-cta .btn-primary{background:var(--preto); color:var(--bege-claro);}
+  .final-cta .btn-primary:hover{box-shadow:5px 5px 0 var(--bege-claro);}
+  .gift-note{
+    margin-top:22px; font-family:'Space Mono'; font-size:0.78rem; opacity:0.85;
+  }
+
+  footer{
+    background:var(--preto); color:#8a8a8a; padding:36px 0; text-align:center;
+    font-family:'Space Mono'; font-size:0.72rem;
+  }
+  footer strong{color:var(--bege-claro);}
+</style>
+</head>
+<body>
+
+<header>
+  <nav>
+    <div class="logo"><span class="logo-mark">TI</span> DZTI</div>
+    <div class="nav-links">
+      <a href="#problema">O problema</a>
+      <a href="#metodo">O método</a>
+      <a href="#resultados">Resultados</a>
+      <a href="#depoimentos">Depoimentos</a>
+    </div>
+    <a href="#cta" class="nav-cta">Consultoria gratuita</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow"><span class="eyebrow-dot"></span><span>@alanarocha_it — Alana Rocha, Senior Data Engineer</span></div>
+      <h1>Do zero à TI,<br>ou da estagnação<br>ao <em>próximo nível.</em></h1>
+      <div class="hero-banner-row">
+        <span class="tag-banner">Mentoria DZTI</span>
+        <span class="cursor-icon">🖱️</span>
+      </div>
+      <p class="lede">Um programa para quem quer entrar ou crescer na área de dados. Você aprende a se posicionar na tecnologia com confiança — alinhando sua identidade profissional à nova carreira, sem depender de mais um curso técnico pago.</p>
+      <div class="btn-row">
+        <a href="#cta" class="btn btn-primary">Quero minha consultoria gratuita →</a>
+        <a href="#metodo" class="btn btn-ghost">Ver como funciona</a>
+      </div>
+    </div>
+    <div>
+      <div class="shot-frame">
+        <img src="assets/linkedin-oportunidades.jpg" alt="Caixa de mensagens do LinkedIn de Alana Rocha mostrando 317 oportunidades de trabalho selecionadas em 2025">
+        <div class="floating-tag">300+ oportunidades em 2025*</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="marquee-strip">
+  <div class="marquee-track">
+    <span>ANÁLISE DE DADOS</span><span class="accent">•</span>
+    <span>ENGENHARIA DE DADOS</span><span class="accent">•</span>
+    <span>CIÊNCIA DE DADOS</span><span class="accent">•</span>
+    <span>LINKEDIN QUE ATRAI RECRUTADOR</span><span class="accent">•</span>
+    <span>VAGAS EM DÓLAR E EURO</span><span class="accent">•</span>
+    <span>ANÁLISE DE DADOS</span><span class="accent">•</span>
+    <span>ENGENHARIA DE DADOS</span><span class="accent">•</span>
+    <span>CIÊNCIA DE DADOS</span><span class="accent">•</span>
+    <span>LINKEDIN QUE ATRAI RECRUTADOR</span><span class="accent">•</span>
+    <span>VAGAS EM DÓLAR E EURO</span><span class="accent">•</span>
+  </div>
+</div>
+
+<section class="credibility">
+  <div class="wrap">
+    <div class="cred-top reveal">
+      <span class="kicker">Quem te ensina, também vive isso</span>
+      <p>Não é teoria. Em <span class="underline-mark">2025</span>, foi assim que o meu próprio ano no mercado internacional de dados foi:</p>
+    </div>
+    <div class="cred-grid reveal">
+      <div class="cred-stat">
+        <div class="result-num">300+</div>
+        <p style="margin-top:12px; font-size:0.95rem; opacity:0.75; max-width:320px;">Oportunidades de emprego recebidas em dólar, em grandes empresas brasileiras e internacionais.</p>
+      </div>
+      <div class="cred-stat">
+        <div class="result-num">Tech Lead</div>
+        <p style="margin-top:12px; font-size:0.95rem; opacity:0.75; max-width:320px;">Propostas internacionais recusadas para assumir o cargo de Tech Lead em um projeto estratégico.</p>
+      </div>
+    </div>
+    <div class="cred-companies reveal">
+      <span class="kicker">Procurada por empresas como</span>
+      <div class="company-chips">
+        <span class="company-chip">Google</span>
+        <span class="company-chip">Paramount</span>
+        <span class="company-chip">Abercrombie & Fitch</span>
+      </div>
+      <div class="cred-footnote">*com base no histórico de contatos e propostas recebidas em 2025, via LinkedIn e InMail.</div>
+    </div>
+  </div>
+</section>
+
+<section class="problem" id="problema">
+  <div class="wrap">
+    <p class="problem-lede reveal">Se você sente que <span class="underline-mark pink">nunca está pronto</span>, o problema não é você. É o caminho que te ensinaram a seguir.</p>
+    <div class="problem-grid">
+      <div class="problem-card reveal"><span class="strike">Cursos soltos</span><p>Um atrás do outro, sem eixo — e o currículo continua parecido.</p></div>
+      <div class="problem-card reveal"><span class="strike">Estudo sem direção</span><p>Muita hora de tela, pouca clareza sobre o que realmente move a agulha.</p></div>
+      <div class="problem-card reveal"><span class="strike">Portfólio que não comunica</span><p>Projetos técnicos que não contam a história de quem resolve problemas.</p></div>
+      <div class="problem-card reveal"><span class="strike">Currículo ignorado & LinkedIn invisível</span><p>Você aplica, aplica, e o retorno quase nunca vem.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="metodo">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="kicker">O método DZTI</span>
+      <h2>Um processo estruturado, não mais um curso técnico.</h2>
+    </div>
+  </div>
+  <div class="wrap" style="padding:0;">
+    <div class="method-grid reveal">
+      <div class="method-item">
+        <span class="method-num">01</span>
+        <div>
+          <h3>Entrar ou subir de nível</h3>
+          <p>Conquiste sua primeira vaga em dados ou uma posição melhor — Análise, Ciência ou Engenharia de Dados.</p>
+        </div>
+      </div>
+      <div class="method-item">
+        <span class="method-num">02</span>
+        <div>
+          <h3>Reposicionamento</h3>
+          <p>CV, LinkedIn e portfólio contando a mesma história: a de alguém pronto para o próximo passo.</p>
+        </div>
+      </div>
+      <div class="method-item">
+        <span class="method-num">03</span>
+        <div>
+          <h3>Clareza e confiança</h3>
+          <p>Plano de estudo com prioridade — o que estudar, em que ordem, e por quê.</p>
+        </div>
+      </div>
+      <div class="method-item">
+        <span class="method-num">04</span>
+        <div>
+          <h3>Independência de cursos</h3>
+          <p>Você aprende a se posicionar sem precisar de mais um certificado pago para se sentir "pronto".</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="positioning">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="kicker">Como funciona na prática</span>
+      <h2 style="color:var(--bege-claro);">Acompanhamento de perto, não um PDF genérico.</h2>
+    </div>
+    <div class="pos-grid">
+      <p class="pos-quote reveal">"Você recebe <span class="hl">direcionamento estratégico</span> e um plano pensado para a sua realidade — não caminha sozinho."</p>
+      <ul class="checklist reveal">
+        <li><span class="check-icon">✓</span>Reuniões individuais com direcionamento estratégico e updates constantes sobre seus processos seletivos.</li>
+        <li><span class="check-icon">✓</span>Ajuste completo de currículo, LinkedIn e portfólio — feito com você, não para você.</li>
+        <li><span class="check-icon">✓</span>Mock interviews e construção de speech para você chegar seguro na entrevista.</li>
+        <li><span class="check-icon">✓</span>Plano de estudos estruturado e personalizado, com apoio para colocá-lo em prática na rotina.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="results" id="resultados">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="kicker">Resultados de mentorados</span>
+      <h2>Números que vieram de gente real, não de promessa.</h2>
+    </div>
+  </div>
+  <div class="wrap" style="padding:0;">
+    <div class="results-grid reveal">
+      <div class="result-item">
+        <div class="result-num">&lt;1 mês</div>
+        <p>Foi o tempo entre o início da mentoria e a contratação do Victor Hugo, como Engenheiro de Dados.</p>
+      </div>
+      <div class="result-item">
+        <div class="result-num">~1/dia</div>
+        <p>Convites para entrevista por dia, em média, depois que o Marcos aplicou o método no LinkedIn — vários em dólar.</p>
+      </div>
+      <div class="result-item">
+        <div class="result-num">4 meses</div>
+        <p>Do início da mentoria até a job offer do Vinicius — a primeira pessoa que ele contou foi a Alana.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="testimonials" id="depoimentos">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="kicker">Depoimentos</span>
+      <h2 style="color:var(--bege-claro);">O que muda quando alguém te puxa pela mão.</h2>
+    </div>
+    <div class="testi-grid">
+
+      <div class="chat-card reveal">
+        <div class="chat-top">
+          <div><span class="chat-name">Marcos</span><br><span class="chat-role">Estágios em dados na graduação</span></div>
+          <span>4 meses</span>
+        </div>
+        <div class="msg">Fiquei cerca de um ano ajustando CV, fazendo cursos e networking — e mesmo assim quase não conseguia entrevista.</div>
+        <div class="msg">A Alana me ajudou a entender no que focar nos estudos, como ajustar meu portfólio e como me portar nas entrevistas.</div>
+        <div class="msg-reply">Quando apliquei o que ela ensinou no LinkedIn, comecei a receber em média um convite por dia — muitos em dólar. 🤩</div>
+        <span class="result-chip">✓ Aprovado em 3 processos seletivos</span>
+      </div>
+
+      <div class="chat-card reveal">
+        <div class="chat-top">
+          <div><span class="chat-name">Vinicius</span><br><span class="chat-role">Migração de carreira para dados</span></div>
+          <span>4 meses</span>
+        </div>
+        <div class="msg">Eu já tinha decidido migrar para dados, mas estava quase sem esperança quando encontrei a Alana.</div>
+        <div class="msg">Ela ajustou meu LinkedIn e currículo, fizemos mock interviews e ela me pegou pela mão pra construir meu speech.</div>
+        <div class="msg-reply">Entrei na mentoria em maio, recebi a job offer em setembro — e a Alana foi a primeira pessoa que contei. 💙</div>
+        <span class="result-chip">✓ Job offer confirmada</span>
+      </div>
+
+      <div class="chat-card reveal">
+        <div class="chat-top">
+          <div><span class="chat-name">Victor Hugo</span><br><span class="chat-role">Analytics Engineer buscando Data Eng.</span></div>
+          <span>&lt;1 mês</span>
+        </div>
+        <div class="msg">Eu não recebia retornos positivos nos processos e não avançava de fase — precisava de algo mais assertivo.</div>
+        <div class="msg">Reformulei currículo e LinkedIn, recebi um plano de estudos personalizado e apoio pra colocá-lo em prática.</div>
+        <div class="msg-reply">Fui contratado em menos de um mês. A mentoria fez toda a diferença pra chegar na minha posição atual. 🚀</div>
+        <span class="result-chip">✓ Contratado como Data Engineer</span>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="final-cta" id="cta">
+  <div class="wrap reveal">
+    <span class="tag-banner" style="background:var(--preto);">Primeira etapa gratuita</span>
+    <h2 style="margin-top:24px;">Pare de esperar o<br>momento certo.</h2>
+    <p>Comece pela consultoria gratuita da Mentoria DZTI e descubra exatamente onde estão as lacunas que estão te segurando.</p>
+    <a href="#" class="btn btn-primary">Quero minha consultoria gratuita →</a>
+    <div class="gift-note">🎁 sem compromisso — direcionamento real desde a primeira conversa</div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap"><strong>Mentoria DZTI</strong> — Do Zero à TI · Alana Rocha, Senior Data Engineer & Mentora de Carreira em Dados</div>
+</footer>
+
+<script>
+  const items = document.querySelectorAll('.reveal');
+  const obs = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); obs.unobserve(e.target); } });
+  }, {threshold:0.15});
+  items.forEach(i=>obs.observe(i));
+
+  document.querySelectorAll('.problem-card, .chat-card, .result-item, .method-item, .cred-stat, .company-chip').forEach(el=>{
+    el.classList.add('bracketed');
+    el.insertAdjacentHTML('beforeend', '<span class="bl"></span><span class="br"></span>');
+  });
+</script>
+
+</body>
+</html>
