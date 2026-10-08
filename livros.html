@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Livros que eu indico — Mentoria DZTI</title>
+<meta name="description" content="32 livros em 6 trilhas para a área de Dados: do primeiro SQL até liderança técnica e carreira internacional. Curadoria de Alana Rocha, Senior Data Engineer.">
+<meta property="og:title" content="Livros que eu indico para a área de Dados">
+<meta property="og:description" content="32 livros em 6 trilhas, do primeiro SQL até liderança técnica e carreira internacional.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400;1,9..144,600&family=Space+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#ebe8e3; --surface:#f5f3ef; --ink:#111; --muted:#5b5853; --line:#d4d0c8;
+    --accent:#bb2649; --accent-soft:#f3dde2; --chip:#e0dcd5;
+    --serif:"Fraunces",Georgia,serif; --sans:"Space Grotesk",system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,monospace;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.55}
+  a{color:inherit}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+
+  /* nav */
+  header.nav{border-bottom:1px solid var(--line)}
+  header.nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px;gap:16px}
+  .logo{font-family:var(--serif);font-weight:600;font-size:20px;text-decoration:none;letter-spacing:.02em}
+  .btn{display:inline-block;background:var(--ink);color:#fff;text-decoration:none;font-size:14px;font-weight:500;padding:10px 16px;border-radius:2px;white-space:nowrap}
+  .btn:hover{background:var(--accent)}
+
+  /* hero */
+  .hero{padding:56px 0 32px}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  h1{font-family:var(--serif);font-weight:600;font-size:clamp(34px,6vw,58px);line-height:1.05;margin:14px 0 18px;letter-spacing:-.01em}
+  h1 em{color:var(--accent);font-style:italic;font-weight:400}
+  .lead{max-width:640px;font-size:18px;color:#2b2926;margin:0}
+  .stats{display:flex;gap:28px;flex-wrap:wrap;margin:28px 0 0;padding:0;list-style:none}
+  .stats li{font-family:var(--mono);font-size:13px;color:var(--muted)}
+  .stats b{display:block;font-family:var(--serif);font-size:30px;color:var(--ink);font-weight:600}
+
+  .how{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:36px 0 0}
+  .card-note{background:var(--surface);border:1px solid var(--line);padding:18px 20px;border-radius:2px}
+  .card-note h2{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 8px;color:var(--accent);font-weight:500}
+  .card-note p{margin:0;font-size:15px}
+  @media (max-width:720px){.how{grid-template-columns:1fr}}
+
+  /* filters */
+  .toolbar{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding:14px 0;margin-top:40px}
+  .chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+  .chips::-webkit-scrollbar{display:none}
+  .chip{flex:none;font:500 14px var(--sans);border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:7px 13px;border-radius:999px;cursor:pointer}
+  .chip[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .row2{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap}
+  .search{flex:1 1 220px;font:15px var(--sans);padding:9px 12px;border:1px solid var(--line);background:var(--surface);border-radius:2px;color:var(--ink);min-width:0}
+  .search:focus,.chip:focus-visible,.lang:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+  .langs{display:flex;border:1px solid var(--line);border-radius:2px;overflow:hidden}
+  .lang{font:500 13px var(--mono);background:var(--surface);border:0;border-right:1px solid var(--line);padding:0 12px;cursor:pointer;color:var(--ink);min-height:38px}
+  .lang:last-child{border-right:0}
+  .lang[aria-pressed="true"]{background:var(--accent);color:#fff}
+
+  /* sections */
+  section.trail{padding:44px 0 8px;scroll-margin-top:120px}
+  .trail-head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;border-bottom:1px solid var(--ink);padding-bottom:12px;margin-bottom:20px}
+  .trail-num{font-family:var(--mono);font-size:13px;color:var(--accent)}
+  .trail h2{font-family:var(--serif);font-weight:600;font-size:clamp(24px,3.4vw,32px);margin:0;line-height:1.15}
+  .trail-desc{width:100%;margin:2px 0 0;color:var(--muted);font-size:15px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+  @media (max-width:360px){.grid{grid-template-columns:1fr}}
+
+  .book{background:var(--surface);border:1px solid var(--line);border-radius:2px;padding:18px 18px 16px;display:flex;flex-direction:column;gap:8px;transition:border-color .15s,transform .15s}
+  .book:hover{border-color:var(--ink);transform:translateY(-2px)}
+  .book-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+  .book h3{font-family:var(--serif);font-weight:600;font-size:19px;line-height:1.2;margin:0}
+  .tag{flex:none;font:500 11px var(--mono);letter-spacing:.06em;padding:3px 7px;border-radius:2px;background:var(--chip);color:var(--ink)}
+  .tag.en{background:var(--accent-soft);color:var(--accent)}
+  .author{font-size:14px;color:var(--muted);margin:0}
+  .why{font-size:15px;margin:2px 0 6px;flex:1}
+  .buy{display:inline-flex;align-items:center;gap:6px;align-self:flex-start;font:500 14px var(--sans);color:var(--accent);text-decoration:none;border-bottom:1px solid currentColor;padding-bottom:1px}
+  .buy:hover{color:var(--ink)}
+  .ku{display:block;font-size:13px;color:var(--ink);text-decoration:none;background:var(--accent-soft);border-left:3px solid var(--accent);padding:7px 10px;margin:-2px 0 6px}
+  .ku:hover{text-decoration:underline}
+
+  .empty{display:none;padding:48px 0;text-align:center;color:var(--muted)}
+
+  /* CTA */
+  .cta{margin:64px 0 0;background:var(--ink);color:#fff;padding:40px 28px;border-radius:2px;display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap}
+  .cta h2{font-family:var(--serif);font-weight:400;font-size:clamp(24px,3.4vw,32px);margin:0 0 6px;line-height:1.15}
+  .cta h2 em{color:#ff8fa8;font-style:italic}
+  .cta p{margin:0;color:#c9c6c0;max-width:520px}
+  .cta .btn{background:var(--accent)}
+  .cta .btn:hover{background:#fff;color:var(--ink)}
+
+  footer{padding:32px 0 48px;font-size:13px;color:var(--muted)}
+  footer p{margin:4px 0}
+  .disclaimer{font-family:var(--mono);font-size:12px}
+
+  @media (max-width:520px){
+    .wrap{padding:0 16px}
+    header.nav .btn{padding:8px 12px;font-size:13px}
+    .hero{padding-top:36px}
+    .cta{padding:28px 20px}
+  }
+  @media (prefers-reduced-motion:reduce){.book{transition:none}.book:hover{transform:none}}
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="logo" href="/">DZTI</a>
+    <a class="btn" href="https://forms.gle/5L2KgW2JzPi2RsJL7" target="_blank" rel="noopener">Consultoria gratuita</a>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <section class="hero">
+      <div class="eyebrow">@alanarocha_it — Alana Rocha, Senior Data Engineer</div>
+      <h1>Livros que eu indico para a área de <em>Dados.</em></h1>
+      <p class="lead">Do primeiro SQL até liderança técnica e carreira internacional. Comece pelo seu nível atual. Não precisa ler tudo: 2 ou 3 livros por nível já fazem diferença.</p>
+      <ul class="stats">
+        <li><b id="stat-books">32</b>livros</li>
+        <li><b>6</b>trilhas</li>
+        <li><b>PT + EN</b>idiomas</li>
+      </ul>
+
+      <div class="how">
+        <div class="card-note">
+          <h2>Como usar esta lista</h2>
+          <p>Escolha a trilha do seu momento, leia o "por que indico" e pegue 2 ou 3 títulos. Use os filtros abaixo para ver só livros em português ou buscar por tema.</p>
+        </div>
+        <div class="card-note">
+          <h2>Aviso</h2>
+          <p>Alguns links desta lista são de afiliado. Se você comprar por eles, recebo uma pequena comissão, sem custo extra para você.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="toolbar">
+    <div class="wrap">
+      <div class="chips" id="chips" role="group" aria-label="Filtrar por trilha"></div>
+      <div class="row2">
+        <input class="search" id="search" type="search" placeholder="Buscar livro, autor ou tema (ex.: dbt, SQL, entrevista)" aria-label="Buscar livros">
+        <div class="langs" role="group" aria-label="Filtrar por idioma">
+          <button class="lang" data-lang="all" aria-pressed="true">Todos</button>
+          <button class="lang" data-lang="PT" aria-pressed="false">PT</button>
+          <button class="lang" data-lang="EN" aria-pressed="false">EN</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div id="trails"></div>
+    <p class="empty" id="empty">Nenhum livro encontrado com esses filtros.</p>
+
+    <aside class="cta">
+      <div>
+        <h2>Não sabe por onde <em>começar?</em></h2>
+        <p>Na mentoria eu monto o seu plano de estudos com os livros, cursos e projetos certos para a vaga que você quer.</p>
+      </div>
+      <a class="btn" href="https://forms.gle/5L2KgW2JzPi2RsJL7" target="_blank" rel="noopener">Agendar diagnóstico gratuito</a>
+    </aside>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p class="disclaimer">Links de afiliado: posso receber comissão por compras qualificadas, sem custo extra para você.</p>
+    <p>© <span id="year">2026</span> Mentoria DZTI · Do Zero à TI · <a href="https://www.instagram.com/alanarocha_it/">@alanarocha_it</a></p>
+  </div>
+</footer>
+
+<script>
+/* ===== CONFIGURAÇÃO DE AFILIADO =====
+   Coloque aqui o seu ID de associado da Amazon (ex.: "alanarocha-20").
+   Ele é adicionado automaticamente a todos os links de busca.
+   Para usar um link específico (Amazon ou Mercado Livre) em um livro,
+   preencha o campo "link" daquele livro na lista abaixo. */
+const AMAZON_TAG = "";
+
+const TRAILS = [
+  { id:"n1", num:"Nível 1", title:"Iniciante: do zero ao primeiro SQL", desc:"Para quem está migrando de área ou começando agora.", books:[
+    ["Entendendo Algoritmos","Aditya Bhargava","PT","Lógica de programação com desenhos, sem trauma"],
+    ["Use a Cabeça! SQL","Lynn Beighley","PT","O SQL mais didático para quem nunca viu banco de dados"],
+    ["Aprendendo SQL","Alan Beaulieu","PT","Consolida o SQL que cai em entrevista e no dia a dia"],
+    ["Pense em Python","Allen B. Downey","PT","Python do básico, com exercícios curtos"],
+    ["Python para Análise de Dados","Wes McKinney","PT","Pandas escrito pelo criador do Pandas"],
+    ["Data Science Para Leigos","Lillian Pierson","PT","Visão geral da área sem jargão, ajuda a decidir qual caminho seguir em dados"],
+  ]},
+  { id:"n2", num:"Nível 2", title:"Analista e BI", desc:"Para quem já usa SQL e quer analisar, modelar e apresentar dados.", books:[
+    ["Estatística Prática para Cientistas de Dados","Peter Bruce, Andrew Bruce","PT","A estatística que realmente se usa, com exemplos em Python e R"],
+    ["Storytelling com Dados","Cole Nussbaumer Knaflic","PT","Ensina a fazer gráfico que convence gestor"],
+    ["Data Science para Negócios","Foster Provost, Tom Fawcett","PT","Liga análise de dados a decisão de negócio"],
+    ["SQL for Data Analysis","Cathy Tanimura","EN","SQL analítico avançado: window functions, coortes, séries temporais"],
+    ["The Data Warehouse Toolkit","Ralph Kimball, Margy Ross","EN","A bíblia da modelagem dimensional, base de todo DW"],
+    ["Como Mentir com Estatística","Darrell Huff","PT","Curto e divertido: ensina a desconfiar de gráfico enganoso e de média mal usada"],
+  ]},
+  { id:"n3", num:"Nível 3", title:"Engenharia de Dados", desc:"Para quem quer construir pipelines e trabalhar com stack moderna (dbt, Snowflake, Spark, cloud).", books:[
+    ["Fundamentos de Engenharia de Dados","Joe Reis, Matt Housley","PT/EN","O mapa da profissão: ciclo de vida, arquitetura e escolhas de ferramenta"],
+    ["Data Pipelines Pocket Reference","James Densmore","EN","Curto e prático: ingestão, ELT, orquestração"],
+    ["Analytics Engineering with SQL and dbt","Rui Machado, Hélder Russa","EN","dbt na prática, do modelo ao teste"],
+    ["Snowflake: The Definitive Guide","Joyce Kay Avila","EN","Arquitetura e recursos do Snowflake, ótimo para a certificação"],
+    ["Spark: The Definitive Guide","Bill Chambers, Matei Zaharia","EN","Processamento distribuído com quem criou o Spark"],
+    ["Data Quality Fundamentals","Barr Moses, Lior Gavish, Molly Vorwerck","EN","Testes, observabilidade e confiança nos dados"],
+    ["Data Engineering Design Patterns","Bartosz Konieczny","EN","Soluções prontas para problemas reais de pipeline: idempotência, backfill, dados atrasados e qualidade"],
+  ]},
+  { id:"n4", num:"Nível 4", title:"Sênior e Tech Lead", desc:"Para quem desenha arquitetura e lidera pessoas ou decisões técnicas.", books:[
+    ["Designing Data-Intensive Applications","Martin Kleppmann","EN/PT","O livro mais importante de sistemas de dados: replicação, consistência, streaming"],
+    ["Fundamentals of Software Architecture","Mark Richards, Neal Ford","EN","Ensina a pensar em trade-offs como arquiteta"],
+    ["Data Mesh","Zhamak Dehghani","EN","Dados como produto e times descentralizados"],
+    ["Staff Engineer","Will Larson","EN","Como crescer na carreira técnica sem virar gestora"],
+    ["The Manager's Path","Camille Fournier","EN","Do tech lead à gerência, etapa por etapa"],
+  ]},
+  { id:"ml", num:"Trilha extra", title:"Ciência de Dados e Machine Learning", desc:"Para quem já domina SQL e Python e quer entrar em modelos preditivos.", books:[
+    ["The StatQuest Illustrated Guide to Machine Learning","Josh Starmer","EN","Machine learning explicado com desenhos, no mesmo estilo do canal StatQuest no YouTube"],
+    ["Hands-On Data Science and Python Machine Learning","Frank Kane","EN","Prático do começo ao fim: estatística, regressão e modelos de ML rodando em Python"],
+  ]},
+  { id:"car", num:"Para todos", title:"Carreira e carreira internacional", desc:"Para qualquer nível, principalmente quem mira vaga no exterior.", books:[
+    ["O Mapa Cultural","Erin Meyer","PT","Como trabalhar com gringos sem ruído de cultura"],
+    ["Negocie como se sua vida dependesse disso","Chris Voss","PT","Negociação de salário e proposta, com técnicas de um negociador do FBI"],
+    ["Cracking the Coding Interview","Gayle Laakmann McDowell","EN","O clássico para entrevista técnica em empresa americana"],
+    ["Ace the Data Engineering Interview","Sean Coyne","EN","Perguntas e respostas de entrevista para Engenharia de Dados: Python, SQL, modelagem de dados e mais", {text:"Você pode acessar esse livro com Kindle Unlimited", url:"https://link.amazon/B0hsnUHU0"}],
+    ["Soft Skills","John Sonmez","EN","Carreira, marca pessoal e produtividade para devs"],
+    ["Hábitos Atômicos","James Clear","PT","Constância nos estudos e no inglês"],
+  ]},
+];
+
+/* Links específicos por livro (opcional). Ex.:
+   LINKS["Storytelling com Dados"] = "https://amzn.to/xxxxxx"; */
+const LINKS = {
+  "Ace the Data Engineering Interview": "https://link.amazon/B0dCDjXBz",
+};
+
+function linkFor(title, author){
+  if (LINKS[title]) return LINKS[title];
+  const q = encodeURIComponent(title + " " + author.split(",")[0]);
+  return "https://www.amazon.com.br/s?k=" + q + (AMAZON_TAG ? "&tag=" + encodeURIComponent(AMAZON_TAG) : "");
+}
+const esc = s => s.replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const norm = s => s.normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
+
+const state = { trail:"all", lang:"all", q:"" };
+const trailsEl = document.getElementById("trails");
+const chipsEl = document.getElementById("chips");
+
+chipsEl.innerHTML = [`<button class="chip" data-trail="all" aria-pressed="true">Todas</button>`]
+  .concat(TRAILS.map(t => `<button class="chip" data-trail="${t.id}" aria-pressed="false">${esc(t.num.startsWith("Nível") ? t.num : t.title.split(" e ")[0].split(":")[0])}</button>`)).join("");
+
+trailsEl.innerHTML = TRAILS.map(t => `
+  <section class="trail" id="${t.id}" data-trail="${t.id}">
+    <div class="trail-head">
+      <span class="trail-num">${esc(t.num)}</span>
+      <h2>${esc(t.title)}</h2>
+      <p class="trail-desc">${esc(t.desc)}</p>
+    </div>
+    <div class="grid">
+      ${t.books.map(([title, author, lang, why, note]) => `
+        <article class="book" data-lang="${lang}" data-text="${esc(norm(title+" "+author+" "+why))}">
+          <div class="book-top">
+            <h3>${esc(title)}</h3>
+            <span class="tag ${lang.startsWith("EN") ? "en" : ""}" title="Idioma">${esc(lang)}</span>
+          </div>
+          <p class="author">${esc(author)}</p>
+          <p class="why">${esc(why)}</p>
+          ${note ? `<a class="ku" href="${note.url}" target="_blank" rel="noopener sponsored nofollow">${esc(note.text)} <span aria-hidden="true">↗</span></a>` : ""}          <a class="buy" href="${linkFor(title, author)}" target="_blank" rel="noopener sponsored nofollow">Ver o livro <span aria-hidden="true">→</span></a>
+        </article>`).join("")}
+    </div>
+  </section>`).join("");
+
+document.getElementById("stat-books").textContent = TRAILS.reduce((n,t)=>n+t.books.length,0);
+document.getElementById("year").textContent = new Date().getFullYear();
+
+function apply(){
+  const q = norm(state.q.trim());
+  let total = 0;
+  document.querySelectorAll(".trail").forEach(sec => {
+    const trailOk = state.trail === "all" || sec.dataset.trail === state.trail;
+    let visible = 0;
+    sec.querySelectorAll(".book").forEach(b => {
+      const langOk = state.lang === "all" || b.dataset.lang.includes(state.lang);
+      const qOk = !q || b.dataset.text.includes(q);
+      const show = trailOk && langOk && qOk;
+      b.hidden = !show; if (show) visible++;
+    });
+    sec.hidden = visible === 0; total += visible;
+  });
+  document.getElementById("empty").style.display = total ? "none" : "block";
+}
+
+chipsEl.addEventListener("click", e => {
+  const b = e.target.closest(".chip"); if (!b) return;
+  state.trail = b.dataset.trail;
+  chipsEl.querySelectorAll(".chip").forEach(c => c.setAttribute("aria-pressed", c === b));
+  apply();
+});
+document.querySelector(".langs").addEventListener("click", e => {
+  const b = e.target.closest(".lang"); if (!b) return;
+  state.lang = b.dataset.lang;
+  document.querySelectorAll(".lang").forEach(c => c.setAttribute("aria-pressed", c === b));
+  apply();
+});
+document.getElementById("search").addEventListener("input", e => { state.q = e.target.value; apply(); });
+</script>
+</body>
+</html>
