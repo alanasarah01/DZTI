@@ -353,7 +353,7 @@ const VISOES = [
   { id: 'checklist', nome: 'Checklist', titulo: 'Checklist das <em>fases</em>', desc: '✓ concluída · … em andamento · ! a fazer · — não faz parte da jornada.' },
   { id: 'proxima', nome: 'Próxima chamada', titulo: 'Próxima <em>chamada</em>', desc: 'Alunos agrupados pela fase em andamento na jornada.' },
   { id: 'batata', nome: 'Batata quente', titulo: 'Batata <em>quente</em>', desc: 'Com quem está a bola, segundo a equipe. Para o cálculo automático, veja Pendências.' },
-  { id: 'livros', nome: 'Livros', titulo: 'Livro de <em>presente</em>', desc: 'Envio do livro. Prazo vencido aparece em rosa.' },
+  { id: 'livros', nome: 'Apostilas', titulo: 'Envio de <em>apostilas</em>', desc: 'Envio das apostilas. Prazo vencido aparece em rosa.' },
   { id: 'senioridade', nome: 'Senioridade', titulo: 'Senioridade dos <em>alunos</em>', desc: 'Nível técnico de cada aluno.' },
   { id: 'servico', nome: 'Tipo de serviço', titulo: 'Tipo de <em>serviço</em>', desc: 'Programa contratado e status.' },
   { id: 'resultados', nome: 'Resultados', titulo: 'Resultados dos <em>alunos</em>', desc: 'Momento no mercado: estudando, recebendo recrutadores, em processos.' },
@@ -558,7 +558,7 @@ function visaoLivros(lista) {
   const cols = agrupar(lista.sort(porNome), 'livro', OPCOES.livro, 'Sem informação');
   return quadro(cols, (a) => {
     const ate = d(a, 'livro_ate'), env = d(a, 'livro_enviado');
-    if (env) return 'Enviado em <strong>' + fmt(env) + '</strong>';
+    if (env) return 'Enviadas em <strong>' + fmt(env) + '</strong>';
     if (ate && d(a, 'livro') === 'Enviar') return (ate < hoje ? '<span class="chip chip--alerta">Atrasado</span> ' : '') + 'Enviar até <strong>' + fmt(ate) + '</strong>';
     return '';
   });
@@ -735,8 +735,8 @@ function abrirFicha(idx) {
     + '</div></section>'
     + '<section><h3>Próximos passos</h3><div class="campos">' + campo('proximo_contato', 'Próximo contato', f('proximo_contato'), 'data')
     + campo('proximo_passo', 'Próximo passo', f('proximo_passo'), 'area') + '</div></section>'
-    + '<section><h3>Livro e administrativo</h3><div class="campos">'
-    + campo('livro', 'Livro', f('livro'), 'lista', OPCOES.livro) + campo('livro_ate', 'Enviar livro até', f('livro_ate'), 'data') + campo('livro_enviado', 'Livro enviado em', f('livro_enviado'), 'data')
+    + '<section><h3>Apostilas e administrativo</h3><div class="campos">'
+    + campo('livro', 'Apostilas', f('livro'), 'lista', OPCOES.livro) + campo('livro_ate', 'Enviar apostilas até', f('livro_ate'), 'data') + campo('livro_enviado', 'Apostilas enviadas em', f('livro_enviado'), 'data')
     + campo('administrativo', 'Administrativo', f('administrativo'), 'texto') + campo('acessos', 'Acessos', f('acessos'), 'texto') + campo('entregavel', 'Entregável', f('entregavel'), 'texto')
     + campo('revisao', 'Revisão (Alana)', f('revisao'), 'texto') + campo('live_coding', 'Live Coding', f('live_coding'), 'texto')
     + '</div></section>'
