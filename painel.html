@@ -215,10 +215,13 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 .campo textarea.alto{min-height:180px}
 .campo input[readonly]{background:var(--bege2)}
 .acomp-lista{display:grid;gap:6px}
-.acomp-linha{display:grid;grid-template-columns:90px minmax(0,1fr);gap:10px;align-items:center}
-.acomp-linha label{display:flex;gap:8px;align-items:center;font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;cursor:pointer}
+.acomp-lista{gap:10px}
+.acomp-linha{display:grid;grid-template-columns:110px minmax(0,1fr);gap:10px;align-items:start}
+.acomp-linha label{display:flex;gap:8px;align-items:center;font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;cursor:pointer;white-space:nowrap;padding-top:9px}
 .acomp-linha input[type=checkbox]{accent-color:var(--preto);width:16px;height:16px}
-.acomp-linha input[type=text]{border:1.5px solid var(--preto);background:var(--bege);padding:6px 8px;width:100%}
+.acomp-linha textarea{border:1.5px solid var(--preto);background:var(--bege);padding:8px 10px;width:100%;font-size:14px;line-height:1.5;min-height:40px;max-height:480px;resize:vertical;overflow-y:auto;white-space:pre-wrap}
+.acomp-linha.tem-nota textarea{background:var(--bege)}
+.acomp-linha.tem-nota label{font-weight:700}
 .ficha-acoes{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;position:sticky;bottom:0;background:var(--bege);padding-block:12px 0;border-top:1.5px solid var(--preto)}
 .ficha-acoes div{display:flex;gap:10px;flex-wrap:wrap}
 
@@ -738,8 +741,8 @@ function abrirFicha(idx) {
     + campo('revisao', 'Revisão (Alana)', f('revisao'), 'texto') + campo('live_coding', 'Live Coding', f('live_coding'), 'texto')
     + '</div></section>'
     + '<section><h3>Acompanhamento semanal</h3><div class="acomp-lista">'
-    + Array.from({ length: 13 }, (_, i) => i + 1).map((n) => '<div class="acomp-linha"><label><input type="checkbox" data-k="ac' + n + '"' + (f('ac' + n) === true ? ' checked' : '') + '> Ac ' + n + '/13</label>'
-      + '<input type="text" data-k="ac' + n + '_nota" value="' + esc(f('ac' + n + '_nota')) + '" aria-label="Nota do acompanhamento ' + n + '" placeholder="Nota"></div>').join('')
+    + Array.from({ length: 13 }, (_, i) => i + 1).map((n) => '<div class="acomp-linha' + (f('ac' + n + '_nota') ? ' tem-nota' : '') + '"><label><input type="checkbox" data-k="ac' + n + '"' + (f('ac' + n) === true ? ' checked' : '') + '> Ac ' + n + '/13</label>'
+      + '<textarea class="auto" rows="1" data-k="ac' + n + '_nota" aria-label="Nota do acompanhamento ' + n + '" placeholder="Nota">' + esc(f('ac' + n + '_nota')) + '</textarea></div>').join('')
     + '</div></section>'
     + '<section><h3>Histórico</h3><div class="campos">' + campo('historico', 'Histórico do aluno', f('historico'), 'area', null, 'alto') + '</div></section>'
     + '<div class="ficha-acoes"><span class="status-txt">Só os campos alterados são gravados.</span><div><button class="btn" type="button" id="ficha-fechar">Fechar</button><button class="btn btn--rosa" type="button" id="ficha-salvar">Salvar</button></div></div>';
@@ -747,7 +750,11 @@ function abrirFicha(idx) {
   const dlg = $('#ficha');
   if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
   dlg.scrollTop = 0;
+  dlg.querySelectorAll('textarea.auto').forEach(ajustarAltura);
 }
+/* Caixa de nota cresce com o texto (até o limite; depois rola). */
+function ajustarAltura(t) { t.style.height = 'auto'; t.style.height = Math.min(t.scrollHeight + 3, 480) + 'px'; }
+document.addEventListener('input', (e) => { if (e.target.matches && e.target.matches('textarea.auto')) ajustarAltura(e.target); });
 function fecharFicha() { const dlg = $('#ficha'); if (dlg.close) dlg.close(); else dlg.removeAttribute('open'); fichaIdx = null; }
 
 function valorAtual(a, k) { return ['email', 'objetivo', 'inicio'].includes(k) ? (a[k] || '') : d(a, k); }
