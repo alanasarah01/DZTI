@@ -1,0 +1,489 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Painel da Equipe DZTI</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,800;1,9..144,700&family=Space+Grotesk:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap">
+<style>
+/* Layout: barra da marca; resumo com 4 responsáveis (Alana, Mai, Assistente, Aluno) que também filtram;
+   barra de filtros; lista de alunos, cada um com fase atual, progresso e pendências por responsável.
+   Mesmo visual da jornada: bege, rosa de ação, bordas pretas, sombras duras. */
+:root{
+  --bege:#ebe8e3;
+  --bege2:#ddcfc7;
+  --rosa:#bb2649;
+  --laranja:#fd7528;
+  --azul:#344c92;
+  --preto:#000000;
+  --tinta:#1a1716;
+  --suave:#5e5450;
+  --f-display:'Fraunces', Georgia, 'Times New Roman', serif;
+  --f-body:'Space Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --f-mono:'Space Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  color-scheme: light;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bege);color:var(--tinta);font-family:var(--f-body);font-size:15px;line-height:1.5;margin:0}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--azul);outline-offset:2px}
+a{color:inherit}
+
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:0 56px}
+
+.topo{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding-block:16px;border-bottom:1.5px solid var(--preto)}
+.marca{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.marca b{font-family:var(--f-display);font-weight:800;font-size:28px;letter-spacing:-.02em;line-height:1}
+.marca span,.mono{font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+.acoes{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.status-txt{font-family:var(--f-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--suave)}
+
+.btn{font-family:var(--f-mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;background:var(--bege);border:1.5px solid var(--preto);padding:9px 14px;box-shadow:3px 3px 0 var(--preto);cursor:pointer;transition:transform .12s, box-shadow .12s;text-decoration:none;display:inline-block}
+.btn:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--preto)}
+.btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--preto)}
+.btn--preto{background:var(--preto);color:var(--bege)}
+.btn--rosa{background:var(--rosa);color:var(--bege)}
+.btn[disabled]{opacity:.5;cursor:wait}
+
+.aviso{margin:16px 0 0;border:1.5px dashed var(--azul);color:var(--azul);padding:8px 12px;font-family:var(--f-mono);font-size:12px;letter-spacing:.04em}
+
+/* ---------- login ---------- */
+.login{margin:56px 0 0;max-width:460px;border:1.5px solid var(--preto);background:var(--bege2);padding:24px;box-shadow:8px 8px 0 var(--preto);display:grid;gap:14px}
+.login h1{font-family:var(--f-display);font-weight:800;font-size:34px;line-height:1;margin:0;letter-spacing:-.02em}
+.login p{margin:0;color:var(--suave)}
+.login label{font-family:var(--f-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase}
+.login input{border:1.5px solid var(--preto);background:var(--bege);padding:10px;width:100%}
+.login .erro{color:var(--rosa);font-size:13px}
+.login-linha{display:flex;gap:10px;flex-wrap:wrap}
+.login-linha input{flex:1 1 200px;width:auto}
+
+/* ---------- cabeçalho ---------- */
+.hero{padding-block:32px 4px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:12px 24px}
+.kicker{font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--azul);margin:0 0 8px}
+.hero h1{font-family:var(--f-display);font-weight:800;font-size:clamp(36px,6vw,64px);line-height:.98;letter-spacing:-.025em;margin:0;text-wrap:balance}
+.hero h1 em{font-style:italic;color:var(--rosa)}
+
+/* ---------- resumo por responsável ---------- */
+.resumo{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-top:24px}
+.resp{--c:var(--preto);text-align:left;border:1.5px solid var(--preto);background:var(--bege);padding:14px 16px 16px;display:grid;gap:4px;cursor:pointer;box-shadow:4px 4px 0 var(--preto);transition:transform .12s, box-shadow .12s;position:relative}
+.resp::before{content:"";position:absolute;inset:0 0 auto;height:6px;background:var(--c)}
+.resp:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 var(--preto)}
+.resp[aria-pressed="true"]{background:var(--bege2);box-shadow:6px 6px 0 var(--c)}
+.resp-nome{font-family:var(--f-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;margin-top:6px}
+.resp-num{font-family:var(--f-display);font-weight:800;font-size:46px;line-height:1;font-variant-numeric:tabular-nums}
+.resp-det{font-size:13px;color:var(--suave)}
+.resp-det b{color:var(--tinta)}
+.r-alana{--c:var(--rosa)}
+.r-mai{--c:var(--azul)}
+.r-assistente{--c:var(--laranja)}
+.r-aluno{--c:var(--preto)}
+
+/* ---------- filtros ---------- */
+.filtros{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;margin-top:26px;padding-block:12px;border-top:1.5px solid var(--preto);border-bottom:1.5px solid var(--preto)}
+.seg{display:flex;border:1.5px solid var(--preto)}
+.seg button{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;background:var(--bege);border:0;padding:8px 12px;cursor:pointer}
+.seg button+button{border-left:1.5px solid var(--preto)}
+.seg button[aria-pressed="true"]{background:var(--preto);color:var(--bege)}
+.busca{border:1.5px solid var(--preto);background:var(--bege);padding:8px 10px;flex:1 1 200px;min-width:0;max-width:320px}
+.check{display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer}
+.check input{accent-color:var(--rosa);width:16px;height:16px}
+.limpar{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;background:none;border:0;text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:4px}
+
+/* ---------- lista ---------- */
+.lista{display:grid;gap:16px;margin-top:20px}
+.aluno{border:1.5px solid var(--preto);background:var(--bege);display:grid;grid-template-columns:minmax(0,320px) minmax(0,1fr);min-width:0}
+.aluno-info{padding:16px 18px;border-right:1.5px solid var(--preto);background:var(--bege2);display:grid;gap:8px;align-content:start;min-width:0}
+.aluno-nome{font-family:var(--f-display);font-weight:700;font-size:23px;line-height:1.1;margin:0;overflow-wrap:anywhere}
+.prog{justify-self:start;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;border:1.5px solid var(--preto);padding:1px 7px;background:var(--bege)}
+.prog--dti{background:var(--preto);color:var(--bege)}
+.fase-atual{font-size:14px;margin:2px 0 0}
+.fase-atual b{font-weight:700}
+.barra{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:3px;margin-top:2px}
+.barra i{height:9px;border:1.5px solid var(--preto);background:var(--bege)}
+.barra i.f{background:var(--preto)}
+.barra i.a{background:var(--rosa)}
+.links{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:4px;font-family:var(--f-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+.links a{text-underline-offset:3px}
+
+.aluno-pend{padding:14px 18px 16px;display:grid;gap:12px;align-content:start;min-width:0}
+.ok-tudo{font-family:var(--f-mono);font-size:12px;color:var(--suave);margin:0;display:flex;align-items:center;gap:8px}
+.grupo{display:grid;grid-template-columns:120px minmax(0,1fr);gap:10px;align-items:start}
+.grupo-rot{font-family:var(--f-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;padding:3px 8px;border:1.5px solid var(--preto);justify-self:start;font-weight:700}
+.grupo-rot.r-alana{background:var(--rosa);border-color:var(--rosa);color:var(--bege)}
+.grupo-rot.r-mai{background:var(--azul);border-color:var(--azul);color:var(--bege)}
+.grupo-rot.r-assistente{background:var(--laranja);border-color:var(--laranja);color:var(--preto)}
+.grupo-rot.r-aluno{background:var(--preto);color:var(--bege)}
+.itens{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.item{display:flex;gap:9px;align-items:flex-start;font-size:14px;line-height:1.35;background:none;border:0;padding:0;text-align:left;width:100%;cursor:pointer}
+.item:hover .txt{text-decoration:underline;text-underline-offset:3px}
+.caixa{flex:none;width:15px;height:15px;border:1.5px solid var(--preto);margin-top:1px;display:grid;place-items:center;background:var(--bege)}
+.item.feito .caixa{background:var(--preto)}
+.item.feito .txt{color:var(--suave);text-decoration:line-through}
+.onde{display:block;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--suave);margin-top:2px}
+.esq{color:var(--rosa);font-weight:700}
+.erro-aluno{font-size:13px;color:var(--rosa);margin:0}
+
+.vazio{margin-top:24px;font-family:var(--f-mono);font-size:13px;border:1.5px dashed var(--suave);color:var(--suave);padding:18px;text-align:center}
+.nota{margin-top:28px;font-size:13px;color:var(--suave);max-width:70ch}
+
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom, 0px));z-index:60;background:var(--preto);color:var(--bege);font-family:var(--f-mono);font-size:12px;letter-spacing:.04em;padding:11px 16px;max-width:calc(100vw - 32px);box-shadow:4px 4px 0 var(--laranja)}
+.toast.erro{box-shadow:4px 4px 0 var(--rosa)}
+
+@media (max-width: 900px){
+  .resumo{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .aluno{grid-template-columns:minmax(0,1fr)}
+  .aluno-info{border-right:0;border-bottom:1.5px solid var(--preto)}
+}
+@media (max-width: 520px){
+  .grupo{grid-template-columns:minmax(0,1fr);gap:6px}
+  .resp-num{font-size:38px}
+}
+@media (prefers-reduced-motion: reduce){ *{transition:none!important} }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="topo">
+    <div class="marca"><b>DZTI</b><span>Painel da equipe</span></div>
+    <div class="acoes" id="acoes" hidden>
+      <span class="status-txt" id="atualizado"></span>
+      <button class="btn" type="button" id="btn-atualizar">Atualizar</button>
+      <button class="btn" type="button" id="btn-sair">Sair</button>
+    </div>
+  </header>
+
+  <p class="aviso" id="aviso-demo" hidden><strong>Demonstração</strong> · alunos fictícios · nada é gravado · senha: <strong>dzti</strong></p>
+
+  <form class="login" id="login" hidden>
+    <h1>Painel da equipe</h1>
+    <p>Pendências de todos os alunos da Do Zero à TI e da Destrava TI.</p>
+    <label for="senha">Senha da equipe</label>
+    <div class="login-linha">
+      <input id="senha" type="password" autocomplete="current-password" required>
+      <button class="btn btn--preto" type="submit" id="btn-entrar">Entrar</button>
+    </div>
+    <span class="erro" id="login-erro" hidden></span>
+  </form>
+
+  <main id="painel" hidden>
+    <section class="hero">
+      <div>
+        <p class="kicker" id="kicker"></p>
+        <h1>Quem está com <em>a próxima ação</em></h1>
+      </div>
+    </section>
+
+    <section class="resumo" id="resumo" aria-label="Pendências por responsável"></section>
+
+    <div class="filtros">
+      <div class="seg" role="group" aria-label="Programa" id="seg-programa">
+        <button type="button" data-prog="todos" aria-pressed="true">Todos</button>
+        <button type="button" data-prog="dzti" aria-pressed="false">Do Zero à TI</button>
+        <button type="button" data-prog="dti" aria-pressed="false">Destrava TI</button>
+      </div>
+      <input class="busca" id="busca" type="search" placeholder="Buscar aluno" aria-label="Buscar aluno">
+      <label class="check"><input type="checkbox" id="so-pendentes" checked> Só alunos com pendência</label>
+      <button class="limpar" type="button" id="limpar" hidden>Limpar filtro</button>
+    </div>
+
+    <section class="lista" id="lista" aria-label="Alunos"></section>
+
+    <p class="nota">Pendência = item não marcado na fase em andamento, ou esquecido numa fase já concluída. Itens de "Mentoria entrega" contam para a Mai quando a fase tem call com a Mai; nas outras fases, para a Alana. Clique num item para marcar como feito; a mudança vai para a planilha do aluno.</p>
+  </main>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<script>
+/* Mesma URL do App da Web usada na jornada. Vazia = modo demonstração. */
+const API_URL = 'https://script.google.com/macros/s/AKfycbysKP_5-o-R2ECK7TfgbFlgmch4THkdrXgfi52_LvYD2N_efZ8Vy6l_jAeathitJo5L/exec';
+/* Endereço da página do aluno, para o link "Abrir jornada" quando a planilha não tiver o link salvo. */
+const SITE_JORNADA = '/jornada.html';
+
+const RESP = [
+  { id: 'alana', nome: 'Alana' },
+  { id: 'mai', nome: 'Mai' },
+  { id: 'assistente', nome: 'Assistente' },
+  { id: 'aluno', nome: 'Aluno' },
+];
+const GRUPOS = ['aluno', 'mentora', 'equipe'];
+
+let params;
+try { params = new URLSearchParams(location.search); } catch (_) { params = new URLSearchParams(''); }
+const DEMO = !API_URL || params.has('demo');
+const SENHA_DEMO = 'dzti';
+const DEMO_DADOS = [{"nome": "Marina Duarte", "programa": "Do Zero à TI", "inicio": "2026-10-01", "link": "", "planilha": "", "j": "demomarina", "cards": [{"id": "z1", "fase": "Onboarding", "descricao": "", "call": "", "status": "Concluída", "ordem": 1, "prazo": "", "aluno": "", "mentora": "", "equipe": ""}, {"id": "z2", "fase": "Plano de estudos", "descricao": "Na call, a Alana conhece você e monta o seu plano.", "call": "Call · 30 min", "status": "Concluída", "ordem": 2, "prazo": "", "aluno": "[x] Preencher o formulário\n[x] Agendar a call de plano de estudos", "mentora": "", "equipe": "[x] Na semana 4 do plano: agente para criar o formulário do LinkedIn"}, {"id": "z3", "fase": "Call rotina com Mai", "descricao": "", "call": "Call com a Mai", "status": "Concluída", "ordem": 3, "prazo": "", "aluno": "[x] Preencher os links de rotina\n[x] Agendar a call com a Mai", "mentora": "[x] Links de rotina para preencher", "equipe": "[x] Calendário da Mai"}, {"id": "z4", "fase": "LinkedIn e CV + Aplicação Estratégica", "descricao": "", "call": "Sem call", "status": "Em andamento", "ordem": 4, "prazo": "", "aluno": "[x] Rodar o agente de LinkedIn\n[x] Entregar o formulário em até 1 semana", "mentora": "[ ] Textos do LinkedIn, 1 semana após a entrega do formulário\n[ ] Explicação por áudio\n[ ] Revisão depois das suas mudanças, com espaço para dúvidas\n[ ] Acompanhamento semanal dos resultados", "equipe": "[x] Apostilas de LinkedIn, CV e Aplicação Estratégica"}, {"id": "z5", "fase": "Speech", "descricao": "", "call": "Call · 30 min", "status": "Próxima", "ordem": 5, "prazo": "", "aluno": "[ ] Agendar a call de speech", "mentora": "[ ] Sugestão de speech, depois da call", "equipe": "[ ] Apostila de speech, antes da call"}, {"id": "z6", "fase": "Simulação de entrevista de RH", "descricao": "", "call": "Call · 1h", "status": "Próxima", "ordem": 6, "prazo": "", "aluno": "[ ] Agendar a call de RH", "mentora": "[ ] Diagnóstico, depois da call", "equipe": "[ ] Apostila de Entrevista de RH, antes da call"}, {"id": "z7", "fase": "Call Mentalidade com Mai", "descricao": "", "call": "Call com a Mai", "status": "Próxima", "ordem": 7, "prazo": "", "aluno": "[ ] Agendar a call com a Mai", "mentora": "", "equipe": ""}, {"id": "z8", "fase": "Simulação de entrevista técnica", "descricao": "", "call": "Call · 1h", "status": "Próxima", "ordem": 8, "prazo": "", "aluno": "[ ] Agendar a call técnica", "mentora": "[ ] Diagnóstico, depois da call", "equipe": "[ ] Apostila de Entrevista Técnica, antes da call"}, {"id": "z9", "fase": "Apresentação de Portfólio + Aprendizado Contínuo", "descricao": "", "call": "Call · 1h", "status": "Próxima", "ordem": 9, "prazo": "", "aluno": "[ ] Preparar a apresentação de um projeto do seu plano de estudos\n[ ] Agendar a call", "mentora": "[ ] Diagnóstico de carreira e próximos passos, durante a call", "equipe": ""}]}, {"nome": "Bruno Teixeira", "programa": "Do Zero à TI", "inicio": "2026-10-01", "link": "", "planilha": "", "j": "demobruno", "cards": [{"id": "z1", "fase": "Onboarding", "descricao": "", "call": "", "status": "Concluída", "ordem": 1, "prazo": "", "aluno": "", "mentora": "", "equipe": ""}, {"id": "z2", "fase": "Plano de estudos", "descricao": "Na call, a Alana conhece você e monta o seu plano.", "call": "Call · 30 min", "status": "Em andamento", "ordem": 2, "prazo": "", "aluno": "[ ] Preencher o formulário\n[ ] Agendar a call de plano de estudos", "mentora": "", "equipe": "[ ] Na semana 4 do plano: agente para criar o formulário do LinkedIn"}, {"id": "z3", "fase": "Call rotina com Mai", "descricao": "", "call": "Call com a Mai", "status": "Próxima", "ordem": 3, "prazo": "", "aluno": "[ ] Preencher os links de rotina\n[ ] Agendar a call com a Mai", "mentora": "[ ] Links de rotina para preencher", "equipe": "[ ] Calendário da Mai"}, {"id": "z4", "fase": "LinkedIn e CV + Aplicação Estratégica", "descricao": "", "call": "Sem call", "status": "Próxima", "ordem": 4, "prazo": "", "aluno": "[ ] Rodar o agente de LinkedIn\n[ ] Entregar o formulário em até 1 semana", "mentora": "[ ] Textos do LinkedIn, 1 semana após a entrega do formulário\n[ ] Explicação por áudio\n[ ] Revisão depois das suas mudanças, com espaço para dúvidas\n[ ] Acompanhamento semanal dos resultados", "equipe": "[ ] Apostilas de LinkedIn, CV e Aplicação Estratégica"}, {"id": "z5", "fase": "Speech", "descricao": "", "call": "Call · 30 min", "status": "Próxima", "ordem": 5, "prazo": "", "aluno": "[ ] Agendar a call de speech", "mentora": "[ ] Sugestão de speech, depois da call", "equipe": "[ ] Apostila de speech, antes da call"}, {"id": "z6", "fase": "Simulação de entrevista de RH", "descricao": "", "call": "Call · 1h", "status": "Próxima", "ordem": 6, "prazo": "", "aluno": "[ ] Agendar a call de RH", "mentora": "[ ] Diagnóstico, depois da call", "equipe": "[ ] Apostila de Entrevista de RH, antes da call"}, {"id": "z7", "fase": "Call Mentalidade com Mai", "descricao": "", "call": "Call com a Mai", "status": "Próxima", "ordem": 7, "prazo": "", "aluno": "[ ] Agendar a call com a Mai", "mentora": "", "equipe": ""}, {"id": "z8", "fase": "Simulação de entrevista técnica", "descricao": "", "call": "Call · 1h", "status": "Próxima", "ordem": 8, "prazo": "", "aluno": "[ ] Agendar a call técnica", "mentora": "[ ] Diagnóstico, depois da call", "equipe": "[ ] Apostila de Entrevista Técnica, antes da call"}, {"id": "z9", "fase": "Apresentação de Portfólio + Aprendizado Contínuo", "descricao": "", "call": "Call · 1h", "status": "Próxima", "ordem": 9, "prazo": "", "aluno": "[ ] Preparar a apresentação de um projeto do seu plano de estudos\n[ ] Agendar a call", "mentora": "[ ] Diagnóstico de carreira e próximos passos, durante a call", "equipe": ""}]}, {"nome": "Camila Nunes", "programa": "Do Zero à TI", "inicio": "2026-10-01", "link": "", "planilha": "", "j": "democamila", "cards": [{"id": "z1", "fase": "Onboarding", "descricao": "", "call": "", "status": "Concluída", "ordem": 1, "prazo": "", "aluno": "", "mentora": "", "equipe": ""}, {"id": "z2", "fase": "Plano de estudos", "descricao": "Na call, a Alana conhece você e monta o seu plano.", "call": "Call · 30 min", "status": "Concluída", "ordem": 2, "prazo": "", "aluno": "[x] Preencher o formulário\n[x] Agendar a call de plano de estudos", "mentora": "", "equipe": "[x] Na semana 4 do plano: agente para criar o formulário do LinkedIn"}, {"id": "z3", "fase": "Call rotina com Mai", "descricao": "", "call": "Call com a Mai", "status": "Concluída", "ordem": 3, "prazo": "", "aluno": "[x] Preencher os links de rotina\n[x] Agendar a call com a Mai", "mentora": "[x] Links de rotina para preencher", "equipe": "[x] Calendário da Mai"}, {"id": "z4", "fase": "LinkedIn e CV + Aplicação Estratégica", "descricao": "", "call": "Sem call", "status": "Concluída", "ordem": 4, "prazo": "", "aluno": "[x] Rodar o agente de LinkedIn\n[x] Entregar o formulário em até 1 semana", "mentora": "[x] Textos do LinkedIn, 1 semana após a entrega do formulário\n[x] Explicação por áudio\n[x] Revisão depois das suas mudanças, com espaço para dúvidas\n[x] Acompanhamento semanal dos resultados", "equipe": "[x] Apostilas de LinkedIn, CV e Aplicação Estratégica"}, {"id": "z5", "fase": "Speech", "descricao": "", "call": "Call · 30 min", "status": "Concluída", "ordem": 5, "prazo": "", "aluno": "[x] Agendar a call de speech", "mentora": "[ ] Sugestão de speech, depois da call", "equipe": "[x] Apostila de speech, antes da call"}, {"id": "z6", "fase": "Simulação de entrevista de RH", "descricao": "", "call": "Call · 1h", "status": "Em andamento", "ordem": 6, "prazo": "", "aluno": "[x] Agendar a call de RH", "mentora": "[ ] Diagnóstico, depois da call", "equipe": "[ ] Apostila de Entrevista de RH, antes da call"}, {"id": "z7", "fase": "Call Mentalidade com Mai", "descricao": "", "call": "Call com a Mai", "status": "Próxima", "ordem": 7, "prazo": "", "aluno": "[ ] Agendar a call com a Mai", "mentora": "", "equipe": ""}, {"id": "z8", "fase": "Simulação de entrevista técnica", "descricao": "", "call": "Call · 1h", "status": "Próxima", "ordem": 8, "prazo": "", "aluno": "[ ] Agendar a call técnica", "mentora": "[ ] Diagnóstico, depois da call", "equipe": "[ ] Apostila de Entrevista Técnica, antes da call"}, {"id": "z9", "fase": "Apresentação de Portfólio + Aprendizado Contínuo", "descricao": "", "call": "Call · 1h", "status": "Próxima", "ordem": 9, "prazo": "", "aluno": "[ ] Preparar a apresentação de um projeto do seu plano de estudos\n[ ] Agendar a call", "mentora": "[ ] Diagnóstico de carreira e próximos passos, durante a call", "equipe": ""}]}, {"nome": "Diego Prado", "programa": "Do Zero à TI", "inicio": "2026-10-01", "link": "", "planilha": "", "j": "demodiego", "cards": [{"id": "z1", "fase": "Onboarding", "descricao": "", "call": "", "status": "Concluída", "ordem": 1, "prazo": "", "aluno": "", "mentora": "", "equipe": ""}, {"id": "z2", "fase": "Plano de estudos", "descricao": "Na call, a Alana conhece você e monta o seu plano.", "call": "Call · 30 min", "status": "Concluída", "ordem": 2, "prazo": "", "aluno": "[x] Preencher o formulário\n[x] Agendar a call de plano de estudos", "mentora": "", "equipe": "[x] Na semana 4 do plano: agente para criar o formulário do LinkedIn"}, {"id": "z3", "fase": "Call rotina com Mai", "descricao": "", "call": "Call com a Mai", "status": "Concluída", "ordem": 3, "prazo": "", "aluno": "[x] Preencher os links de rotina\n[x] Agendar a call com a Mai", "mentora": "[x] Links de rotina para preencher", "equipe": "[x] Calendário da Mai"}, {"id": "z4", "fase": "LinkedIn e CV + Aplicação Estratégica", "descricao": "", "call": "Sem call", "status": "Concluída", "ordem": 4, "prazo": "", "aluno": "[x] Rodar o agente de LinkedIn\n[x] Entregar o formulário em até 1 semana", "mentora": "[x] Textos do LinkedIn, 1 semana após a entrega do formulário\n[x] Explicação por áudio\n[x] Revisão depois das suas mudanças, com espaço para dúvidas\n[x] Acompanhamento semanal dos resultados", "equipe": "[x] Apostilas de LinkedIn, CV e Aplicação Estratégica"}, {"id": "z5", "fase": "Speech", "descricao": "", "call": "Call · 30 min", "status": "Concluída", "ordem": 5, "prazo": "", "aluno": "[x] Agendar a call de speech", "mentora": "[x] Sugestão de speech, depois da call", "equipe": "[x] Apostila de speech, antes da call"}, {"id": "z6", "fase": "Simulação de entrevista de RH", "descricao": "", "call": "Call · 1h", "status": "Concluída", "ordem": 6, "prazo": "", "aluno": "[x] Agendar a call de RH", "mentora": "[x] Diagnóstico, depois da call", "equipe": "[x] Apostila de Entrevista de RH, antes da call"}, {"id": "z7", "fase": "Call Mentalidade com Mai", "descricao": "", "call": "Call com a Mai", "status": "Em andamento", "ordem": 7, "prazo": "", "aluno": "[ ] Agendar a call com a Mai", "mentora": "", "equipe": ""}, {"id": "z8", "fase": "Simulação de entrevista técnica", "descricao": "", "call": "Call · 1h", "status": "Próxima", "ordem": 8, "prazo": "", "aluno": "[ ] Agendar a call técnica", "mentora": "[ ] Diagnóstico, depois da call", "equipe": "[ ] Apostila de Entrevista Técnica, antes da call"}, {"id": "z9", "fase": "Apresentação de Portfólio + Aprendizado Contínuo", "descricao": "", "call": "Call · 1h", "status": "Próxima", "ordem": 9, "prazo": "", "aluno": "[ ] Preparar a apresentação de um projeto do seu plano de estudos\n[ ] Agendar a call", "mentora": "[ ] Diagnóstico de carreira e próximos passos, durante a call", "equipe": ""}]}, {"nome": "Rafael Lima", "programa": "Destrava TI", "inicio": "2026-10-01", "link": "", "planilha": "", "j": "demorafael", "cards": [{"id": "t1", "fase": "Onboarding", "descricao": "", "call": "", "status": "Em andamento", "ordem": 1, "prazo": "", "aluno": "", "mentora": "", "equipe": ""}, {"id": "t2", "fase": "LinkedIn e CV + Aplicação Estratégica", "descricao": "", "call": "Sem call", "status": "Próxima", "ordem": 2, "prazo": "", "aluno": "[ ] Rodar o agente de LinkedIn\n[ ] Entregar o formulário em até 1 semana", "mentora": "[ ] Textos do LinkedIn, 1 semana após a entrega do formulário\n[ ] Áudios explicando como aplicar\n[ ] Dúvidas tiradas pelo WhatsApp", "equipe": "[ ] Apostilas de LinkedIn, CV e Aplicação Estratégica"}, {"id": "t3", "fase": "Speech", "descricao": "", "call": "Call · 30 min", "status": "Próxima", "ordem": 3, "prazo": "", "aluno": "[ ] Agendar a call de speech", "mentora": "[ ] Sugestão de speech, depois da call", "equipe": "[ ] Apostila de speech, antes da call"}, {"id": "t4", "fase": "Simulação de entrevista de RH", "descricao": "", "call": "Call · 1h", "status": "Próxima", "ordem": 4, "prazo": "", "aluno": "[ ] Agendar a call de RH", "mentora": "[ ] Diagnóstico, depois da call", "equipe": "[ ] Apostila de Entrevista de RH, antes da call"}, {"id": "t5", "fase": "Call Mentalidade com Mai", "descricao": "", "call": "Call com a Mai", "status": "Próxima", "ordem": 5, "prazo": "", "aluno": "[ ] Agendar a call com a Mai", "mentora": "", "equipe": ""}, {"id": "t6", "fase": "Simulação de entrevista técnica", "descricao": "", "call": "Call · 1h", "status": "Próxima", "ordem": 6, "prazo": "", "aluno": "[ ] Agendar a call técnica", "mentora": "[ ] Diagnóstico, depois da call", "equipe": "[ ] Apostila de Entrevista Técnica, antes da call"}]}, {"nome": "Juliana Reis", "programa": "Destrava TI", "inicio": "2026-10-01", "link": "", "planilha": "", "j": "demojuliana", "cards": [{"id": "t1", "fase": "Onboarding", "descricao": "", "call": "", "status": "Concluída", "ordem": 1, "prazo": "", "aluno": "", "mentora": "", "equipe": ""}, {"id": "t2", "fase": "LinkedIn e CV + Aplicação Estratégica", "descricao": "", "call": "Sem call", "status": "Concluída", "ordem": 2, "prazo": "", "aluno": "[x] Rodar o agente de LinkedIn\n[x] Entregar o formulário em até 1 semana", "mentora": "[x] Textos do LinkedIn, 1 semana após a entrega do formulário\n[x] Áudios explicando como aplicar\n[x] Dúvidas tiradas pelo WhatsApp", "equipe": "[ ] Apostilas de LinkedIn, CV e Aplicação Estratégica"}, {"id": "t3", "fase": "Speech", "descricao": "", "call": "Call · 30 min", "status": "Em andamento", "ordem": 3, "prazo": "", "aluno": "[x] Agendar a call de speech", "mentora": "[ ] Sugestão de speech, depois da call", "equipe": "[x] Apostila de speech, antes da call"}, {"id": "t4", "fase": "Simulação de entrevista de RH", "descricao": "", "call": "Call · 1h", "status": "Próxima", "ordem": 4, "prazo": "", "aluno": "[ ] Agendar a call de RH", "mentora": "[ ] Diagnóstico, depois da call", "equipe": "[ ] Apostila de Entrevista de RH, antes da call"}, {"id": "t5", "fase": "Call Mentalidade com Mai", "descricao": "", "call": "Call com a Mai", "status": "Próxima", "ordem": 5, "prazo": "", "aluno": "[ ] Agendar a call com a Mai", "mentora": "", "equipe": ""}, {"id": "t6", "fase": "Simulação de entrevista técnica", "descricao": "", "call": "Call · 1h", "status": "Próxima", "ordem": 6, "prazo": "", "aluno": "[ ] Agendar a call técnica", "mentora": "[ ] Diagnóstico, depois da call", "equipe": "[ ] Apostila de Entrevista Técnica, antes da call"}]}, {"nome": "Tiago Souza", "programa": "Do Zero à TI", "inicio": "2026-10-01", "link": "", "planilha": "", "j": "demotiago", "cards": [{"id": "z1", "fase": "Onboarding", "descricao": "", "call": "", "status": "Concluída", "ordem": 1, "prazo": "", "aluno": "", "mentora": "", "equipe": ""}, {"id": "z2", "fase": "Plano de estudos", "descricao": "Na call, a Alana conhece você e monta o seu plano.", "call": "Call · 30 min", "status": "Concluída", "ordem": 2, "prazo": "", "aluno": "[x] Preencher o formulário\n[x] Agendar a call de plano de estudos", "mentora": "", "equipe": "[x] Na semana 4 do plano: agente para criar o formulário do LinkedIn"}, {"id": "z3", "fase": "Call rotina com Mai", "descricao": "", "call": "Call com a Mai", "status": "Em andamento", "ordem": 3, "prazo": "", "aluno": "[x] Preencher os links de rotina\n[ ] Agendar a call com a Mai", "mentora": "[ ] Links de rotina para preencher", "equipe": "[x] Calendário da Mai"}, {"id": "z4", "fase": "LinkedIn e CV + Aplicação Estratégica", "descricao": "", "call": "Sem call", "status": "Próxima", "ordem": 4, "prazo": "", "aluno": "[ ] Rodar o agente de LinkedIn\n[ ] Entregar o formulário em até 1 semana", "mentora": "[ ] Textos do LinkedIn, 1 semana após a entrega do formulário\n[ ] Explicação por áudio\n[ ] Revisão depois das suas mudanças, com espaço para dúvidas\n[ ] Acompanhamento semanal dos resultados", "equipe": "[ ] Apostilas de LinkedIn, CV e Aplicação Estratégica"}, {"id": "z5", "fase": "Speech", "descricao": "", "call": "Call · 30 min", "status": "Próxima", "ordem": 5, "prazo": "", "aluno": "[ ] Agendar a call de speech", "mentora": "[ ] Sugestão de speech, depois da call", "equipe": "[ ] Apostila de speech, antes da call"}, {"id": "z6", "fase": "Simulação de entrevista de RH", "descricao": "", "call": "Call · 1h", "status": "Próxima", "ordem": 6, "prazo": "", "aluno": "[ ] Agendar a call de RH", "mentora": "[ ] Diagnóstico, depois da call", "equipe": "[ ] Apostila de Entrevista de RH, antes da call"}, {"id": "z7", "fase": "Call Mentalidade com Mai", "descricao": "", "call": "Call com a Mai", "status": "Próxima", "ordem": 7, "prazo": "", "aluno": "[ ] Agendar a call com a Mai", "mentora": "", "equipe": ""}, {"id": "z8", "fase": "Simulação de entrevista técnica", "descricao": "", "call": "Call · 1h", "status": "Próxima", "ordem": 8, "prazo": "", "aluno": "[ ] Agendar a call técnica", "mentora": "[ ] Diagnóstico, depois da call", "equipe": "[ ] Apostila de Entrevista Técnica, antes da call"}, {"id": "z9", "fase": "Apresentação de Portfólio + Aprendizado Contínuo", "descricao": "", "call": "Call · 1h", "status": "Próxima", "ordem": 9, "prazo": "", "aluno": "[ ] Preparar a apresentação de um projeto do seu plano de estudos\n[ ] Agendar a call", "mentora": "[ ] Diagnóstico de carreira e próximos passos, durante a call", "equipe": ""}]}, {"nome": "Paula Martins", "programa": "Do Zero à TI", "inicio": "2026-10-01", "link": "", "planilha": "", "j": "demopaula", "cards": [{"id": "z1", "fase": "Onboarding", "descricao": "", "call": "", "status": "Concluída", "ordem": 1, "prazo": "", "aluno": "", "mentora": "", "equipe": ""}, {"id": "z2", "fase": "Plano de estudos", "descricao": "Na call, a Alana conhece você e monta o seu plano.", "call": "Call · 30 min", "status": "Concluída", "ordem": 2, "prazo": "", "aluno": "[x] Preencher o formulário\n[x] Agendar a call de plano de estudos", "mentora": "", "equipe": "[x] Na semana 4 do plano: agente para criar o formulário do LinkedIn"}, {"id": "z3", "fase": "Call rotina com Mai", "descricao": "", "call": "Call com a Mai", "status": "Concluída", "ordem": 3, "prazo": "", "aluno": "[x] Preencher os links de rotina\n[x] Agendar a call com a Mai", "mentora": "[x] Links de rotina para preencher", "equipe": "[x] Calendário da Mai"}, {"id": "z4", "fase": "LinkedIn e CV + Aplicação Estratégica", "descricao": "", "call": "Sem call", "status": "Concluída", "ordem": 4, "prazo": "", "aluno": "[x] Rodar o agente de LinkedIn\n[x] Entregar o formulário em até 1 semana", "mentora": "[x] Textos do LinkedIn, 1 semana após a entrega do formulário\n[x] Explicação por áudio\n[x] Revisão depois das suas mudanças, com espaço para dúvidas\n[x] Acompanhamento semanal dos resultados", "equipe": "[x] Apostilas de LinkedIn, CV e Aplicação Estratégica"}, {"id": "z5", "fase": "Speech", "descricao": "", "call": "Call · 30 min", "status": "Concluída", "ordem": 5, "prazo": "", "aluno": "[x] Agendar a call de speech", "mentora": "[x] Sugestão de speech, depois da call", "equipe": "[x] Apostila de speech, antes da call"}, {"id": "z6", "fase": "Simulação de entrevista de RH", "descricao": "", "call": "Call · 1h", "status": "Concluída", "ordem": 6, "prazo": "", "aluno": "[x] Agendar a call de RH", "mentora": "[x] Diagnóstico, depois da call", "equipe": "[x] Apostila de Entrevista de RH, antes da call"}, {"id": "z7", "fase": "Call Mentalidade com Mai", "descricao": "", "call": "Call com a Mai", "status": "Concluída", "ordem": 7, "prazo": "", "aluno": "[x] Agendar a call com a Mai", "mentora": "", "equipe": ""}, {"id": "z8", "fase": "Simulação de entrevista técnica", "descricao": "", "call": "Call · 1h", "status": "Concluída", "ordem": 8, "prazo": "", "aluno": "[x] Agendar a call técnica", "mentora": "[x] Diagnóstico, depois da call", "equipe": "[x] Apostila de Entrevista Técnica, antes da call"}, {"id": "z9", "fase": "Apresentação de Portfólio + Aprendizado Contínuo", "descricao": "", "call": "Call · 1h", "status": "Concluída", "ordem": 9, "prazo": "", "aluno": "[x] Preparar a apresentação de um projeto do seu plano de estudos\n[x] Agendar a call", "mentora": "[x] Diagnóstico de carreira e próximos passos, durante a call", "equipe": ""}]}];
+
+const estado = { senha: '', alunos: [], filtroResp: null, programa: 'todos', busca: '', soPendentes: true, carregadoEm: null };
+const $ = (s) => document.querySelector(s);
+
+/* ---------- utilitários ---------- */
+function esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+function lerLista(txt) {
+  if (Array.isArray(txt)) return txt;
+  return String(txt || '').split(/\r?\n/).map((l) => l.trim()).filter((l) => l && !/^nada$/i.test(l)).map((l) => ({
+    feito: /^\[x\]/i.test(l),
+    texto: l.replace(/^\[\s*x?\s*\]\s*/i, ''),
+  }));
+}
+const escreverLista = (lista) => lista.map((e) => (e.feito ? '[x] ' : '[ ] ') + e.texto).join('\n');
+function normalizarCards(lista) {
+  return (lista || []).map((c, i) => ({
+    id: String(c.id || 'n' + i), fase: String(c.fase || 'Sem nome'), descricao: String(c.descricao || ''),
+    call: String(c.call || ''), status: ['Próxima', 'Em andamento', 'Concluída'].includes(c.status) ? c.status : 'Próxima',
+    ordem: Number(c.ordem) || i + 1, prazo: String(c.prazo || ''),
+    aluno: lerLista(c.aluno), mentora: lerLista(c.mentora), equipe: lerLista(c.equipe),
+  })).sort((a, b) => a.ordem - b.ordem);
+}
+const paraPlanilha = (c) => ({
+  id: c.id, fase: c.fase, descricao: c.descricao, call: c.call, status: c.status, ordem: c.ordem, prazo: c.prazo,
+  aluno: escreverLista(c.aluno), mentora: escreverLista(c.mentora), equipe: escreverLista(c.equipe),
+});
+const ehDti = (a) => /destrava/i.test(a.programa || '');
+function responsavel(card, grupo) {
+  if (grupo === 'aluno') return 'aluno';
+  if (grupo === 'equipe') return 'assistente';
+  return /\bmai\b/i.test(card.call + ' ' + card.fase) ? 'mai' : 'alana';
+}
+
+let toastTimer;
+function toast(msg, erro) {
+  const t = $('#toast');
+  t.textContent = msg;
+  t.classList.toggle('erro', !!erro);
+  t.hidden = false;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.hidden = true; }, erro ? 6000 : 3000);
+}
+
+const ICONE_CHECK = '<svg width="10" height="10" viewBox="0 0 12 12" aria-hidden="true"><path d="M1.5 6.5l3 3 6-7" fill="none" stroke="#ebe8e3" stroke-width="2.4"/></svg>';
+const ICONE_OK = '<svg width="14" height="14" viewBox="0 0 12 12" aria-hidden="true"><path d="M1.5 6.5l3 3 6-7" fill="none" stroke="#fd7528" stroke-width="2.2"/></svg>';
+
+/* ---------- cálculo das pendências ----------
+   Gera, para cada aluno, a lista de itens pendentes com o responsável de cada um.
+   Itens marcados nesta sessão continuam visíveis (riscados) até a próxima atualização. */
+function pendencias(a) {
+  const out = [];
+  (a.cards || []).forEach((c) => {
+    if (c.status === 'Próxima') return;
+    const esquecido = c.status === 'Concluída';
+    GRUPOS.forEach((g) => {
+      c[g].forEach((it, i) => {
+        if (it.feito && !it.marcadoAgora) return;
+        out.push({ card: c, grupo: g, i, item: it, esquecido, resp: responsavel(c, g) });
+      });
+    });
+  });
+  return out;
+}
+const abertas = (lista) => lista.filter((p) => !p.item.feito);
+
+/* ---------- renderização ---------- */
+function render() {
+  const alunosProg = estado.alunos.filter((a) => estado.programa === 'todos' || (estado.programa === 'dti') === ehDti(a));
+  const ativos = alunosProg.filter((a) => !a.erro);
+
+  // resumo por responsável
+  $('#resumo').innerHTML = RESP.map((r) => {
+    let itens = 0, esq = 0;
+    const comAlunos = new Set();
+    ativos.forEach((a) => {
+      abertas(pendencias(a)).filter((p) => p.resp === r.id).forEach((p) => {
+        itens++; if (p.esquecido) esq++; comAlunos.add(a.j || a.nome);
+      });
+    });
+    return '<button type="button" class="resp r-' + r.id + '" data-resp="' + r.id + '" aria-pressed="' + (estado.filtroResp === r.id) + '">'
+      + '<span class="resp-nome">' + r.nome + '</span>'
+      + '<span class="resp-num">' + itens + '</span>'
+      + '<span class="resp-det">' + (itens === 1 ? 'pendência' : 'pendências') + ' em <b>' + comAlunos.size + '</b> ' + (comAlunos.size === 1 ? 'aluno' : 'alunos')
+      + (esq ? ' · <span class="esq">' + esq + ' esquecida' + (esq === 1 ? '' : 's') + '</span>' : '') + '</span>'
+      + '</button>';
+  }).join('');
+
+  const hora = estado.carregadoEm ? estado.carregadoEm.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '';
+  $('#kicker').textContent = ativos.length + (ativos.length === 1 ? ' aluno' : ' alunos') + (estado.programa === 'todos' ? '' : estado.programa === 'dti' ? ' · Destrava TI' : ' · Do Zero à TI');
+  $('#atualizado').textContent = hora ? 'Atualizado às ' + hora : '';
+  $('#limpar').hidden = !estado.filtroResp && !estado.busca;
+
+  // lista
+  const termo = estado.busca.trim().toLowerCase();
+  const linhas = alunosProg
+    .filter((a) => !termo || a.nome.toLowerCase().includes(termo))
+    .map((a) => {
+      const todas = a.erro ? [] : pendencias(a);
+      const visiveis = estado.filtroResp ? todas.filter((p) => p.resp === estado.filtroResp) : todas;
+      return { a, visiveis, nAbertas: abertas(visiveis).length };
+    })
+    .filter((x) => x.a.erro ? !estado.filtroResp : (!estado.soPendentes && !estado.filtroResp) || x.visiveis.length)
+    .sort((x, y) => y.nAbertas - x.nAbertas || x.a.nome.localeCompare(y.a.nome, 'pt-BR'));
+
+  $('#lista').innerHTML = linhas.length ? linhas.map(linhaAluno).join('')
+    : '<p class="vazio">' + (estado.alunos.length ? 'Nenhum aluno com pendência para esse filtro.' : 'Nenhum aluno com jornada gerada ainda. Gere a primeira na planilha Alunos DZTI.') + '</p>';
+}
+
+function linhaAluno({ a, visiveis }) {
+  const idx = estado.alunos.indexOf(a);
+  const dti = ehDti(a);
+  const cards = a.cards || [];
+  const atual = cards.find((c) => c.status === 'Em andamento') || cards.find((c) => c.status === 'Próxima');
+  const feitas = cards.filter((c) => c.status === 'Concluída').length;
+  const link = a.link || (a.j ? SITE_JORNADA + '?j=' + a.j : '');
+
+  let info = '<div class="aluno-info">'
+    + '<h2 class="aluno-nome">' + esc(a.nome) + '</h2>'
+    + '<span class="prog' + (dti ? ' prog--dti' : '') + '">' + (dti ? 'Destrava TI' : 'Do Zero à TI') + '</span>';
+  if (!a.erro) {
+    info += '<p class="fase-atual">' + (atual ? 'Fase ' + (cards.indexOf(atual) + 1) + ' de ' + cards.length + ': <b>' + esc(atual.fase) + '</b>' : '<b>Jornada concluída</b>') + '</p>'
+      + '<div class="barra" aria-label="' + feitas + ' de ' + cards.length + ' fases concluídas">'
+      + cards.map((c) => '<i class="' + (c.status === 'Concluída' ? 'f' : c.status === 'Em andamento' ? 'a' : '') + '"></i>').join('') + '</div>';
+  }
+  info += '<div class="links">' + (link ? '<a href="' + esc(link) + '" target="_blank" rel="noopener">Abrir jornada ↗</a>' : '')
+    + (a.planilha ? '<a href="' + esc(a.planilha) + '" target="_blank" rel="noopener">Planilha ↗</a>' : '') + '</div></div>';
+
+  let pend = '<div class="aluno-pend">';
+  if (a.erro) {
+    pend += '<p class="erro-aluno">Não foi possível ler a jornada: ' + esc(a.erro) + '</p>';
+  } else if (!visiveis.length) {
+    pend += '<p class="ok-tudo">' + ICONE_OK + 'Nenhuma pendência.</p>';
+  } else {
+    RESP.forEach((r) => {
+      const meus = visiveis.filter((p) => p.resp === r.id);
+      if (!meus.length) return;
+      pend += '<div class="grupo"><span class="grupo-rot r-' + r.id + '">' + r.nome + '</span><ul class="itens">'
+        + meus.map((p) => '<li><button type="button" class="item' + (p.item.feito ? ' feito' : '') + '" aria-pressed="' + p.item.feito + '" '
+          + 'data-a="' + idx + '" data-c="' + esc(p.card.id) + '" data-g="' + p.grupo + '" data-i="' + p.i + '">'
+          + '<span class="caixa">' + (p.item.feito ? ICONE_CHECK : '') + '</span>'
+          + '<span><span class="txt">' + esc(p.item.texto) + '</span>'
+          + '<span class="onde">' + (p.esquecido ? '<span class="esq">Esquecido</span> · ' : '') + esc(p.card.fase) + '</span></span>'
+          + '</button></li>').join('')
+        + '</ul></div>';
+    });
+  }
+  pend += '</div>';
+  return '<article class="aluno">' + info + pend + '</article>';
+}
+
+/* ---------- dados ---------- */
+function aplicar(alunos) {
+  estado.alunos = (alunos || []).map((a) => Object.assign({}, a, { cards: a.erro ? [] : normalizarCards(a.cards) }));
+  estado.carregadoEm = new Date();
+  render();
+}
+
+async function buscar(senha) {
+  if (DEMO) {
+    if (senha !== SENHA_DEMO) throw new Error('senha');
+    return JSON.parse(JSON.stringify(DEMO_DADOS));
+  }
+  const r = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ acao: 'painel', senha }) });
+  const d = await r.json();
+  if (!d.ok) throw new Error(d.erro || 'Erro desconhecido.');
+  return d.alunos;
+}
+
+function guardarSenha(s) { try { if (s) sessionStorage.setItem('dzti-senha', s); else sessionStorage.removeItem('dzti-senha'); } catch (_) {} }
+function lerSenha() { try { return sessionStorage.getItem('dzti-senha') || ''; } catch (_) { return ''; } }
+
+async function entrar(senha, silencioso) {
+  const btn = $('#btn-entrar');
+  btn.disabled = true; btn.textContent = 'Carregando…';
+  $('#login-erro').hidden = true;
+  try {
+    const alunos = await buscar(senha);
+    estado.senha = senha;
+    guardarSenha(senha);
+    $('#login').hidden = true;
+    $('#painel').hidden = false;
+    $('#acoes').hidden = false;
+    aplicar(alunos);
+  } catch (e) {
+    guardarSenha('');
+    $('#login').hidden = false;
+    if (!silencioso) {
+      $('#login-erro').textContent = e.message === 'senha'
+        ? (DEMO ? 'Senha incorreta. Na demonstração, a senha é dzti.' : 'Senha incorreta.')
+        : 'Não foi possível carregar: ' + e.message;
+      $('#login-erro').hidden = false;
+    }
+  } finally {
+    btn.disabled = false; btn.textContent = 'Entrar';
+  }
+}
+
+async function atualizar() {
+  const b = $('#btn-atualizar');
+  b.disabled = true; b.textContent = 'Atualizando…';
+  try { aplicar(await buscar(estado.senha)); toast('Painel atualizado'); }
+  catch (e) {
+    if (e.message === 'senha') { sair(); toast('A senha mudou. Entre de novo.', true); }
+    else toast('Não foi possível atualizar: ' + e.message, true);
+  } finally { b.disabled = false; b.textContent = 'Atualizar'; }
+}
+
+function sair() {
+  guardarSenha('');
+  estado.senha = ''; estado.alunos = [];
+  $('#painel').hidden = true; $('#acoes').hidden = true; $('#login').hidden = false;
+  $('#senha').value = '';
+}
+
+async function alternarItem(btn) {
+  const a = estado.alunos[Number(btn.dataset.a)];
+  if (!a) return;
+  const card = a.cards.find((c) => c.id === btn.dataset.c);
+  const item = card && card[btn.dataset.g][Number(btn.dataset.i)];
+  if (!item) return;
+  item.feito = !item.feito;
+  item.marcadoAgora = true;
+  render();
+  if (DEMO) { toast((item.feito ? 'Feito' : 'Reaberto') + ' · demonstração, nada foi gravado'); return; }
+  try {
+    const r = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ acao: 'salvar', j: a.j, senha: estado.senha, cards: a.cards.map(paraPlanilha) }) });
+    const d = await r.json();
+    if (!d.ok) throw new Error(d.erro === 'senha' ? 'senha incorreta' : d.erro);
+    toast((item.feito ? 'Feito' : 'Reaberto') + ' · salvo na planilha de ' + a.nome);
+  } catch (e) {
+    item.feito = !item.feito;
+    render();
+    toast('Não salvou: ' + (e.message || 'sem conexão') + '. A mudança foi desfeita.', true);
+  }
+}
+
+/* ---------- eventos ---------- */
+$('#login').addEventListener('submit', (e) => { e.preventDefault(); entrar($('#senha').value); });
+$('#btn-atualizar').addEventListener('click', atualizar);
+$('#btn-sair').addEventListener('click', sair);
+$('#resumo').addEventListener('click', (e) => {
+  const b = e.target.closest('.resp');
+  if (!b) return;
+  estado.filtroResp = estado.filtroResp === b.dataset.resp ? null : b.dataset.resp;
+  render();
+});
+$('#seg-programa').addEventListener('click', (e) => {
+  const b = e.target.closest('button');
+  if (!b) return;
+  estado.programa = b.dataset.prog;
+  document.querySelectorAll('#seg-programa button').forEach((x) => x.setAttribute('aria-pressed', x === b));
+  render();
+});
+$('#busca').addEventListener('input', (e) => { estado.busca = e.target.value; render(); });
+$('#so-pendentes').addEventListener('change', (e) => { estado.soPendentes = e.target.checked; render(); });
+$('#limpar').addEventListener('click', () => { estado.filtroResp = null; estado.busca = ''; $('#busca').value = ''; render(); });
+$('#lista').addEventListener('click', (e) => { const b = e.target.closest('.item'); if (b) alternarItem(b); });
+
+/* ---------- início ---------- */
+$('#aviso-demo').hidden = !DEMO;
+const guardada = lerSenha();
+if (guardada) entrar(guardada, true); else $('#login').hidden = false;
+</script>
+</body>
+</html>
