@@ -11,8 +11,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,800;1,9..144,700&family=Space+Grotesk:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap">
 <style>
-/* Layout: barra da marca; resumo com 4 responsáveis (Alana, Mai, Assistente, Aluno) que também filtram;
-   barra de filtros; lista de alunos, cada um com fase atual, progresso e pendências por responsável.
+/* Layout: barra da marca; abas com as visões (as mesmas do Notion + Pendências); filtros comuns;
+   cada visão é um quadro em colunas, uma tabela ou uma linha do tempo. Clicar num aluno abre a ficha editável.
    Mesmo visual da jornada: bege, rosa de ação, bordas pretas, sombras duras. */
 :root{
   --bege:#ebe8e3;
@@ -20,6 +20,7 @@
   --rosa:#bb2649;
   --laranja:#fd7528;
   --azul:#344c92;
+  --verde:#2f6b4f;
   --preto:#000000;
   --tinta:#1a1716;
   --suave:#5e5450;
@@ -31,16 +32,16 @@
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 body{background:var(--bege);color:var(--tinta);font-family:var(--f-body);font-size:15px;line-height:1.5;margin:0}
-button,input,select{font:inherit;color:inherit}
+button,input,select,textarea{font:inherit;color:inherit}
 :focus-visible{outline:3px solid var(--azul);outline-offset:2px}
 a{color:inherit}
 
-.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:0 56px}
+.wrap{max-width:1280px;margin:0 auto;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:0 56px}
 
 .topo{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding-block:16px;border-bottom:1.5px solid var(--preto)}
 .marca{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
 .marca b{font-family:var(--f-display);font-weight:800;font-size:28px;letter-spacing:-.02em;line-height:1}
-.marca span,.mono{font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+.marca span{font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase}
 .acoes{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .status-txt{font-family:var(--f-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--suave)}
 
@@ -63,45 +64,54 @@ a{color:inherit}
 .login-linha{display:flex;gap:10px;flex-wrap:wrap}
 .login-linha input{flex:1 1 200px;width:auto}
 
-/* ---------- cabeçalho ---------- */
-.hero{padding-block:32px 4px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:12px 24px}
+/* ---------- cabeçalho e abas ---------- */
+.hero{padding-block:28px 0}
 .kicker{font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--azul);margin:0 0 8px}
-.hero h1{font-family:var(--f-display);font-weight:800;font-size:clamp(36px,6vw,64px);line-height:.98;letter-spacing:-.025em;margin:0;text-wrap:balance}
+.hero h1{font-family:var(--f-display);font-weight:800;font-size:clamp(32px,5vw,54px);line-height:1;letter-spacing:-.025em;margin:0;text-wrap:balance}
 .hero h1 em{font-style:italic;color:var(--rosa)}
+.hero p{margin:10px 0 0;color:var(--suave);max-width:70ch}
 
-/* ---------- resumo por responsável ---------- */
-.resumo{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-top:24px}
+.abas{display:flex;gap:6px;overflow-x:auto;margin-top:22px;padding-bottom:8px;border-bottom:1.5px solid var(--preto);scrollbar-width:thin}
+.aba{flex:none;font-family:var(--f-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;background:var(--bege);border:1.5px solid var(--preto);padding:7px 11px;cursor:pointer;white-space:nowrap}
+.aba:hover{background:var(--bege2)}
+.aba[aria-selected="true"]{background:var(--preto);color:var(--bege)}
+
+.filtros{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;padding-block:12px;border-bottom:1.5px solid var(--preto)}
+.filtros select,.busca{border:1.5px solid var(--preto);background:var(--bege);padding:7px 10px;min-width:0}
+.busca{flex:1 1 180px;max-width:300px}
+.filtros label{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;display:flex;align-items:center;gap:8px}
+.check{display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer}
+.check input{accent-color:var(--rosa);width:16px;height:16px}
+.limpar{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;background:none;border:0;text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:4px}
+
+.visao{margin-top:20px}
+.vazio{margin-top:8px;font-family:var(--f-mono);font-size:13px;border:1.5px dashed var(--suave);color:var(--suave);padding:18px;text-align:center}
+.nota{margin-top:24px;font-size:13px;color:var(--suave);max-width:75ch}
+
+/* ---------- pendências ---------- */
+.resumo{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
 .resp{--c:var(--preto);text-align:left;border:1.5px solid var(--preto);background:var(--bege);padding:14px 16px 16px;display:grid;gap:4px;cursor:pointer;box-shadow:4px 4px 0 var(--preto);transition:transform .12s, box-shadow .12s;position:relative}
 .resp::before{content:"";position:absolute;inset:0 0 auto;height:6px;background:var(--c)}
 .resp:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 var(--preto)}
 .resp[aria-pressed="true"]{background:var(--bege2);box-shadow:6px 6px 0 var(--c)}
 .resp-nome{font-family:var(--f-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;margin-top:6px}
-.resp-num{font-family:var(--f-display);font-weight:800;font-size:46px;line-height:1;font-variant-numeric:tabular-nums}
+.resp-num{font-family:var(--f-display);font-weight:800;font-size:44px;line-height:1;font-variant-numeric:tabular-nums}
 .resp-det{font-size:13px;color:var(--suave)}
 .resp-det b{color:var(--tinta)}
 .r-alana{--c:var(--rosa)}
 .r-mai{--c:var(--azul)}
 .r-assistente{--c:var(--laranja)}
 .r-aluno{--c:var(--preto)}
+.so-pend{margin:16px 0 0}
 
-/* ---------- filtros ---------- */
-.filtros{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;margin-top:26px;padding-block:12px;border-top:1.5px solid var(--preto);border-bottom:1.5px solid var(--preto)}
-.seg{display:flex;border:1.5px solid var(--preto)}
-.seg button{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;background:var(--bege);border:0;padding:8px 12px;cursor:pointer}
-.seg button+button{border-left:1.5px solid var(--preto)}
-.seg button[aria-pressed="true"]{background:var(--preto);color:var(--bege)}
-.busca{border:1.5px solid var(--preto);background:var(--bege);padding:8px 10px;flex:1 1 200px;min-width:0;max-width:320px}
-.check{display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer}
-.check input{accent-color:var(--rosa);width:16px;height:16px}
-.limpar{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;background:none;border:0;text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:4px}
-
-/* ---------- lista ---------- */
-.lista{display:grid;gap:16px;margin-top:20px}
+.lista{display:grid;gap:16px;margin-top:16px}
 .aluno{border:1.5px solid var(--preto);background:var(--bege);display:grid;grid-template-columns:minmax(0,320px) minmax(0,1fr);min-width:0}
 .aluno-info{padding:16px 18px;border-right:1.5px solid var(--preto);background:var(--bege2);display:grid;gap:8px;align-content:start;min-width:0}
-.aluno-nome{font-family:var(--f-display);font-weight:700;font-size:23px;line-height:1.1;margin:0;overflow-wrap:anywhere}
-.prog{justify-self:start;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;border:1.5px solid var(--preto);padding:1px 7px;background:var(--bege)}
+.aluno-nome{font-family:var(--f-display);font-weight:700;font-size:22px;line-height:1.1;margin:0;overflow-wrap:anywhere;background:none;border:0;padding:0;text-align:left;cursor:pointer;text-decoration:underline;text-decoration-color:transparent;text-underline-offset:4px}
+.aluno-nome:hover{text-decoration-color:currentColor}
+.prog{justify-self:start;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;border:1.5px solid var(--preto);padding:1px 7px;background:var(--bege);white-space:nowrap}
 .prog--dti{background:var(--preto);color:var(--bege)}
+.prog--plano{background:var(--azul);border-color:var(--azul);color:var(--bege)}
 .fase-atual{font-size:14px;margin:2px 0 0}
 .fase-atual b{font-weight:700}
 .barra{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:3px;margin-top:2px}
@@ -110,7 +120,6 @@ a{color:inherit}
 .barra i.a{background:var(--rosa)}
 .links{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:4px;font-family:var(--f-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase}
 .links a{text-underline-offset:3px}
-
 .aluno-pend{padding:14px 18px 16px;display:grid;gap:12px;align-content:start;min-width:0}
 .ok-tudo{font-family:var(--f-mono);font-size:12px;color:var(--suave);margin:0;display:flex;align-items:center;gap:8px}
 .grupo{display:grid;grid-template-columns:120px minmax(0,1fr);gap:10px;align-items:start}
@@ -129,8 +138,89 @@ a{color:inherit}
 .esq{color:var(--rosa);font-weight:700}
 .erro-aluno{font-size:13px;color:var(--rosa);margin:0}
 
-.vazio{margin-top:24px;font-family:var(--f-mono);font-size:13px;border:1.5px dashed var(--suave);color:var(--suave);padding:18px;text-align:center}
-.nota{margin-top:28px;font-size:13px;color:var(--suave);max-width:70ch}
+/* ---------- quadro em colunas ---------- */
+.quadro{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(240px,1fr);gap:14px;overflow-x:auto;padding-bottom:12px;align-items:start}
+.col{border:1.5px solid var(--preto);background:var(--bege2);min-width:0}
+.col.hoje{box-shadow:6px 6px 0 var(--rosa)}
+.col-cab{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 12px;border-bottom:1.5px solid var(--preto);font-family:var(--f-mono);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;background:var(--bege)}
+.col-cab .conta{font-variant-numeric:tabular-nums;border:1.5px solid currentColor;padding:0 6px;flex:none}
+.col-corpo{display:grid;gap:10px;padding:12px}
+.col-vazia{font-family:var(--f-mono);font-size:11px;color:var(--suave);margin:0;text-align:center;padding:6px}
+.cartao{background:var(--bege);border:1.5px solid var(--preto);padding:10px 12px;display:grid;gap:6px;text-align:left;cursor:pointer;box-shadow:3px 3px 0 var(--preto);transition:transform .12s, box-shadow .12s;width:100%;min-width:0}
+.cartao:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--preto)}
+.cartao b{font-family:var(--f-display);font-weight:700;font-size:17px;line-height:1.15;overflow-wrap:anywhere}
+.cartao .linha-chips{display:flex;flex-wrap:wrap;gap:4px}
+.cartao .extra{font-size:12.5px;color:var(--suave);line-height:1.4;overflow-wrap:anywhere}
+.cartao .extra strong{color:var(--tinta)}
+.chip{font-family:var(--f-mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;border:1.5px solid var(--preto);padding:0 6px;background:var(--bege2);white-space:nowrap}
+.chip--alerta{background:var(--rosa);border-color:var(--rosa);color:var(--bege)}
+.chip--ok{background:var(--verde);border-color:var(--verde);color:var(--bege)}
+.tons-0 .col-cab{background:var(--preto);color:var(--bege)}
+.tons-1 .col-cab{background:var(--rosa);color:var(--bege)}
+.tons-2 .col-cab{background:var(--azul);color:var(--bege)}
+.tons-3 .col-cab{background:var(--laranja);color:var(--preto)}
+
+/* ---------- tabelas ---------- */
+.tabela-box{overflow-x:auto;border:1.5px solid var(--preto);background:var(--bege)}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{border-bottom:1px solid var(--bege2);padding:8px 10px;text-align:left;vertical-align:top}
+th{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;background:var(--preto);color:var(--bege);position:sticky;top:0;white-space:nowrap;font-weight:400}
+td.nome,th.nome{position:sticky;left:0;background:var(--bege2);z-index:1;min-width:180px}
+th.nome{background:var(--preto);z-index:2}
+td.nome button{background:none;border:0;padding:0;font-family:var(--f-display);font-weight:700;font-size:15px;text-align:left;cursor:pointer;text-decoration:underline;text-decoration-color:transparent;text-underline-offset:3px}
+td.nome button:hover{text-decoration-color:currentColor}
+td.curto{white-space:nowrap}
+td.texto{min-width:240px;max-width:360px;color:var(--suave)}
+td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+.sim{font-family:var(--f-mono);font-weight:700;text-align:center;font-size:14px}
+.sim-f{color:var(--preto)}
+.sim-a{color:var(--rosa)}
+.sim-p{color:var(--laranja)}
+.sim-x{color:var(--suave)}
+.acs{display:flex;gap:4px}
+.acb{width:22px;height:22px;border:1.5px solid var(--preto);background:var(--bege);cursor:pointer;display:grid;place-items:center;padding:0;font-family:var(--f-mono);font-size:9px}
+.acb.on{background:var(--preto);color:var(--bege)}
+.acb.nota::after{content:"";width:5px;height:5px;background:var(--laranja);border-radius:50%;position:relative;top:-6px;left:6px}
+.acb.on.nota::after{background:var(--laranja)}
+
+/* ---------- linha do tempo ---------- */
+.tl{border:1.5px solid var(--preto);background:var(--bege);overflow-x:auto}
+.tl-grade{min-width:820px;position:relative}
+.tl-meses{display:grid;margin-left:200px;border-bottom:1.5px solid var(--preto);font-family:var(--f-mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase}
+.tl-meses span{padding:6px 4px;border-left:1px solid var(--bege2);white-space:nowrap;overflow:hidden}
+.tl-linha{display:grid;grid-template-columns:200px 1fr;align-items:center;border-bottom:1px solid var(--bege2);min-height:34px}
+.tl-nome{padding:6px 10px;background:var(--bege2);height:100%;display:flex;align-items:center;border-right:1.5px solid var(--preto)}
+.tl-nome button{background:none;border:0;padding:0;font-weight:700;font-size:13px;text-align:left;cursor:pointer}
+.tl-trilho{position:relative;height:34px}
+.tl-barra{position:absolute;top:8px;height:18px;border:1.5px solid var(--preto);background:var(--bege2);font-family:var(--f-mono);font-size:9.5px;padding:0 6px;white-space:nowrap;overflow:hidden;line-height:15px}
+.tl-barra.dti{background:var(--preto);color:var(--bege)}
+.tl-barra.plano{background:var(--azul);color:var(--bege);border-color:var(--azul)}
+.tl-barra.atrasado{box-shadow:3px 3px 0 var(--rosa)}
+.tl-hoje{position:absolute;top:0;bottom:0;width:2px;background:var(--rosa);z-index:2}
+
+/* ---------- ficha ---------- */
+dialog{border:1.5px solid var(--preto);background:var(--bege);color:var(--tinta);padding:0;width:min(860px, calc(100vw - 24px));max-height:calc(100vh - 24px);box-shadow:10px 10px 0 var(--preto)}
+dialog::backdrop{background:rgba(0,0,0,.45)}
+.ficha{display:grid;gap:18px;padding:22px}
+.ficha-topo{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;align-items:start}
+.ficha h2{font-family:var(--f-display);font-weight:800;font-size:32px;line-height:1;margin:0;letter-spacing:-.02em}
+.ficha h3{font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;margin:0 0 10px;color:var(--azul)}
+.ficha section{border-top:1.5px solid var(--preto);padding-top:14px}
+.campos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.campo{display:grid;gap:5px;min-width:0}
+.campo.largo{grid-column:1/-1}
+.campo label{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase}
+.campo input,.campo select,.campo textarea{border:1.5px solid var(--preto);background:var(--bege);padding:8px 9px;width:100%}
+.campo textarea{resize:vertical;min-height:70px}
+.campo textarea.alto{min-height:180px}
+.campo input[readonly]{background:var(--bege2)}
+.acomp-lista{display:grid;gap:6px}
+.acomp-linha{display:grid;grid-template-columns:90px minmax(0,1fr);gap:10px;align-items:center}
+.acomp-linha label{display:flex;gap:8px;align-items:center;font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;cursor:pointer}
+.acomp-linha input[type=checkbox]{accent-color:var(--preto);width:16px;height:16px}
+.acomp-linha input[type=text]{border:1.5px solid var(--preto);background:var(--bege);padding:6px 8px;width:100%}
+.ficha-acoes{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;position:sticky;bottom:0;background:var(--bege);padding-block:12px 0;border-top:1.5px solid var(--preto)}
+.ficha-acoes div{display:flex;gap:10px;flex-wrap:wrap}
 
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom, 0px));z-index:60;background:var(--preto);color:var(--bege);font-family:var(--f-mono);font-size:12px;letter-spacing:.04em;padding:11px 16px;max-width:calc(100vw - 32px);box-shadow:4px 4px 0 var(--laranja)}
 .toast.erro{box-shadow:4px 4px 0 var(--rosa)}
@@ -139,10 +229,14 @@ a{color:inherit}
   .resumo{grid-template-columns:repeat(2,minmax(0,1fr))}
   .aluno{grid-template-columns:minmax(0,1fr)}
   .aluno-info{border-right:0;border-bottom:1.5px solid var(--preto)}
+  .campos{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
-@media (max-width: 520px){
+@media (max-width: 560px){
   .grupo{grid-template-columns:minmax(0,1fr);gap:6px}
-  .resp-num{font-size:38px}
+  .resp-num{font-size:36px}
+  .campos{grid-template-columns:minmax(0,1fr)}
+  .acomp-linha{grid-template-columns:minmax(0,1fr)}
+  .quadro{grid-auto-columns:minmax(220px,85%)}
 }
 @media (prefers-reduced-motion: reduce){ *{transition:none!important} }
 </style>
@@ -163,7 +257,7 @@ a{color:inherit}
 
   <form class="login" id="login" hidden>
     <h1>Painel da equipe</h1>
-    <p>Pendências de todos os alunos da Do Zero à TI e da Destrava TI.</p>
+    <p>Alunos, jornadas e pendências da Do Zero à TI e da Destrava TI.</p>
     <label for="senha">Senha da equipe</label>
     <div class="login-linha">
       <input id="senha" type="password" autocomplete="current-password" required>
@@ -174,30 +268,46 @@ a{color:inherit}
 
   <main id="painel" hidden>
     <section class="hero">
-      <div>
-        <p class="kicker" id="kicker"></p>
-        <h1>Quem está com <em>a próxima ação</em></h1>
-      </div>
+      <p class="kicker" id="kicker"></p>
+      <h1 id="titulo-visao"></h1>
+      <p id="desc-visao"></p>
     </section>
 
-    <section class="resumo" id="resumo" aria-label="Pendências por responsável"></section>
+    <nav class="abas" id="abas" role="tablist" aria-label="Visões"></nav>
 
     <div class="filtros">
-      <div class="seg" role="group" aria-label="Programa" id="seg-programa">
-        <button type="button" data-prog="todos" aria-pressed="true">Todos</button>
-        <button type="button" data-prog="dzti" aria-pressed="false">Do Zero à TI</button>
-        <button type="button" data-prog="dti" aria-pressed="false">Destrava TI</button>
-      </div>
+      <label for="f-programa">Programa
+        <select id="f-programa">
+          <option value="">Todos</option>
+          <option>Do Zero à TI</option>
+          <option>Destrava TI</option>
+          <option>Plano de Estudos</option>
+          <option>CV &amp; LinkedIn</option>
+        </select>
+      </label>
+      <label for="f-status">Status
+        <select id="f-status">
+          <option value="acomp">Em acompanhamento</option>
+          <option value="">Todos</option>
+          <option>Ativo</option>
+          <option>Período de Extensão</option>
+          <option>Em pausa</option>
+          <option>Não iniciou</option>
+          <option>Offboarding</option>
+          <option>Concluído</option>
+        </select>
+      </label>
       <input class="busca" id="busca" type="search" placeholder="Buscar aluno" aria-label="Buscar aluno">
-      <label class="check"><input type="checkbox" id="so-pendentes" checked> Só alunos com pendência</label>
-      <button class="limpar" type="button" id="limpar" hidden>Limpar filtro</button>
+      <button class="limpar" type="button" id="limpar" hidden>Limpar filtros</button>
     </div>
 
-    <section class="lista" id="lista" aria-label="Alunos"></section>
-
-    <p class="nota">Pendência = item não marcado na fase em andamento, ou esquecido numa fase já concluída. Itens de "Mentoria entrega" contam para a Mai quando a fase tem call com a Mai; nas outras fases, para a Alana. Clique num item para marcar como feito; a mudança vai para a planilha do aluno.</p>
+    <section class="visao" id="visao"></section>
   </main>
 </div>
+
+<dialog id="ficha">
+  <form class="ficha" id="form-ficha" method="dialog"></form>
+</dialog>
 
 <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
@@ -207,32 +317,63 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbysKP_5-o-R2ECK7TfgbFlg
 /* Endereço da página do aluno, para o link "Abrir jornada" quando a planilha não tiver o link salvo. */
 const SITE_JORNADA = '/jornada.html';
 
-const RESP = [
-  { id: 'alana', nome: 'Alana' },
-  { id: 'mai', nome: 'Mai' },
-  { id: 'assistente', nome: 'Assistente' },
-  { id: 'aluno', nome: 'Aluno' },
-];
-const GRUPOS = ['aluno', 'mentora', 'equipe'];
-
 let params;
 try { params = new URLSearchParams(location.search); } catch (_) { params = new URLSearchParams(''); }
 const DEMO = !API_URL || params.has('demo');
 const SENHA_DEMO = 'dzti';
-const DEMO_DADOS = [{"nome": "Marina Duarte", "programa": "Do Zero à TI", "inicio": "2026-10-01", "link": "", "planilha": "", "j": "demomarina", "cards": [{"id": "z1", "fase": "Onboarding", "descricao": "", "call": "", "status": "Concluída", "ordem": 1, "prazo": "", "aluno": "", "mentora": "", "equipe": ""}, {"id": "z2", "fase": "Plano de estudos", "descricao": "Na call, a Alana conhece você e monta o seu plano.", "call": "Call · 30 min", "status": "Concluída", "ordem": 2, "prazo": "", "aluno": "[x] Preencher o formulário\n[x] Agendar a call de plano de estudos", "mentora": "", "equipe": "[x] Na semana 4 do plano: agente para criar o formulário do LinkedIn"}, {"id": "z3", "fase": "Call rotina com Mai", "descricao": "", "call": "Call com a Mai", "status": "Concluída", "ordem": 3, "prazo": "", "aluno": "[x] Preencher os links de rotina\n[x] Agendar a call com a Mai", "mentora": "[x] Links de rotina para preencher", "equipe": "[x] Calendário da Mai"}, {"id": "z4", "fase": "LinkedIn e CV + Aplicação Estratégica", "descricao": "", "call": "Sem call", "status": "Em andamento", "ordem": 4, "prazo": "", "aluno": "[x] Rodar o agente de LinkedIn\n[x] Entregar o formulário em até 1 semana", "mentora": "[ ] Textos do LinkedIn, 1 semana após a entrega do formulário\n[ ] Explicação por áudio\n[ ] Revisão depois das suas mudanças, com espaço para dúvidas\n[ ] Acompanhamento semanal dos resultados", "equipe": "[x] Apostilas de LinkedIn, CV e Aplicação Estratégica"}, {"id": "z5", "fase": "Speech", "descricao": "", "call": "Call · 30 min", "status": "Próxima", "ordem": 5, "prazo": "", "aluno": "[ ] Agendar a call de speech", "mentora": "[ ] Sugestão de speech, depois da call", "equipe": "[ ] Apostila de speech, antes da call"}, {"id": "z6", "fase": "Simulação de entrevista de RH", "descricao": "", "call": "Call · 1h", "status": "Próxima", "ordem": 6, "prazo": "", "aluno": "[ ] Agendar a call de RH", "mentora": "[ ] Diagnóstico, depois da call", "equipe": "[ ] Apostila de Entrevista de RH, antes da call"}, {"id": "z7", "fase": "Call Mentalidade com Mai", "descricao": "", "call": "Call com a Mai", "status": "Próxima", "ordem": 7, "prazo": "", "aluno": "[ ] Agendar a call com a Mai", "mentora": "", "equipe": ""}, {"id": "z8", "fase": "Simulação de entrevista técnica", "descricao": "", "call": "Call · 1h", "status": "Próxima", "ordem": 8, "prazo": "", "aluno": "[ ] Agendar a call técnica", "mentora": "[ ] Diagnóstico, depois da call", "equipe": "[ ] Apostila de Entrevista Técnica, antes da call"}, {"id": "z9", "fase": "Apresentação de Portfólio + Aprendizado Contínuo", "descricao": "", "call": "Call · 1h", "status": "Próxima", "ordem": 9, "prazo": "", "aluno": "[ ] Preparar a apresentação de um projeto do seu plano de estudos\n[ ] Agendar a call", "mentora": "[ ] Diagnóstico de carreira e próximos passos, durante a call", "equipe": ""}]}, {"nome": "Bruno Teixeira", "programa": "Do Zero à TI", "inicio": "2026-10-01", "link": "", "planilha": "", "j": "demobruno", "cards": [{"id": "z1", "fase": "Onboarding", "descricao": "", "call": "", "status": "Concluída", "ordem": 1, "prazo": "", "aluno": "", "mentora": "", "equipe": ""}, {"id": "z2", "fase": "Plano de estudos", "descricao": "Na call, a Alana conhece você e monta o seu plano.", "call": "Call · 30 min", "status": "Em andamento", "ordem": 2, "prazo": "", "aluno": "[ ] Preencher o formulário\n[ ] Agendar a call de plano de estudos", "mentora": "", "equipe": "[ ] Na semana 4 do plano: agente para criar o formulário do LinkedIn"}, {"id": "z3", "fase": "Call rotina com Mai", "descricao": "", "call": "Call com a Mai", "status": "Próxima", "ordem": 3, "prazo": "", "aluno": "[ ] Preencher os links de rotina\n[ ] Agendar a call com a Mai", "mentora": "[ ] Links de rotina para preencher", "equipe": "[ ] Calendário da Mai"}, {"id": "z4", "fase": "LinkedIn e CV + Aplicação Estratégica", "descricao": "", "call": "Sem call", "status": "Próxima", "ordem": 4, "prazo": "", "aluno": "[ ] Rodar o agente de LinkedIn\n[ ] Entregar o formulário em até 1 semana", "mentora": "[ ] Textos do LinkedIn, 1 semana após a entrega do formulário\n[ ] Explicação por áudio\n[ ] Revisão depois das suas mudanças, com espaço para dúvidas\n[ ] Acompanhamento semanal dos resultados", "equipe": "[ ] Apostilas de LinkedIn, CV e Aplicação Estratégica"}, {"id": "z5", "fase": "Speech", "descricao": "", "call": "Call · 30 min", "status": "Próxima", "ordem": 5, "prazo": "", "aluno": "[ ] Agendar a call de speech", "mentora": "[ ] Sugestão de speech, depois da call", "equipe": "[ ] Apostila de speech, antes da call"}, {"id": "z6", "fase": "Simulação de entrevista de RH", "descricao": "", "call": "Call · 1h", "status": "Próxima", "ordem": 6, "prazo": "", "aluno": "[ ] Agendar a call de RH", "mentora": "[ ] Diagnóstico, depois da call", "equipe": "[ ] Apostila de Entrevista de RH, antes da call"}, {"id": "z7", "fase": "Call Mentalidade com Mai", "descricao": "", "call": "Call com a Mai", "status": "Próxima", "ordem": 7, "prazo": "", "aluno": "[ ] Agendar a call com a Mai", "mentora": "", "equipe": ""}, {"id": "z8", "fase": "Simulação de entrevista técnica", "descricao": "", "call": "Call · 1h", "status": "Próxima", "ordem": 8, "prazo": "", "aluno": "[ ] Agendar a call técnica", "mentora": "[ ] Diagnóstico, depois da call", "equipe": "[ ] Apostila de Entrevista Técnica, antes da call"}, {"id": "z9", "fase": "Apresentação de Portfólio + Aprendizado Contínuo", "descricao": "", "call": "Call · 1h", "status": "Próxima", "ordem": 9, "prazo": "", "aluno": "[ ] Preparar a apresentação de um projeto do seu plano de estudos\n[ ] Agendar a call", "mentora": "[ ] Diagnóstico de carreira e próximos passos, durante a call", "equipe": ""}]}, {"nome": "Camila Nunes", "programa": "Do Zero à TI", "inicio": "2026-10-01", "link": "", "planilha": "", "j": "democamila", "cards": [{"id": "z1", "fase": "Onboarding", "descricao": "", "call": "", "status": "Concluída", "ordem": 1, "prazo": "", "aluno": "", "mentora": "", "equipe": ""}, {"id": "z2", "fase": "Plano de estudos", "descricao": "Na call, a Alana conhece você e monta o seu plano.", "call": "Call · 30 min", "status": "Concluída", "ordem": 2, "prazo": "", "aluno": "[x] Preencher o formulário\n[x] Agendar a call de plano de estudos", "mentora": "", "equipe": "[x] Na semana 4 do plano: agente para criar o formulário do LinkedIn"}, {"id": "z3", "fase": "Call rotina com Mai", "descricao": "", "call": "Call com a Mai", "status": "Concluída", "ordem": 3, "prazo": "", "aluno": "[x] Preencher os links de rotina\n[x] Agendar a call com a Mai", "mentora": "[x] Links de rotina para preencher", "equipe": "[x] Calendário da Mai"}, {"id": "z4", "fase": "LinkedIn e CV + Aplicação Estratégica", "descricao": "", "call": "Sem call", "status": "Concluída", "ordem": 4, "prazo": "", "aluno": "[x] Rodar o agente de LinkedIn\n[x] Entregar o formulário em até 1 semana", "mentora": "[x] Textos do LinkedIn, 1 semana após a entrega do formulário\n[x] Explicação por áudio\n[x] Revisão depois das suas mudanças, com espaço para dúvidas\n[x] Acompanhamento semanal dos resultados", "equipe": "[x] Apostilas de LinkedIn, CV e Aplicação Estratégica"}, {"id": "z5", "fase": "Speech", "descricao": "", "call": "Call · 30 min", "status": "Concluída", "ordem": 5, "prazo": "", "aluno": "[x] Agendar a call de speech", "mentora": "[ ] Sugestão de speech, depois da call", "equipe": "[x] Apostila de speech, antes da call"}, {"id": "z6", "fase": "Simulação de entrevista de RH", "descricao": "", "call": "Call · 1h", "status": "Em andamento", "ordem": 6, "prazo": "", "aluno": "[x] Agendar a call de RH", "mentora": "[ ] Diagnóstico, depois da call", "equipe": "[ ] Apostila de Entrevista de RH, antes da call"}, {"id": "z7", "fase": "Call Mentalidade com Mai", "descricao": "", "call": "Call com a Mai", "status": "Próxima", "ordem": 7, "prazo": "", "aluno": "[ ] Agendar a call com a Mai", "mentora": "", "equipe": ""}, {"id": "z8", "fase": "Simulação de entrevista técnica", "descricao": "", "call": "Call · 1h", "status": "Próxima", "ordem": 8, "prazo": "", "aluno": "[ ] Agendar a call técnica", "mentora": "[ ] Diagnóstico, depois da call", "equipe": "[ ] Apostila de Entrevista Técnica, antes da call"}, {"id": "z9", "fase": "Apresentação de Portfólio + Aprendizado Contínuo", "descricao": "", "call": "Call · 1h", "status": "Próxima", "ordem": 9, "prazo": "", "aluno": "[ ] Preparar a apresentação de um projeto do seu plano de estudos\n[ ] Agendar a call", "mentora": "[ ] Diagnóstico de carreira e próximos passos, durante a call", "equipe": ""}]}, {"nome": "Diego Prado", "programa": "Do Zero à TI", "inicio": "2026-10-01", "link": "", "planilha": "", "j": "demodiego", "cards": [{"id": "z1", "fase": "Onboarding", "descricao": "", "call": "", "status": "Concluída", "ordem": 1, "prazo": "", "aluno": "", "mentora": "", "equipe": ""}, {"id": "z2", "fase": "Plano de estudos", "descricao": "Na call, a Alana conhece você e monta o seu plano.", "call": "Call · 30 min", "status": "Concluída", "ordem": 2, "prazo": "", "aluno": "[x] Preencher o formulário\n[x] Agendar a call de plano de estudos", "mentora": "", "equipe": "[x] Na semana 4 do plano: agente para criar o formulário do LinkedIn"}, {"id": "z3", "fase": "Call rotina com Mai", "descricao": "", "call": "Call com a Mai", "status": "Concluída", "ordem": 3, "prazo": "", "aluno": "[x] Preencher os links de rotina\n[x] Agendar a call com a Mai", "mentora": "[x] Links de rotina para preencher", "equipe": "[x] Calendário da Mai"}, {"id": "z4", "fase": "LinkedIn e CV + Aplicação Estratégica", "descricao": "", "call": "Sem call", "status": "Concluída", "ordem": 4, "prazo": "", "aluno": "[x] Rodar o agente de LinkedIn\n[x] Entregar o formulário em até 1 semana", "mentora": "[x] Textos do LinkedIn, 1 semana após a entrega do formulário\n[x] Explicação por áudio\n[x] Revisão depois das suas mudanças, com espaço para dúvidas\n[x] Acompanhamento semanal dos resultados", "equipe": "[x] Apostilas de LinkedIn, CV e Aplicação Estratégica"}, {"id": "z5", "fase": "Speech", "descricao": "", "call": "Call · 30 min", "status": "Concluída", "ordem": 5, "prazo": "", "aluno": "[x] Agendar a call de speech", "mentora": "[x] Sugestão de speech, depois da call", "equipe": "[x] Apostila de speech, antes da call"}, {"id": "z6", "fase": "Simulação de entrevista de RH", "descricao": "", "call": "Call · 1h", "status": "Concluída", "ordem": 6, "prazo": "", "aluno": "[x] Agendar a call de RH", "mentora": "[x] Diagnóstico, depois da call", "equipe": "[x] Apostila de Entrevista de RH, antes da call"}, {"id": "z7", "fase": "Call Mentalidade com Mai", "descricao": "", "call": "Call com a Mai", "status": "Em andamento", "ordem": 7, "prazo": "", "aluno": "[ ] Agendar a call com a Mai", "mentora": "", "equipe": ""}, {"id": "z8", "fase": "Simulação de entrevista técnica", "descricao": "", "call": "Call · 1h", "status": "Próxima", "ordem": 8, "prazo": "", "aluno": "[ ] Agendar a call técnica", "mentora": "[ ] Diagnóstico, depois da call", "equipe": "[ ] Apostila de Entrevista Técnica, antes da call"}, {"id": "z9", "fase": "Apresentação de Portfólio + Aprendizado Contínuo", "descricao": "", "call": "Call · 1h", "status": "Próxima", "ordem": 9, "prazo": "", "aluno": "[ ] Preparar a apresentação de um projeto do seu plano de estudos\n[ ] Agendar a call", "mentora": "[ ] Diagnóstico de carreira e próximos passos, durante a call", "equipe": ""}]}, {"nome": "Rafael Lima", "programa": "Destrava TI", "inicio": "2026-10-01", "link": "", "planilha": "", "j": "demorafael", "cards": [{"id": "t1", "fase": "Onboarding", "descricao": "", "call": "", "status": "Em andamento", "ordem": 1, "prazo": "", "aluno": "", "mentora": "", "equipe": ""}, {"id": "t2", "fase": "LinkedIn e CV + Aplicação Estratégica", "descricao": "", "call": "Sem call", "status": "Próxima", "ordem": 2, "prazo": "", "aluno": "[ ] Rodar o agente de LinkedIn\n[ ] Entregar o formulário em até 1 semana", "mentora": "[ ] Textos do LinkedIn, 1 semana após a entrega do formulário\n[ ] Áudios explicando como aplicar\n[ ] Dúvidas tiradas pelo WhatsApp", "equipe": "[ ] Apostilas de LinkedIn, CV e Aplicação Estratégica"}, {"id": "t3", "fase": "Speech", "descricao": "", "call": "Call · 30 min", "status": "Próxima", "ordem": 3, "prazo": "", "aluno": "[ ] Agendar a call de speech", "mentora": "[ ] Sugestão de speech, depois da call", "equipe": "[ ] Apostila de speech, antes da call"}, {"id": "t4", "fase": "Simulação de entrevista de RH", "descricao": "", "call": "Call · 1h", "status": "Próxima", "ordem": 4, "prazo": "", "aluno": "[ ] Agendar a call de RH", "mentora": "[ ] Diagnóstico, depois da call", "equipe": "[ ] Apostila de Entrevista de RH, antes da call"}, {"id": "t5", "fase": "Call Mentalidade com Mai", "descricao": "", "call": "Call com a Mai", "status": "Próxima", "ordem": 5, "prazo": "", "aluno": "[ ] Agendar a call com a Mai", "mentora": "", "equipe": ""}, {"id": "t6", "fase": "Simulação de entrevista técnica", "descricao": "", "call": "Call · 1h", "status": "Próxima", "ordem": 6, "prazo": "", "aluno": "[ ] Agendar a call técnica", "mentora": "[ ] Diagnóstico, depois da call", "equipe": "[ ] Apostila de Entrevista Técnica, antes da call"}]}, {"nome": "Juliana Reis", "programa": "Destrava TI", "inicio": "2026-10-01", "link": "", "planilha": "", "j": "demojuliana", "cards": [{"id": "t1", "fase": "Onboarding", "descricao": "", "call": "", "status": "Concluída", "ordem": 1, "prazo": "", "aluno": "", "mentora": "", "equipe": ""}, {"id": "t2", "fase": "LinkedIn e CV + Aplicação Estratégica", "descricao": "", "call": "Sem call", "status": "Concluída", "ordem": 2, "prazo": "", "aluno": "[x] Rodar o agente de LinkedIn\n[x] Entregar o formulário em até 1 semana", "mentora": "[x] Textos do LinkedIn, 1 semana após a entrega do formulário\n[x] Áudios explicando como aplicar\n[x] Dúvidas tiradas pelo WhatsApp", "equipe": "[ ] Apostilas de LinkedIn, CV e Aplicação Estratégica"}, {"id": "t3", "fase": "Speech", "descricao": "", "call": "Call · 30 min", "status": "Em andamento", "ordem": 3, "prazo": "", "aluno": "[x] Agendar a call de speech", "mentora": "[ ] Sugestão de speech, depois da call", "equipe": "[x] Apostila de speech, antes da call"}, {"id": "t4", "fase": "Simulação de entrevista de RH", "descricao": "", "call": "Call · 1h", "status": "Próxima", "ordem": 4, "prazo": "", "aluno": "[ ] Agendar a call de RH", "mentora": "[ ] Diagnóstico, depois da call", "equipe": "[ ] Apostila de Entrevista de RH, antes da call"}, {"id": "t5", "fase": "Call Mentalidade com Mai", "descricao": "", "call": "Call com a Mai", "status": "Próxima", "ordem": 5, "prazo": "", "aluno": "[ ] Agendar a call com a Mai", "mentora": "", "equipe": ""}, {"id": "t6", "fase": "Simulação de entrevista técnica", "descricao": "", "call": "Call · 1h", "status": "Próxima", "ordem": 6, "prazo": "", "aluno": "[ ] Agendar a call técnica", "mentora": "[ ] Diagnóstico, depois da call", "equipe": "[ ] Apostila de Entrevista Técnica, antes da call"}]}, {"nome": "Tiago Souza", "programa": "Do Zero à TI", "inicio": "2026-10-01", "link": "", "planilha": "", "j": "demotiago", "cards": [{"id": "z1", "fase": "Onboarding", "descricao": "", "call": "", "status": "Concluída", "ordem": 1, "prazo": "", "aluno": "", "mentora": "", "equipe": ""}, {"id": "z2", "fase": "Plano de estudos", "descricao": "Na call, a Alana conhece você e monta o seu plano.", "call": "Call · 30 min", "status": "Concluída", "ordem": 2, "prazo": "", "aluno": "[x] Preencher o formulário\n[x] Agendar a call de plano de estudos", "mentora": "", "equipe": "[x] Na semana 4 do plano: agente para criar o formulário do LinkedIn"}, {"id": "z3", "fase": "Call rotina com Mai", "descricao": "", "call": "Call com a Mai", "status": "Em andamento", "ordem": 3, "prazo": "", "aluno": "[x] Preencher os links de rotina\n[ ] Agendar a call com a Mai", "mentora": "[ ] Links de rotina para preencher", "equipe": "[x] Calendário da Mai"}, {"id": "z4", "fase": "LinkedIn e CV + Aplicação Estratégica", "descricao": "", "call": "Sem call", "status": "Próxima", "ordem": 4, "prazo": "", "aluno": "[ ] Rodar o agente de LinkedIn\n[ ] Entregar o formulário em até 1 semana", "mentora": "[ ] Textos do LinkedIn, 1 semana após a entrega do formulário\n[ ] Explicação por áudio\n[ ] Revisão depois das suas mudanças, com espaço para dúvidas\n[ ] Acompanhamento semanal dos resultados", "equipe": "[ ] Apostilas de LinkedIn, CV e Aplicação Estratégica"}, {"id": "z5", "fase": "Speech", "descricao": "", "call": "Call · 30 min", "status": "Próxima", "ordem": 5, "prazo": "", "aluno": "[ ] Agendar a call de speech", "mentora": "[ ] Sugestão de speech, depois da call", "equipe": "[ ] Apostila de speech, antes da call"}, {"id": "z6", "fase": "Simulação de entrevista de RH", "descricao": "", "call": "Call · 1h", "status": "Próxima", "ordem": 6, "prazo": "", "aluno": "[ ] Agendar a call de RH", "mentora": "[ ] Diagnóstico, depois da call", "equipe": "[ ] Apostila de Entrevista de RH, antes da call"}, {"id": "z7", "fase": "Call Mentalidade com Mai", "descricao": "", "call": "Call com a Mai", "status": "Próxima", "ordem": 7, "prazo": "", "aluno": "[ ] Agendar a call com a Mai", "mentora": "", "equipe": ""}, {"id": "z8", "fase": "Simulação de entrevista técnica", "descricao": "", "call": "Call · 1h", "status": "Próxima", "ordem": 8, "prazo": "", "aluno": "[ ] Agendar a call técnica", "mentora": "[ ] Diagnóstico, depois da call", "equipe": "[ ] Apostila de Entrevista Técnica, antes da call"}, {"id": "z9", "fase": "Apresentação de Portfólio + Aprendizado Contínuo", "descricao": "", "call": "Call · 1h", "status": "Próxima", "ordem": 9, "prazo": "", "aluno": "[ ] Preparar a apresentação de um projeto do seu plano de estudos\n[ ] Agendar a call", "mentora": "[ ] Diagnóstico de carreira e próximos passos, durante a call", "equipe": ""}]}, {"nome": "Paula Martins", "programa": "Do Zero à TI", "inicio": "2026-10-01", "link": "", "planilha": "", "j": "demopaula", "cards": [{"id": "z1", "fase": "Onboarding", "descricao": "", "call": "", "status": "Concluída", "ordem": 1, "prazo": "", "aluno": "", "mentora": "", "equipe": ""}, {"id": "z2", "fase": "Plano de estudos", "descricao": "Na call, a Alana conhece você e monta o seu plano.", "call": "Call · 30 min", "status": "Concluída", "ordem": 2, "prazo": "", "aluno": "[x] Preencher o formulário\n[x] Agendar a call de plano de estudos", "mentora": "", "equipe": "[x] Na semana 4 do plano: agente para criar o formulário do LinkedIn"}, {"id": "z3", "fase": "Call rotina com Mai", "descricao": "", "call": "Call com a Mai", "status": "Concluída", "ordem": 3, "prazo": "", "aluno": "[x] Preencher os links de rotina\n[x] Agendar a call com a Mai", "mentora": "[x] Links de rotina para preencher", "equipe": "[x] Calendário da Mai"}, {"id": "z4", "fase": "LinkedIn e CV + Aplicação Estratégica", "descricao": "", "call": "Sem call", "status": "Concluída", "ordem": 4, "prazo": "", "aluno": "[x] Rodar o agente de LinkedIn\n[x] Entregar o formulário em até 1 semana", "mentora": "[x] Textos do LinkedIn, 1 semana após a entrega do formulário\n[x] Explicação por áudio\n[x] Revisão depois das suas mudanças, com espaço para dúvidas\n[x] Acompanhamento semanal dos resultados", "equipe": "[x] Apostilas de LinkedIn, CV e Aplicação Estratégica"}, {"id": "z5", "fase": "Speech", "descricao": "", "call": "Call · 30 min", "status": "Concluída", "ordem": 5, "prazo": "", "aluno": "[x] Agendar a call de speech", "mentora": "[x] Sugestão de speech, depois da call", "equipe": "[x] Apostila de speech, antes da call"}, {"id": "z6", "fase": "Simulação de entrevista de RH", "descricao": "", "call": "Call · 1h", "status": "Concluída", "ordem": 6, "prazo": "", "aluno": "[x] Agendar a call de RH", "mentora": "[x] Diagnóstico, depois da call", "equipe": "[x] Apostila de Entrevista de RH, antes da call"}, {"id": "z7", "fase": "Call Mentalidade com Mai", "descricao": "", "call": "Call com a Mai", "status": "Concluída", "ordem": 7, "prazo": "", "aluno": "[x] Agendar a call com a Mai", "mentora": "", "equipe": ""}, {"id": "z8", "fase": "Simulação de entrevista técnica", "descricao": "", "call": "Call · 1h", "status": "Concluída", "ordem": 8, "prazo": "", "aluno": "[x] Agendar a call técnica", "mentora": "[x] Diagnóstico, depois da call", "equipe": "[x] Apostila de Entrevista Técnica, antes da call"}, {"id": "z9", "fase": "Apresentação de Portfólio + Aprendizado Contínuo", "descricao": "", "call": "Call · 1h", "status": "Concluída", "ordem": 9, "prazo": "", "aluno": "[x] Preparar a apresentação de um projeto do seu plano de estudos\n[x] Agendar a call", "mentora": "[x] Diagnóstico de carreira e próximos passos, durante a call", "equipe": ""}]}];
+const DEMO_DADOS = [{"nome": "Marina Duarte", "programa": "Do Zero à TI", "inicio": "2026-09-02", "link": "", "planilha": "", "j": "demomarina", "cards": [{"id": "z1", "fase": "Onboarding", "descricao": "", "call": "", "status": "Concluída", "ordem": 1, "prazo": "", "aluno": "", "mentora": "", "equipe": ""}, {"id": "z2", "fase": "Plano de estudos", "descricao": "Na call, a Alana conhece você e monta o seu plano.", "call": "Call · 30 min", "status": "Concluída", "ordem": 2, "prazo": "", "aluno": "[x] Preencher o formulário\n[x] Agendar a call de plano de estudos", "mentora": "", "equipe": "[x] Na semana 4 do plano: agente para criar o formulário do LinkedIn"}, {"id": "z3", "fase": "Call rotina com Mai", "descricao": "", "call": "Call com a Mai", "status": "Concluída", "ordem": 3, "prazo": "", "aluno": "[x] Preencher os links de rotina\n[x] Agendar a call com a Mai", "mentora": "[x] Links de rotina para preencher", "equipe": "[x] Calendário da Mai"}, {"id": "z4", "fase": "LinkedIn e CV + Aplicação Estratégica", "descricao": "", "call": "Sem call", "status": "Em andamento", "ordem": 4, "prazo": "", "aluno": "[x] Rodar o agente de LinkedIn\n[x] Entregar o formulário em até 1 semana", "mentora": "[ ] Textos do LinkedIn, 1 semana após a entrega do formulário\n[ ] Explicação por áudio\n[ ] Revisão depois das suas mudanças, com espaço para dúvidas\n[ ] Acompanhamento semanal dos resultados", "equipe": "[x] Apostilas de LinkedIn, CV e Aplicação Estratégica"}, {"id": "z5", "fase": "Speech", "descricao": "", "call": "Call · 30 min", "status": "Próxima", "ordem": 5, "prazo": "", "aluno": "[ ] Agendar a call de speech", "mentora": "[ ] Sugestão de speech, depois da call", "equipe": "[ ] Apostila de speech, antes da call"}, {"id": "z6", "fase": "Simulação de entrevista de RH", "descricao": "", "call": "Call · 1h", "status": "Próxima", "ordem": 6, "prazo": "", "aluno": "[ ] Agendar a call de RH", "mentora": "[ ] Diagnóstico, depois da call", "equipe": "[ ] Apostila de Entrevista de RH, antes da call"}, {"id": "z7", "fase": "Call Mentalidade com Mai", "descricao": "", "call": "Call com a Mai", "status": "Próxima", "ordem": 7, "prazo": "", "aluno": "[ ] Agendar a call com a Mai", "mentora": "", "equipe": ""}, {"id": "z8", "fase": "Simulação de entrevista técnica", "descricao": "", "call": "Call · 1h", "status": "Próxima", "ordem": 8, "prazo": "", "aluno": "[ ] Agendar a call técnica", "mentora": "[ ] Diagnóstico, depois da call", "equipe": "[ ] Apostila de Entrevista Técnica, antes da call"}, {"id": "z9", "fase": "Apresentação de Portfólio + Aprendizado Contínuo", "descricao": "", "call": "Call · 1h", "status": "Próxima", "ordem": 9, "prazo": "", "aluno": "[ ] Preparar a apresentação de um projeto do seu plano de estudos\n[ ] Agendar a call", "mentora": "[ ] Diagnóstico de carreira e próximos passos, durante a call", "equipe": ""}], "linha": 2, "email": "marina@exemplo.com", "objetivo": "", "dados": {"termino": "2027-03-02", "status": "Ativo", "momento": "Ainda Estudando", "nivel": "Junior", "ingles": "Faz entrevista em inglês com dificuldade", "semana": "Mês 2 - 4/13 prazo do portfólio", "batata": "Larissa", "livro": "Enviar", "livro_ate": "2026-11-05", "livro_enviado": "", "aniversario": "1995-11-21", "proximo_passo": "Mandar o link de agendamento do LinkedIn quando ela chegar na semana 3 do plano.", "proximo_contato": "2026-11-10", "historico": "Histórico de exemplo: calls, entregas e combinados com o aluno.", "responsavel": "Larissa", "status_notas": "", "administrativo": "", "acessos": "", "entregavel": "", "revisao": "", "live_coding": "", "ac1": true, "ac1_nota": "Acompanhamento 1 feito por mensagem.", "ac2": true, "ac2_nota": "", "ac3": true, "ac3_nota": "Acompanhamento 3 feito por mensagem.", "ac4": true, "ac4_nota": "", "ac5": false, "ac5_nota": "", "ac6": false, "ac6_nota": "", "ac7": false, "ac7_nota": "", "ac8": false, "ac8_nota": "", "ac9": false, "ac9_nota": "", "ac10": false, "ac10_nota": "", "ac11": false, "ac11_nota": "", "ac12": false, "ac12_nota": "", "ac13": false, "ac13_nota": ""}}, {"nome": "Bruno Teixeira", "programa": "Do Zero à TI", "inicio": "2026-10-20", "link": "", "planilha": "", "j": "demobruno", "cards": [{"id": "z1", "fase": "Onboarding", "descricao": "", "call": "", "status": "Concluída", "ordem": 1, "prazo": "", "aluno": "", "mentora": "", "equipe": ""}, {"id": "z2", "fase": "Plano de estudos", "descricao": "Na call, a Alana conhece você e monta o seu plano.", "call": "Call · 30 min", "status": "Em andamento", "ordem": 2, "prazo": "", "aluno": "[ ] Preencher o formulário\n[ ] Agendar a call de plano de estudos", "mentora": "", "equipe": "[ ] Na semana 4 do plano: agente para criar o formulário do LinkedIn"}, {"id": "z3", "fase": "Call rotina com Mai", "descricao": "", "call": "Call com a Mai", "status": "Próxima", "ordem": 3, "prazo": "", "aluno": "[ ] Preencher os links de rotina\n[ ] Agendar a call com a Mai", "mentora": "[ ] Links de rotina para preencher", "equipe": "[ ] Calendário da Mai"}, {"id": "z4", "fase": "LinkedIn e CV + Aplicação Estratégica", "descricao": "", "call": "Sem call", "status": "Próxima", "ordem": 4, "prazo": "", "aluno": "[ ] Rodar o agente de LinkedIn\n[ ] Entregar o formulário em até 1 semana", "mentora": "[ ] Textos do LinkedIn, 1 semana após a entrega do formulário\n[ ] Explicação por áudio\n[ ] Revisão depois das suas mudanças, com espaço para dúvidas\n[ ] Acompanhamento semanal dos resultados", "equipe": "[ ] Apostilas de LinkedIn, CV e Aplicação Estratégica"}, {"id": "z5", "fase": "Speech", "descricao": "", "call": "Call · 30 min", "status": "Próxima", "ordem": 5, "prazo": "", "aluno": "[ ] Agendar a call de speech", "mentora": "[ ] Sugestão de speech, depois da call", "equipe": "[ ] Apostila de speech, antes da call"}, {"id": "z6", "fase": "Simulação de entrevista de RH", "descricao": "", "call": "Call · 1h", "status": "Próxima", "ordem": 6, "prazo": "", "aluno": "[ ] Agendar a call de RH", "mentora": "[ ] Diagnóstico, depois da call", "equipe": "[ ] Apostila de Entrevista de RH, antes da call"}, {"id": "z7", "fase": "Call Mentalidade com Mai", "descricao": "", "call": "Call com a Mai", "status": "Próxima", "ordem": 7, "prazo": "", "aluno": "[ ] Agendar a call com a Mai", "mentora": "", "equipe": ""}, {"id": "z8", "fase": "Simulação de entrevista técnica", "descricao": "", "call": "Call · 1h", "status": "Próxima", "ordem": 8, "prazo": "", "aluno": "[ ] Agendar a call técnica", "mentora": "[ ] Diagnóstico, depois da call", "equipe": "[ ] Apostila de Entrevista Técnica, antes da call"}, {"id": "z9", "fase": "Apresentação de Portfólio + Aprendizado Contínuo", "descricao": "", "call": "Call · 1h", "status": "Próxima", "ordem": 9, "prazo": "", "aluno": "[ ] Preparar a apresentação de um projeto do seu plano de estudos\n[ ] Agendar a call", "mentora": "[ ] Diagnóstico de carreira e próximos passos, durante a call", "equipe": ""}], "linha": 3, "email": "bruno@exemplo.com", "objetivo": "", "dados": {"termino": "2027-04-20", "status": "Ativo", "momento": "Ainda Estudando", "nivel": "Muito Junior", "ingles": "Não consegue fazer entrevista em inglês", "semana": "Mês 1 - 1/13 dúvidas e orientações", "batata": "Alana", "livro": "Não incluso", "livro_ate": "", "livro_enviado": "", "aniversario": "1999-03-08", "proximo_passo": "Aguardando a Alana entregar o plano de estudos.", "proximo_contato": "2026-11-11", "historico": "Histórico de exemplo: calls, entregas e combinados com o aluno.", "responsavel": "Alana", "status_notas": "", "administrativo": "", "acessos": "", "entregavel": "", "revisao": "", "live_coding": "", "ac1": true, "ac1_nota": "Acompanhamento 1 feito por mensagem.", "ac2": false, "ac2_nota": "", "ac3": false, "ac3_nota": "", "ac4": false, "ac4_nota": "", "ac5": false, "ac5_nota": "", "ac6": false, "ac6_nota": "", "ac7": false, "ac7_nota": "", "ac8": false, "ac8_nota": "", "ac9": false, "ac9_nota": "", "ac10": false, "ac10_nota": "", "ac11": false, "ac11_nota": "", "ac12": false, "ac12_nota": "", "ac13": false, "ac13_nota": ""}}, {"nome": "Camila Nunes", "programa": "Plano de Estudos", "inicio": "2026-07-10", "link": "", "planilha": "", "j": "democamila", "cards": [{"id": "z1", "fase": "Onboarding", "descricao": "", "call": "", "status": "Concluída", "ordem": 1, "prazo": "", "aluno": "", "mentora": "", "equipe": ""}, {"id": "z2", "fase": "Plano de estudos", "descricao": "Na call, a Alana conhece você e monta o seu plano.", "call": "Call · 30 min", "status": "Concluída", "ordem": 2, "prazo": "", "aluno": "[x] Preencher o formulário\n[x] Agendar a call de plano de estudos", "mentora": "", "equipe": "[x] Na semana 4 do plano: agente para criar o formulário do LinkedIn"}, {"id": "z3", "fase": "Call rotina com Mai", "descricao": "", "call": "Call com a Mai", "status": "Concluída", "ordem": 3, "prazo": "", "aluno": "[x] Preencher os links de rotina\n[x] Agendar a call com a Mai", "mentora": "[x] Links de rotina para preencher", "equipe": "[x] Calendário da Mai"}, {"id": "z4", "fase": "LinkedIn e CV + Aplicação Estratégica", "descricao": "", "call": "Sem call", "status": "Concluída", "ordem": 4, "prazo": "", "aluno": "[x] Rodar o agente de LinkedIn\n[x] Entregar o formulário em até 1 semana", "mentora": "[x] Textos do LinkedIn, 1 semana após a entrega do formulário\n[x] Explicação por áudio\n[x] Revisão depois das suas mudanças, com espaço para dúvidas\n[x] Acompanhamento semanal dos resultados", "equipe": "[x] Apostilas de LinkedIn, CV e Aplicação Estratégica"}, {"id": "z5", "fase": "Speech", "descricao": "", "call": "Call · 30 min", "status": "Concluída", "ordem": 5, "prazo": "", "aluno": "[x] Agendar a call de speech", "mentora": "[ ] Sugestão de speech, depois da call", "equipe": "[x] Apostila de speech, antes da call"}, {"id": "z6", "fase": "Simulação de entrevista de RH", "descricao": "", "call": "Call · 1h", "status": "Em andamento", "ordem": 6, "prazo": "", "aluno": "[x] Agendar a call de RH", "mentora": "[ ] Diagnóstico, depois da call", "equipe": "[ ] Apostila de Entrevista de RH, antes da call"}, {"id": "z7", "fase": "Call Mentalidade com Mai", "descricao": "", "call": "Call com a Mai", "status": "Próxima", "ordem": 7, "prazo": "", "aluno": "[ ] Agendar a call com a Mai", "mentora": "", "equipe": ""}, {"id": "z8", "fase": "Simulação de entrevista técnica", "descricao": "", "call": "Call · 1h", "status": "Próxima", "ordem": 8, "prazo": "", "aluno": "[ ] Agendar a call técnica", "mentora": "[ ] Diagnóstico, depois da call", "equipe": "[ ] Apostila de Entrevista Técnica, antes da call"}, {"id": "z9", "fase": "Apresentação de Portfólio + Aprendizado Contínuo", "descricao": "", "call": "Call · 1h", "status": "Próxima", "ordem": 9, "prazo": "", "aluno": "[ ] Preparar a apresentação de um projeto do seu plano de estudos\n[ ] Agendar a call", "mentora": "[ ] Diagnóstico de carreira e próximos passos, durante a call", "equipe": ""}], "linha": 4, "email": "camila@exemplo.com", "objetivo": "", "dados": {"termino": "2027-01-10", "status": "Ativo", "momento": "Ainda Estudando", "nivel": "Senior", "ingles": "Consegue fazer entrevista em inglês", "semana": "Mês 3 - 6/13 acompanhamento", "batata": "Maiara", "livro": "Enviado", "livro_ate": "", "livro_enviado": "2026-09-14", "aniversario": "1990-07-02", "proximo_passo": "Reenviar o calendário de apresentação de portfólio na primeira semana de dezembro.", "proximo_contato": "2026-11-12", "historico": "Histórico de exemplo: calls, entregas e combinados com o aluno.", "responsavel": "Maiara", "status_notas": "", "administrativo": "", "acessos": "", "entregavel": "", "revisao": "", "live_coding": "", "ac1": true, "ac1_nota": "Acompanhamento 1 feito por mensagem.", "ac2": true, "ac2_nota": "", "ac3": true, "ac3_nota": "Acompanhamento 3 feito por mensagem.", "ac4": true, "ac4_nota": "", "ac5": true, "ac5_nota": "Acompanhamento 5 feito por mensagem.", "ac6": true, "ac6_nota": "", "ac7": false, "ac7_nota": "", "ac8": false, "ac8_nota": "", "ac9": false, "ac9_nota": "", "ac10": false, "ac10_nota": "", "ac11": false, "ac11_nota": "", "ac12": false, "ac12_nota": "", "ac13": false, "ac13_nota": ""}}, {"nome": "Diego Prado", "programa": "Do Zero à TI", "inicio": "2026-06-03", "link": "", "planilha": "", "j": "demodiego", "cards": [{"id": "z1", "fase": "Onboarding", "descricao": "", "call": "", "status": "Concluída", "ordem": 1, "prazo": "", "aluno": "", "mentora": "", "equipe": ""}, {"id": "z2", "fase": "Plano de estudos", "descricao": "Na call, a Alana conhece você e monta o seu plano.", "call": "Call · 30 min", "status": "Concluída", "ordem": 2, "prazo": "", "aluno": "[x] Preencher o formulário\n[x] Agendar a call de plano de estudos", "mentora": "", "equipe": "[x] Na semana 4 do plano: agente para criar o formulário do LinkedIn"}, {"id": "z3", "fase": "Call rotina com Mai", "descricao": "", "call": "Call com a Mai", "status": "Concluída", "ordem": 3, "prazo": "", "aluno": "[x] Preencher os links de rotina\n[x] Agendar a call com a Mai", "mentora": "[x] Links de rotina para preencher", "equipe": "[x] Calendário da Mai"}, {"id": "z4", "fase": "LinkedIn e CV + Aplicação Estratégica", "descricao": "", "call": "Sem call", "status": "Concluída", "ordem": 4, "prazo": "", "aluno": "[x] Rodar o agente de LinkedIn\n[x] Entregar o formulário em até 1 semana", "mentora": "[x] Textos do LinkedIn, 1 semana após a entrega do formulário\n[x] Explicação por áudio\n[x] Revisão depois das suas mudanças, com espaço para dúvidas\n[x] Acompanhamento semanal dos resultados", "equipe": "[x] Apostilas de LinkedIn, CV e Aplicação Estratégica"}, {"id": "z5", "fase": "Speech", "descricao": "", "call": "Call · 30 min", "status": "Concluída", "ordem": 5, "prazo": "", "aluno": "[x] Agendar a call de speech", "mentora": "[x] Sugestão de speech, depois da call", "equipe": "[x] Apostila de speech, antes da call"}, {"id": "z6", "fase": "Simulação de entrevista de RH", "descricao": "", "call": "Call · 1h", "status": "Concluída", "ordem": 6, "prazo": "", "aluno": "[x] Agendar a call de RH", "mentora": "[x] Diagnóstico, depois da call", "equipe": "[x] Apostila de Entrevista de RH, antes da call"}, {"id": "z7", "fase": "Call Mentalidade com Mai", "descricao": "", "call": "Call com a Mai", "status": "Em andamento", "ordem": 7, "prazo": "", "aluno": "[ ] Agendar a call com a Mai", "mentora": "", "equipe": ""}, {"id": "z8", "fase": "Simulação de entrevista técnica", "descricao": "", "call": "Call · 1h", "status": "Próxima", "ordem": 8, "prazo": "", "aluno": "[ ] Agendar a call técnica", "mentora": "[ ] Diagnóstico, depois da call", "equipe": "[ ] Apostila de Entrevista Técnica, antes da call"}, {"id": "z9", "fase": "Apresentação de Portfólio + Aprendizado Contínuo", "descricao": "", "call": "Call · 1h", "status": "Próxima", "ordem": 9, "prazo": "", "aluno": "[ ] Preparar a apresentação de um projeto do seu plano de estudos\n[ ] Agendar a call", "mentora": "[ ] Diagnóstico de carreira e próximos passos, durante a call", "equipe": ""}], "linha": 5, "email": "diego@exemplo.com", "objetivo": "", "dados": {"termino": "2026-12-03", "status": "Ativo", "momento": "Recebendo Recrutadores", "nivel": "Pleno", "ingles": "Faz entrevista em inglês com dificuldade", "semana": "Mês 4 - 8/13 prazos finais", "batata": "Maiara", "livro": "Enviado", "livro_ate": "", "livro_enviado": "2026-09-17", "aniversario": "1993-04-15", "proximo_passo": "Agendar a call de mentalidade com a Mai.", "proximo_contato": "2026-11-13", "historico": "Histórico de exemplo: calls, entregas e combinados com o aluno.", "responsavel": "Maiara", "status_notas": "", "administrativo": "", "acessos": "", "entregavel": "", "revisao": "", "live_coding": "", "ac1": true, "ac1_nota": "Acompanhamento 1 feito por mensagem.", "ac2": true, "ac2_nota": "", "ac3": true, "ac3_nota": "Acompanhamento 3 feito por mensagem.", "ac4": true, "ac4_nota": "", "ac5": true, "ac5_nota": "Acompanhamento 5 feito por mensagem.", "ac6": true, "ac6_nota": "", "ac7": true, "ac7_nota": "Acompanhamento 7 feito por mensagem.", "ac8": true, "ac8_nota": "", "ac9": false, "ac9_nota": "", "ac10": false, "ac10_nota": "", "ac11": false, "ac11_nota": "", "ac12": false, "ac12_nota": "", "ac13": false, "ac13_nota": ""}}, {"nome": "Tiago Souza", "programa": "Do Zero à TI", "inicio": "2026-09-19", "link": "", "planilha": "", "j": "demotiago", "cards": [{"id": "z1", "fase": "Onboarding", "descricao": "", "call": "", "status": "Concluída", "ordem": 1, "prazo": "", "aluno": "", "mentora": "", "equipe": ""}, {"id": "z2", "fase": "Plano de estudos", "descricao": "Na call, a Alana conhece você e monta o seu plano.", "call": "Call · 30 min", "status": "Concluída", "ordem": 2, "prazo": "", "aluno": "[x] Preencher o formulário\n[x] Agendar a call de plano de estudos", "mentora": "", "equipe": "[x] Na semana 4 do plano: agente para criar o formulário do LinkedIn"}, {"id": "z3", "fase": "Call rotina com Mai", "descricao": "", "call": "Call com a Mai", "status": "Em andamento", "ordem": 3, "prazo": "", "aluno": "[x] Preencher os links de rotina\n[ ] Agendar a call com a Mai", "mentora": "[ ] Links de rotina para preencher", "equipe": "[x] Calendário da Mai"}, {"id": "z4", "fase": "LinkedIn e CV + Aplicação Estratégica", "descricao": "", "call": "Sem call", "status": "Próxima", "ordem": 4, "prazo": "", "aluno": "[ ] Rodar o agente de LinkedIn\n[ ] Entregar o formulário em até 1 semana", "mentora": "[ ] Textos do LinkedIn, 1 semana após a entrega do formulário\n[ ] Explicação por áudio\n[ ] Revisão depois das suas mudanças, com espaço para dúvidas\n[ ] Acompanhamento semanal dos resultados", "equipe": "[ ] Apostilas de LinkedIn, CV e Aplicação Estratégica"}, {"id": "z5", "fase": "Speech", "descricao": "", "call": "Call · 30 min", "status": "Próxima", "ordem": 5, "prazo": "", "aluno": "[ ] Agendar a call de speech", "mentora": "[ ] Sugestão de speech, depois da call", "equipe": "[ ] Apostila de speech, antes da call"}, {"id": "z6", "fase": "Simulação de entrevista de RH", "descricao": "", "call": "Call · 1h", "status": "Próxima", "ordem": 6, "prazo": "", "aluno": "[ ] Agendar a call de RH", "mentora": "[ ] Diagnóstico, depois da call", "equipe": "[ ] Apostila de Entrevista de RH, antes da call"}, {"id": "z7", "fase": "Call Mentalidade com Mai", "descricao": "", "call": "Call com a Mai", "status": "Próxima", "ordem": 7, "prazo": "", "aluno": "[ ] Agendar a call com a Mai", "mentora": "", "equipe": ""}, {"id": "z8", "fase": "Simulação de entrevista técnica", "descricao": "", "call": "Call · 1h", "status": "Próxima", "ordem": 8, "prazo": "", "aluno": "[ ] Agendar a call técnica", "mentora": "[ ] Diagnóstico, depois da call", "equipe": "[ ] Apostila de Entrevista Técnica, antes da call"}, {"id": "z9", "fase": "Apresentação de Portfólio + Aprendizado Contínuo", "descricao": "", "call": "Call · 1h", "status": "Próxima", "ordem": 9, "prazo": "", "aluno": "[ ] Preparar a apresentação de um projeto do seu plano de estudos\n[ ] Agendar a call", "mentora": "[ ] Diagnóstico de carreira e próximos passos, durante a call", "equipe": ""}], "linha": 6, "email": "tiago@exemplo.com", "objetivo": "", "dados": {"termino": "2027-03-19", "status": "Ativo", "momento": "Ainda Estudando", "nivel": "Pleno", "ingles": "Consegue fazer entrevista em inglês", "semana": "Mês 2 - 3/13 prazo do portfólio", "batata": "Larissa", "livro": "Enviar", "livro_ate": "2026-12-01", "livro_enviado": "", "aniversario": "1991-08-30", "proximo_passo": "Confirmar a call de rotina com a Mai.", "proximo_contato": "2026-11-14", "historico": "Histórico de exemplo: calls, entregas e combinados com o aluno.", "responsavel": "Larissa", "status_notas": "", "administrativo": "", "acessos": "", "entregavel": "", "revisao": "", "live_coding": "", "ac1": true, "ac1_nota": "Acompanhamento 1 feito por mensagem.", "ac2": true, "ac2_nota": "", "ac3": true, "ac3_nota": "Acompanhamento 3 feito por mensagem.", "ac4": false, "ac4_nota": "", "ac5": false, "ac5_nota": "", "ac6": false, "ac6_nota": "", "ac7": false, "ac7_nota": "", "ac8": false, "ac8_nota": "", "ac9": false, "ac9_nota": "", "ac10": false, "ac10_nota": "", "ac11": false, "ac11_nota": "", "ac12": false, "ac12_nota": "", "ac13": false, "ac13_nota": ""}}, {"nome": "Rafael Lima", "programa": "Destrava TI", "inicio": "2026-08-10", "link": "", "planilha": "", "j": "demorafael", "cards": [{"id": "t1", "fase": "Onboarding", "descricao": "", "call": "", "status": "Concluída", "ordem": 1, "prazo": "", "aluno": "", "mentora": "", "equipe": ""}, {"id": "t2", "fase": "LinkedIn e CV + Aplicação Estratégica", "descricao": "", "call": "Sem call", "status": "Em andamento", "ordem": 2, "prazo": "", "aluno": "[x] Rodar o agente de LinkedIn\n[ ] Entregar o formulário em até 1 semana", "mentora": "[ ] Textos do LinkedIn, 1 semana após a entrega do formulário\n[ ] Áudios explicando como aplicar\n[ ] Dúvidas tiradas pelo WhatsApp", "equipe": "[x] Apostilas de LinkedIn, CV e Aplicação Estratégica"}, {"id": "t3", "fase": "Speech", "descricao": "", "call": "Call · 30 min", "status": "Próxima", "ordem": 3, "prazo": "", "aluno": "[ ] Agendar a call de speech", "mentora": "[ ] Sugestão de speech, depois da call", "equipe": "[ ] Apostila de speech, antes da call"}, {"id": "t4", "fase": "Simulação de entrevista de RH", "descricao": "", "call": "Call · 1h", "status": "Próxima", "ordem": 4, "prazo": "", "aluno": "[ ] Agendar a call de RH", "mentora": "[ ] Diagnóstico, depois da call", "equipe": "[ ] Apostila de Entrevista de RH, antes da call"}, {"id": "t5", "fase": "Call Mentalidade com Mai", "descricao": "", "call": "Call com a Mai", "status": "Próxima", "ordem": 5, "prazo": "", "aluno": "[ ] Agendar a call com a Mai", "mentora": "", "equipe": ""}, {"id": "t6", "fase": "Simulação de entrevista técnica", "descricao": "", "call": "Call · 1h", "status": "Próxima", "ordem": 6, "prazo": "", "aluno": "[ ] Agendar a call técnica", "mentora": "[ ] Diagnóstico, depois da call", "equipe": "[ ] Apostila de Entrevista Técnica, antes da call"}], "linha": 7, "email": "rafael@exemplo.com", "objetivo": "", "dados": {"termino": "2027-02-10", "status": "Ativo", "momento": "Não recebendo recrutadores", "nivel": "Senior", "ingles": "Faz entrevista em inglês com dificuldade", "semana": "Mês 3 - 6/13 acompanhamento", "batata": "Alana", "livro": "Enviar", "livro_ate": "2026-10-30", "livro_enviado": "", "aniversario": "1988-10-12", "proximo_passo": "Alana entrega os textos do LinkedIn até sexta.", "proximo_contato": "2026-11-15", "historico": "Histórico de exemplo: calls, entregas e combinados com o aluno.", "responsavel": "Alana", "status_notas": "", "administrativo": "", "acessos": "", "entregavel": "", "revisao": "", "live_coding": "", "ac1": true, "ac1_nota": "Acompanhamento 1 feito por mensagem.", "ac2": true, "ac2_nota": "", "ac3": true, "ac3_nota": "Acompanhamento 3 feito por mensagem.", "ac4": true, "ac4_nota": "", "ac5": true, "ac5_nota": "Acompanhamento 5 feito por mensagem.", "ac6": false, "ac6_nota": "", "ac7": false, "ac7_nota": "", "ac8": false, "ac8_nota": "", "ac9": false, "ac9_nota": "", "ac10": false, "ac10_nota": "", "ac11": false, "ac11_nota": "", "ac12": false, "ac12_nota": "", "ac13": false, "ac13_nota": ""}}, {"nome": "Juliana Reis", "programa": "Destrava TI", "inicio": "2026-05-05", "link": "", "planilha": "", "j": "demojuliana", "cards": [{"id": "t1", "fase": "Onboarding", "descricao": "", "call": "", "status": "Concluída", "ordem": 1, "prazo": "", "aluno": "", "mentora": "", "equipe": ""}, {"id": "t2", "fase": "LinkedIn e CV + Aplicação Estratégica", "descricao": "", "call": "Sem call", "status": "Concluída", "ordem": 2, "prazo": "", "aluno": "[x] Rodar o agente de LinkedIn\n[x] Entregar o formulário em até 1 semana", "mentora": "[x] Textos do LinkedIn, 1 semana após a entrega do formulário\n[x] Áudios explicando como aplicar\n[x] Dúvidas tiradas pelo WhatsApp", "equipe": "[x] Apostilas de LinkedIn, CV e Aplicação Estratégica"}, {"id": "t3", "fase": "Speech", "descricao": "", "call": "Call · 30 min", "status": "Concluída", "ordem": 3, "prazo": "", "aluno": "[x] Agendar a call de speech", "mentora": "[x] Sugestão de speech, depois da call", "equipe": "[ ] Apostila de speech, antes da call"}, {"id": "t4", "fase": "Simulação de entrevista de RH", "descricao": "", "call": "Call · 1h", "status": "Em andamento", "ordem": 4, "prazo": "", "aluno": "[x] Agendar a call de RH", "mentora": "[ ] Diagnóstico, depois da call", "equipe": "[x] Apostila de Entrevista de RH, antes da call"}, {"id": "t5", "fase": "Call Mentalidade com Mai", "descricao": "", "call": "Call com a Mai", "status": "Próxima", "ordem": 5, "prazo": "", "aluno": "[ ] Agendar a call com a Mai", "mentora": "", "equipe": ""}, {"id": "t6", "fase": "Simulação de entrevista técnica", "descricao": "", "call": "Call · 1h", "status": "Próxima", "ordem": 6, "prazo": "", "aluno": "[ ] Agendar a call técnica", "mentora": "[ ] Diagnóstico, depois da call", "equipe": "[ ] Apostila de Entrevista Técnica, antes da call"}], "linha": 8, "email": "juliana@exemplo.com", "objetivo": "", "dados": {"termino": "2026-11-05", "status": "Período de Extensão", "momento": "Participando de Processos Seletivos", "nivel": "Pleno", "ingles": "Consegue fazer entrevista em inglês", "semana": "Mês 5 - 9/13 início do offboarding", "batata": "Larissa", "livro": "Enviado", "livro_ate": "", "livro_enviado": "2026-08-01", "aniversario": "1996-11-03", "proximo_passo": "Simulação de RH remarcada; mandar a apostila antes da call.", "proximo_contato": "2026-11-16", "historico": "Histórico de exemplo: calls, entregas e combinados com o aluno.", "responsavel": "Larissa", "status_notas": "", "administrativo": "", "acessos": "", "entregavel": "", "revisao": "", "live_coding": "", "ac1": true, "ac1_nota": "Acompanhamento 1 feito por mensagem.", "ac2": true, "ac2_nota": "", "ac3": true, "ac3_nota": "Acompanhamento 3 feito por mensagem.", "ac4": true, "ac4_nota": "", "ac5": true, "ac5_nota": "Acompanhamento 5 feito por mensagem.", "ac6": true, "ac6_nota": "", "ac7": true, "ac7_nota": "Acompanhamento 7 feito por mensagem.", "ac8": true, "ac8_nota": "", "ac9": true, "ac9_nota": "Acompanhamento 9 feito por mensagem.", "ac10": false, "ac10_nota": "", "ac11": false, "ac11_nota": "", "ac12": false, "ac12_nota": "", "ac13": false, "ac13_nota": ""}}, {"nome": "Paula Martins", "programa": "Do Zero à TI", "inicio": "2026-01-12", "link": "", "planilha": "", "j": "demopaula", "cards": [{"id": "z1", "fase": "Onboarding", "descricao": "", "call": "", "status": "Concluída", "ordem": 1, "prazo": "", "aluno": "", "mentora": "", "equipe": ""}, {"id": "z2", "fase": "Plano de estudos", "descricao": "Na call, a Alana conhece você e monta o seu plano.", "call": "Call · 30 min", "status": "Concluída", "ordem": 2, "prazo": "", "aluno": "[x] Preencher o formulário\n[x] Agendar a call de plano de estudos", "mentora": "", "equipe": "[x] Na semana 4 do plano: agente para criar o formulário do LinkedIn"}, {"id": "z3", "fase": "Call rotina com Mai", "descricao": "", "call": "Call com a Mai", "status": "Concluída", "ordem": 3, "prazo": "", "aluno": "[x] Preencher os links de rotina\n[x] Agendar a call com a Mai", "mentora": "[x] Links de rotina para preencher", "equipe": "[x] Calendário da Mai"}, {"id": "z4", "fase": "LinkedIn e CV + Aplicação Estratégica", "descricao": "", "call": "Sem call", "status": "Concluída", "ordem": 4, "prazo": "", "aluno": "[x] Rodar o agente de LinkedIn\n[x] Entregar o formulário em até 1 semana", "mentora": "[x] Textos do LinkedIn, 1 semana após a entrega do formulário\n[x] Explicação por áudio\n[x] Revisão depois das suas mudanças, com espaço para dúvidas\n[x] Acompanhamento semanal dos resultados", "equipe": "[x] Apostilas de LinkedIn, CV e Aplicação Estratégica"}, {"id": "z5", "fase": "Speech", "descricao": "", "call": "Call · 30 min", "status": "Concluída", "ordem": 5, "prazo": "", "aluno": "[x] Agendar a call de speech", "mentora": "[x] Sugestão de speech, depois da call", "equipe": "[x] Apostila de speech, antes da call"}, {"id": "z6", "fase": "Simulação de entrevista de RH", "descricao": "", "call": "Call · 1h", "status": "Concluída", "ordem": 6, "prazo": "", "aluno": "[x] Agendar a call de RH", "mentora": "[x] Diagnóstico, depois da call", "equipe": "[x] Apostila de Entrevista de RH, antes da call"}, {"id": "z7", "fase": "Call Mentalidade com Mai", "descricao": "", "call": "Call com a Mai", "status": "Concluída", "ordem": 7, "prazo": "", "aluno": "[x] Agendar a call com a Mai", "mentora": "", "equipe": ""}, {"id": "z8", "fase": "Simulação de entrevista técnica", "descricao": "", "call": "Call · 1h", "status": "Concluída", "ordem": 8, "prazo": "", "aluno": "[x] Agendar a call técnica", "mentora": "[x] Diagnóstico, depois da call", "equipe": "[x] Apostila de Entrevista Técnica, antes da call"}, {"id": "z9", "fase": "Apresentação de Portfólio + Aprendizado Contínuo", "descricao": "", "call": "Call · 1h", "status": "Concluída", "ordem": 9, "prazo": "", "aluno": "[x] Preparar a apresentação de um projeto do seu plano de estudos\n[x] Agendar a call", "mentora": "[x] Diagnóstico de carreira e próximos passos, durante a call", "equipe": ""}], "linha": 9, "email": "paula@exemplo.com", "objetivo": "", "dados": {"termino": "2026-07-12", "status": "Offboarding", "momento": "Participando de Processos Seletivos", "nivel": "Junior", "ingles": "Faz entrevista em inglês com dificuldade", "semana": "Mês 5 - 9/13 início do offboarding", "batata": "", "livro": "Enviado", "livro_ate": "", "livro_enviado": "2026-05-10", "aniversario": "1994-01-25", "proximo_passo": "Marcar a reunião de offboarding.", "proximo_contato": "2026-11-17", "historico": "Histórico de exemplo: calls, entregas e combinados com o aluno.", "responsavel": "", "status_notas": "", "administrativo": "", "acessos": "", "entregavel": "", "revisao": "", "live_coding": "", "ac1": true, "ac1_nota": "Acompanhamento 1 feito por mensagem.", "ac2": true, "ac2_nota": "", "ac3": true, "ac3_nota": "Acompanhamento 3 feito por mensagem.", "ac4": true, "ac4_nota": "", "ac5": true, "ac5_nota": "Acompanhamento 5 feito por mensagem.", "ac6": true, "ac6_nota": "", "ac7": true, "ac7_nota": "Acompanhamento 7 feito por mensagem.", "ac8": true, "ac8_nota": "", "ac9": true, "ac9_nota": "Acompanhamento 9 feito por mensagem.", "ac10": true, "ac10_nota": "", "ac11": true, "ac11_nota": "Acompanhamento 11 feito por mensagem.", "ac12": true, "ac12_nota": "", "ac13": true, "ac13_nota": "Acompanhamento 13 feito por mensagem."}}, {"nome": "Lucas Andrade", "programa": "Destrava TI", "inicio": "2026-11-04", "link": "", "planilha": "", "j": "demolucas", "cards": [{"id": "t1", "fase": "Onboarding", "descricao": "", "call": "", "status": "Em andamento", "ordem": 1, "prazo": "", "aluno": "", "mentora": "", "equipe": ""}, {"id": "t2", "fase": "LinkedIn e CV + Aplicação Estratégica", "descricao": "", "call": "Sem call", "status": "Próxima", "ordem": 2, "prazo": "", "aluno": "[ ] Rodar o agente de LinkedIn\n[ ] Entregar o formulário em até 1 semana", "mentora": "[ ] Textos do LinkedIn, 1 semana após a entrega do formulário\n[ ] Áudios explicando como aplicar\n[ ] Dúvidas tiradas pelo WhatsApp", "equipe": "[ ] Apostilas de LinkedIn, CV e Aplicação Estratégica"}, {"id": "t3", "fase": "Speech", "descricao": "", "call": "Call · 30 min", "status": "Próxima", "ordem": 3, "prazo": "", "aluno": "[ ] Agendar a call de speech", "mentora": "[ ] Sugestão de speech, depois da call", "equipe": "[ ] Apostila de speech, antes da call"}, {"id": "t4", "fase": "Simulação de entrevista de RH", "descricao": "", "call": "Call · 1h", "status": "Próxima", "ordem": 4, "prazo": "", "aluno": "[ ] Agendar a call de RH", "mentora": "[ ] Diagnóstico, depois da call", "equipe": "[ ] Apostila de Entrevista de RH, antes da call"}, {"id": "t5", "fase": "Call Mentalidade com Mai", "descricao": "", "call": "Call com a Mai", "status": "Próxima", "ordem": 5, "prazo": "", "aluno": "[ ] Agendar a call com a Mai", "mentora": "", "equipe": ""}, {"id": "t6", "fase": "Simulação de entrevista técnica", "descricao": "", "call": "Call · 1h", "status": "Próxima", "ordem": 6, "prazo": "", "aluno": "[ ] Agendar a call técnica", "mentora": "[ ] Diagnóstico, depois da call", "equipe": "[ ] Apostila de Entrevista Técnica, antes da call"}], "linha": 10, "email": "lucas@exemplo.com", "objetivo": "", "dados": {"termino": "2027-05-04", "status": "Não iniciou", "momento": "Ainda Estudando", "nivel": "Junior", "ingles": "", "semana": "", "batata": "Larissa", "livro": "Enviar", "livro_ate": "2026-12-10", "livro_enviado": "", "aniversario": "1997-06-19", "proximo_passo": "Enviar o contrato para assinatura.", "proximo_contato": "2026-11-18", "historico": "Histórico de exemplo: calls, entregas e combinados com o aluno.", "responsavel": "Larissa", "status_notas": "", "administrativo": "", "acessos": "", "entregavel": "", "revisao": "", "live_coding": "", "ac1": false, "ac1_nota": "", "ac2": false, "ac2_nota": "", "ac3": false, "ac3_nota": "", "ac4": false, "ac4_nota": "", "ac5": false, "ac5_nota": "", "ac6": false, "ac6_nota": "", "ac7": false, "ac7_nota": "", "ac8": false, "ac8_nota": "", "ac9": false, "ac9_nota": "", "ac10": false, "ac10_nota": "", "ac11": false, "ac11_nota": "", "ac12": false, "ac12_nota": "", "ac13": false, "ac13_nota": ""}}, {"nome": "Helena Costa", "programa": "CV & LinkedIn", "inicio": "2026-08-05", "link": "", "planilha": "", "cards": null, "linha": 11, "email": "helena@exemplo.com", "objetivo": "", "dados": {"termino": "2026-09-05", "status": "Concluído", "momento": "Recebendo Recrutadores", "nivel": "Pleno", "ingles": "Consegue fazer entrevista em inglês", "semana": "", "batata": "", "livro": "Não incluso", "livro_ate": "", "livro_enviado": "", "aniversario": "1992-12-09", "proximo_passo": "", "proximo_contato": "2026-11-10", "historico": "Histórico de exemplo: calls, entregas e combinados com o aluno.", "responsavel": "", "status_notas": "", "administrativo": "", "acessos": "", "entregavel": "", "revisao": "", "live_coding": "", "ac1": false, "ac1_nota": "", "ac2": false, "ac2_nota": "", "ac3": false, "ac3_nota": "", "ac4": false, "ac4_nota": "", "ac5": false, "ac5_nota": "", "ac6": false, "ac6_nota": "", "ac7": false, "ac7_nota": "", "ac8": false, "ac8_nota": "", "ac9": false, "ac9_nota": "", "ac10": false, "ac10_nota": "", "ac11": false, "ac11_nota": "", "ac12": false, "ac12_nota": "", "ac13": false, "ac13_nota": ""}}];
 
-const estado = { senha: '', alunos: [], filtroResp: null, programa: 'todos', busca: '', soPendentes: true, carregadoEm: null };
+/* ---------- definições ---------- */
+const OPCOES = {
+  status: ['Ativo', 'Período de Extensão', 'Em pausa', 'Não iniciou', 'Offboarding', 'Concluído'],
+  momento: ['Ainda Estudando', 'Não recebendo recrutadores', 'Recebendo Recrutadores', 'Participando de Processos Seletivos'],
+  nivel: ['Muito Junior', 'Junior', 'Pleno', 'Senior'],
+  ingles: ['Consegue fazer entrevista em inglês', 'Faz entrevista em inglês com dificuldade', 'Não consegue fazer entrevista em inglês'],
+  batata: ['Alana', 'Maiara', 'Larissa'],
+  livro: ['Enviar', 'Enviado', 'Não incluso'],
+  programa: ['Do Zero à TI', 'Destrava TI', 'Plano de Estudos', 'CV & LinkedIn'],
+};
+const EM_ACOMP = ['Ativo', 'Período de Extensão', 'Em pausa', 'Não iniciou', ''];
+const MESES = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+const FASES_ORDEM = ['Onboarding', 'Plano de estudos', 'Call rotina com Mai', 'LinkedIn e CV + Aplicação Estratégica', 'Speech',
+  'Simulação de entrevista de RH', 'Call Mentalidade com Mai', 'Simulação de entrevista técnica', 'Apresentação de Portfólio + Aprendizado Contínuo'];
+const FASES_CURTAS = { 'LinkedIn e CV + Aplicação Estratégica': 'LinkedIn + Aplicação', 'Simulação de entrevista de RH': 'RH', 'Simulação de entrevista técnica': 'Técnica',
+  'Apresentação de Portfólio + Aprendizado Contínuo': 'Portfólio', 'Call rotina com Mai': 'Rotina (Mai)', 'Call Mentalidade com Mai': 'Mentalidade (Mai)', 'Plano de estudos': 'Plano' };
+const RESP = [
+  { id: 'alana', nome: 'Alana' }, { id: 'mai', nome: 'Mai' }, { id: 'assistente', nome: 'Assistente' }, { id: 'aluno', nome: 'Aluno' },
+];
+const GRUPOS = ['aluno', 'mentora', 'equipe'];
+
+const VISOES = [
+  { id: 'pendencias', nome: 'Pendências', titulo: 'Quem está com <em>a próxima ação</em>', desc: 'Calculado pela jornada: itens não marcados na fase em andamento e esquecidos em fases concluídas.' },
+  { id: 'base', nome: 'Base geral', titulo: 'Base de <em>alunos</em>', desc: 'Todos os dados do aluno. Clique no nome para abrir a ficha e editar.' },
+  { id: 'checklist', nome: 'Checklist', titulo: 'Checklist das <em>fases</em>', desc: '✓ concluída · … em andamento · ! a fazer · — não faz parte da jornada.' },
+  { id: 'proxima', nome: 'Próxima chamada', titulo: 'Próxima <em>chamada</em>', desc: 'Alunos agrupados pela fase em andamento na jornada.' },
+  { id: 'batata', nome: 'Batata quente', titulo: 'Batata <em>quente</em>', desc: 'Com quem está a bola, segundo a equipe. Para o cálculo automático, veja Pendências.' },
+  { id: 'livros', nome: 'Livros', titulo: 'Livro de <em>presente</em>', desc: 'Envio do livro. Prazo vencido aparece em rosa.' },
+  { id: 'senioridade', nome: 'Senioridade', titulo: 'Senioridade dos <em>alunos</em>', desc: 'Nível técnico de cada aluno.' },
+  { id: 'servico', nome: 'Tipo de serviço', titulo: 'Tipo de <em>serviço</em>', desc: 'Programa contratado e status.' },
+  { id: 'resultados', nome: 'Resultados', titulo: 'Resultados dos <em>alunos</em>', desc: 'Momento no mercado: estudando, recebendo recrutadores, em processos.' },
+  { id: 'acompanhamento', nome: 'Acompanhamento semanal', titulo: 'Acompanhamento <em>semanal</em>', desc: 'Os 13 acompanhamentos. Clique numa casa para marcar; o ponto laranja indica que há nota. As notas ficam na ficha do aluno.' },
+  { id: 'aniversarios', nome: 'Aniversários', titulo: '<em>Aniversários</em>', desc: 'A partir do mês atual.' },
+  { id: 'semana', nome: 'Semana atual', titulo: 'Semana <em>atual</em>', desc: 'Semana da mentoria, preenchida pela equipe na ficha do aluno.' },
+  { id: 'timeline', nome: 'Timeline', titulo: '<em>Linha do tempo</em>', desc: 'Início e término de cada aluno. A linha rosa é hoje; sombra rosa = término já passou.' },
+];
+
+const estado = { senha: '', alunos: [], visao: 'pendencias', programa: '', status: 'acomp', busca: '', filtroResp: null, soPendentes: true, carregadoEm: null };
 const $ = (s) => document.querySelector(s);
 
 /* ---------- utilitários ---------- */
 function esc(s) {
   return String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
+function dataISO(s) { const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(s || ''); return m ? new Date(+m[1], +m[2] - 1, +m[3]) : null; }
+function fmt(s, curta) { const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(s || ''); return m ? (curta ? m[3] + '/' + m[2] : m[3] + '/' + m[2] + '/' + m[1]) : (s || ''); }
+function hojeISO() { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
 function lerLista(txt) {
   if (Array.isArray(txt)) return txt;
   return String(txt || '').split(/\r?\n/).map((l) => l.trim()).filter((l) => l && !/^nada$/i.test(l)).map((l) => ({
-    feito: /^\[x\]/i.test(l),
-    texto: l.replace(/^\[\s*x?\s*\]\s*/i, ''),
+    feito: /^\[x\]/i.test(l), texto: l.replace(/^\[\s*x?\s*\]\s*/i, ''),
   }));
 }
 const escreverLista = (lista) => lista.map((e) => (e.feito ? '[x] ' : '[ ] ') + e.texto).join('\n');
@@ -248,12 +389,14 @@ const paraPlanilha = (c) => ({
   id: c.id, fase: c.fase, descricao: c.descricao, call: c.call, status: c.status, ordem: c.ordem, prazo: c.prazo,
   aluno: escreverLista(c.aluno), mentora: escreverLista(c.mentora), equipe: escreverLista(c.equipe),
 });
-const ehDti = (a) => /destrava/i.test(a.programa || '');
+function progClasse(p) { return /destrava/i.test(p) ? ' prog--dti' : /plano/i.test(p) ? ' prog--plano' : ''; }
+function chipProg(a) { return '<span class="prog' + progClasse(a.programa) + '">' + esc(a.programa || 'Sem programa') + '</span>'; }
 function responsavel(card, grupo) {
   if (grupo === 'aluno') return 'aluno';
   if (grupo === 'equipe') return 'assistente';
   return /\bmai\b/i.test(card.call + ' ' + card.fase) ? 'mai' : 'alana';
 }
+const d = (a, k) => (a.dados && a.dados[k] != null ? a.dados[k] : '');
 
 let toastTimer;
 function toast(msg, erro) {
@@ -268,9 +411,21 @@ function toast(msg, erro) {
 const ICONE_CHECK = '<svg width="10" height="10" viewBox="0 0 12 12" aria-hidden="true"><path d="M1.5 6.5l3 3 6-7" fill="none" stroke="#ebe8e3" stroke-width="2.4"/></svg>';
 const ICONE_OK = '<svg width="14" height="14" viewBox="0 0 12 12" aria-hidden="true"><path d="M1.5 6.5l3 3 6-7" fill="none" stroke="#fd7528" stroke-width="2.2"/></svg>';
 
-/* ---------- cálculo das pendências ----------
-   Gera, para cada aluno, a lista de itens pendentes com o responsável de cada um.
-   Itens marcados nesta sessão continuam visíveis (riscados) até a próxima atualização. */
+/* ---------- filtros ---------- */
+function filtrados() {
+  const termo = estado.busca.trim().toLowerCase();
+  return estado.alunos.filter((a) => {
+    if (estado.programa && a.programa !== estado.programa) return false;
+    const st = d(a, 'status');
+    if (estado.status === 'acomp' && !EM_ACOMP.includes(st)) return false;
+    if (estado.status && estado.status !== 'acomp' && st !== estado.status) return false;
+    if (termo && !a.nome.toLowerCase().includes(termo)) return false;
+    return true;
+  });
+}
+const faseAtual = (a) => (a.cards || []).find((c) => c.status === 'Em andamento') || (a.cards || []).find((c) => c.status === 'Próxima');
+
+/* ---------- pendências ---------- */
 function pendencias(a) {
   const out = [];
   (a.cards || []).forEach((c) => {
@@ -287,109 +442,365 @@ function pendencias(a) {
 }
 const abertas = (lista) => lista.filter((p) => !p.item.feito);
 
-/* ---------- renderização ---------- */
-function render() {
-  const alunosProg = estado.alunos.filter((a) => estado.programa === 'todos' || (estado.programa === 'dti') === ehDti(a));
-  const ativos = alunosProg.filter((a) => !a.erro);
-
-  // resumo por responsável
-  $('#resumo').innerHTML = RESP.map((r) => {
+function visaoPendencias(lista) {
+  const ativos = lista.filter((a) => a.cards && a.cards.length && !a.erro);
+  let html = '<section class="resumo" aria-label="Pendências por responsável">' + RESP.map((r) => {
     let itens = 0, esq = 0;
-    const comAlunos = new Set();
-    ativos.forEach((a) => {
-      abertas(pendencias(a)).filter((p) => p.resp === r.id).forEach((p) => {
-        itens++; if (p.esquecido) esq++; comAlunos.add(a.j || a.nome);
-      });
-    });
+    const com = new Set();
+    ativos.forEach((a) => abertas(pendencias(a)).filter((p) => p.resp === r.id).forEach((p) => { itens++; if (p.esquecido) esq++; com.add(a.linha || a.nome); }));
     return '<button type="button" class="resp r-' + r.id + '" data-resp="' + r.id + '" aria-pressed="' + (estado.filtroResp === r.id) + '">'
-      + '<span class="resp-nome">' + r.nome + '</span>'
-      + '<span class="resp-num">' + itens + '</span>'
-      + '<span class="resp-det">' + (itens === 1 ? 'pendência' : 'pendências') + ' em <b>' + comAlunos.size + '</b> ' + (comAlunos.size === 1 ? 'aluno' : 'alunos')
-      + (esq ? ' · <span class="esq">' + esq + ' esquecida' + (esq === 1 ? '' : 's') + '</span>' : '') + '</span>'
-      + '</button>';
-  }).join('');
+      + '<span class="resp-nome">' + r.nome + '</span><span class="resp-num">' + itens + '</span>'
+      + '<span class="resp-det">' + (itens === 1 ? 'pendência' : 'pendências') + ' em <b>' + com.size + '</b> ' + (com.size === 1 ? 'aluno' : 'alunos')
+      + (esq ? ' · <span class="esq">' + esq + ' esquecida' + (esq === 1 ? '' : 's') + '</span>' : '') + '</span></button>';
+  }).join('') + '</section>';
+  html += '<label class="check so-pend"><input type="checkbox" id="so-pendentes"' + (estado.soPendentes ? ' checked' : '') + '> Só alunos com pendência</label>';
 
-  const hora = estado.carregadoEm ? estado.carregadoEm.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '';
-  $('#kicker').textContent = ativos.length + (ativos.length === 1 ? ' aluno' : ' alunos') + (estado.programa === 'todos' ? '' : estado.programa === 'dti' ? ' · Destrava TI' : ' · Do Zero à TI');
-  $('#atualizado').textContent = hora ? 'Atualizado às ' + hora : '';
-  $('#limpar').hidden = !estado.filtroResp && !estado.busca;
-
-  // lista
-  const termo = estado.busca.trim().toLowerCase();
-  const linhas = alunosProg
-    .filter((a) => !termo || a.nome.toLowerCase().includes(termo))
+  const linhas = lista
+    .filter((a) => a.cards && a.cards.length || a.erro)
     .map((a) => {
       const todas = a.erro ? [] : pendencias(a);
-      const visiveis = estado.filtroResp ? todas.filter((p) => p.resp === estado.filtroResp) : todas;
-      return { a, visiveis, nAbertas: abertas(visiveis).length };
+      const vis = estado.filtroResp ? todas.filter((p) => p.resp === estado.filtroResp) : todas;
+      return { a, vis, n: abertas(vis).length };
     })
-    .filter((x) => x.a.erro ? !estado.filtroResp : (!estado.soPendentes && !estado.filtroResp) || x.visiveis.length)
-    .sort((x, y) => y.nAbertas - x.nAbertas || x.a.nome.localeCompare(y.a.nome, 'pt-BR'));
-
-  $('#lista').innerHTML = linhas.length ? linhas.map(linhaAluno).join('')
-    : '<p class="vazio">' + (estado.alunos.length ? 'Nenhum aluno com pendência para esse filtro.' : 'Nenhum aluno com jornada gerada ainda. Gere a primeira na planilha Alunos DZTI.') + '</p>';
+    .filter((x) => x.a.erro ? !estado.filtroResp : (!estado.soPendentes && !estado.filtroResp) || x.vis.length)
+    .sort((x, y) => y.n - x.n || x.a.nome.localeCompare(y.a.nome, 'pt-BR'));
+  html += '<section class="lista">' + (linhas.length ? linhas.map(linhaPendencia).join('') : '<p class="vazio">Nenhum aluno com pendência para esse filtro.</p>') + '</section>';
+  html += '<p class="nota">Itens de "Mentoria entrega" contam para a Mai quando a fase tem call com a Mai; nas outras fases, para a Alana. Clique num item para marcar como feito: a mudança vai para a planilha do aluno.</p>';
+  return html;
 }
 
-function linhaAluno({ a, visiveis }) {
+function linhaPendencia({ a, vis }) {
   const idx = estado.alunos.indexOf(a);
-  const dti = ehDti(a);
   const cards = a.cards || [];
-  const atual = cards.find((c) => c.status === 'Em andamento') || cards.find((c) => c.status === 'Próxima');
+  const atual = faseAtual(a);
   const feitas = cards.filter((c) => c.status === 'Concluída').length;
-  const link = a.link || (a.j ? SITE_JORNADA + '?j=' + a.j : '');
-
-  let info = '<div class="aluno-info">'
-    + '<h2 class="aluno-nome">' + esc(a.nome) + '</h2>'
-    + '<span class="prog' + (dti ? ' prog--dti' : '') + '">' + (dti ? 'Destrava TI' : 'Do Zero à TI') + '</span>';
+  let info = '<div class="aluno-info"><button type="button" class="aluno-nome" data-ficha="' + idx + '">' + esc(a.nome) + '</button>' + chipProg(a);
   if (!a.erro) {
     info += '<p class="fase-atual">' + (atual ? 'Fase ' + (cards.indexOf(atual) + 1) + ' de ' + cards.length + ': <b>' + esc(atual.fase) + '</b>' : '<b>Jornada concluída</b>') + '</p>'
       + '<div class="barra" aria-label="' + feitas + ' de ' + cards.length + ' fases concluídas">'
       + cards.map((c) => '<i class="' + (c.status === 'Concluída' ? 'f' : c.status === 'Em andamento' ? 'a' : '') + '"></i>').join('') + '</div>';
   }
-  info += '<div class="links">' + (link ? '<a href="' + esc(link) + '" target="_blank" rel="noopener">Abrir jornada ↗</a>' : '')
-    + (a.planilha ? '<a href="' + esc(a.planilha) + '" target="_blank" rel="noopener">Planilha ↗</a>' : '') + '</div></div>';
-
+  info += linksAluno(a) + '</div>';
   let pend = '<div class="aluno-pend">';
-  if (a.erro) {
-    pend += '<p class="erro-aluno">Não foi possível ler a jornada: ' + esc(a.erro) + '</p>';
-  } else if (!visiveis.length) {
-    pend += '<p class="ok-tudo">' + ICONE_OK + 'Nenhuma pendência.</p>';
-  } else {
-    RESP.forEach((r) => {
-      const meus = visiveis.filter((p) => p.resp === r.id);
-      if (!meus.length) return;
-      pend += '<div class="grupo"><span class="grupo-rot r-' + r.id + '">' + r.nome + '</span><ul class="itens">'
-        + meus.map((p) => '<li><button type="button" class="item' + (p.item.feito ? ' feito' : '') + '" aria-pressed="' + p.item.feito + '" '
-          + 'data-a="' + idx + '" data-c="' + esc(p.card.id) + '" data-g="' + p.grupo + '" data-i="' + p.i + '">'
-          + '<span class="caixa">' + (p.item.feito ? ICONE_CHECK : '') + '</span>'
-          + '<span><span class="txt">' + esc(p.item.texto) + '</span>'
-          + '<span class="onde">' + (p.esquecido ? '<span class="esq">Esquecido</span> · ' : '') + esc(p.card.fase) + '</span></span>'
-          + '</button></li>').join('')
-        + '</ul></div>';
-    });
+  if (a.erro) pend += '<p class="erro-aluno">Não foi possível ler a jornada: ' + esc(a.erro) + '</p>';
+  else if (!vis.length) pend += '<p class="ok-tudo">' + ICONE_OK + 'Nenhuma pendência.</p>';
+  else RESP.forEach((r) => {
+    const meus = vis.filter((p) => p.resp === r.id);
+    if (!meus.length) return;
+    pend += '<div class="grupo"><span class="grupo-rot r-' + r.id + '">' + r.nome + '</span><ul class="itens">'
+      + meus.map((p) => '<li><button type="button" class="item' + (p.item.feito ? ' feito' : '') + '" aria-pressed="' + p.item.feito + '" '
+        + 'data-a="' + idx + '" data-c="' + esc(p.card.id) + '" data-g="' + p.grupo + '" data-i="' + p.i + '">'
+        + '<span class="caixa">' + (p.item.feito ? ICONE_CHECK : '') + '</span>'
+        + '<span><span class="txt">' + esc(p.item.texto) + '</span><span class="onde">' + (p.esquecido ? '<span class="esq">Esquecido</span> · ' : '') + esc(p.card.fase) + '</span></span>'
+        + '</button></li>').join('') + '</ul></div>';
+  });
+  return '<article class="aluno">' + info + pend + '</div></article>';
+}
+
+function linksAluno(a) {
+  const link = a.link || (a.j ? SITE_JORNADA + '?j=' + a.j : '');
+  return '<div class="links">' + (link ? '<a href="' + esc(link) + '" target="_blank" rel="noopener">Abrir jornada ↗</a>' : '')
+    + (a.planilha ? '<a href="' + esc(a.planilha) + '" target="_blank" rel="noopener">Planilha ↗</a>' : '') + '</div>';
+}
+
+/* ---------- quadro em colunas (visões do tipo board) ---------- */
+function quadro(colunas, extra, opts) {
+  opts = opts || {};
+  if (!colunas.some((c) => c.itens.length)) return '<p class="vazio">Nenhum aluno para esse filtro.</p>';
+  return '<div class="quadro">' + colunas.filter((c) => c.itens.length || !opts.ocultarVazias).map((c, i) =>
+    '<div class="col' + (c.tom != null ? ' tons-' + c.tom : '') + (c.destaque ? ' hoje' : '') + '"><div class="col-cab"><span>' + esc(c.titulo) + '</span><span class="conta">' + c.itens.length + '</span></div>'
+    + '<div class="col-corpo">' + (c.itens.length ? c.itens.map((a) => cartao(a, extra)).join('') : '<p class="col-vazia">—</p>') + '</div></div>').join('') + '</div>';
+}
+function cartao(a, extra) {
+  const idx = estado.alunos.indexOf(a);
+  const x = extra ? extra(a) : '';
+  return '<button type="button" class="cartao" data-ficha="' + idx + '"><b>' + esc(a.nome) + '</b><span class="linha-chips">' + chipProg(a)
+    + (d(a, 'status') && d(a, 'status') !== 'Ativo' ? '<span class="chip">' + esc(d(a, 'status')) + '</span>' : '') + '</span>' + (x ? '<span class="extra">' + x + '</span>' : '') + '</button>';
+}
+function agrupar(lista, chave, opcoes, rotuloVazio) {
+  const cols = opcoes.map((o) => ({ titulo: o, itens: [] }));
+  const vazio = { titulo: rotuloVazio, itens: [] };
+  lista.forEach((a) => {
+    const v = typeof chave === 'function' ? chave(a) : d(a, chave);
+    const c = cols.find((x) => x.titulo === v);
+    (c || vazio).itens.push(a);
+  });
+  return cols.concat(vazio.itens.length ? [vazio] : []);
+}
+const porNome = (x, y) => x.nome.localeCompare(y.nome, 'pt-BR');
+const corte = (s, n) => { s = String(s || ''); return s.length > n ? s.slice(0, n - 1) + '…' : s; };
+
+function visaoProxima(lista) {
+  const fases = {};
+  const sem = [];
+  lista.forEach((a) => {
+    const andam = (a.cards || []).filter((c) => c.status === 'Em andamento');
+    if (!andam.length) { sem.push(a); return; }
+    andam.forEach((c) => { (fases[c.fase] = fases[c.fase] || []).push(a); });
+  });
+  const nomes = Object.keys(fases).sort((x, y) => (FASES_ORDEM.indexOf(x) + 99) % 99 - (FASES_ORDEM.indexOf(y) + 99) % 99);
+  const cols = nomes.map((n, i) => ({ titulo: n, itens: fases[n].sort(porNome), tom: i % 4 }));
+  if (sem.length) cols.push({ titulo: 'Sem fase em andamento', itens: sem.sort(porNome) });
+  return quadro(cols, (a) => d(a, 'proximo_contato') ? 'Próximo contato: <strong>' + fmt(d(a, 'proximo_contato'), true) + '</strong>' : '');
+}
+
+function visaoBatata(lista) {
+  const cols = agrupar(lista.sort(porNome), 'batata', OPCOES.batata, 'Sem batata quente');
+  cols.forEach((c, i) => { if (i < 3) c.tom = [1, 2, 3][i]; });
+  return quadro(cols, (a) => esc(corte(d(a, 'batata_notas') || d(a, 'proximo_passo'), 150)));
+}
+
+function visaoLivros(lista) {
+  const hoje = hojeISO();
+  const cols = agrupar(lista.sort(porNome), 'livro', OPCOES.livro, 'Sem informação');
+  return quadro(cols, (a) => {
+    const ate = d(a, 'livro_ate'), env = d(a, 'livro_enviado');
+    if (env) return 'Enviado em <strong>' + fmt(env) + '</strong>';
+    if (ate && d(a, 'livro') === 'Enviar') return (ate < hoje ? '<span class="chip chip--alerta">Atrasado</span> ' : '') + 'Enviar até <strong>' + fmt(ate) + '</strong>';
+    return '';
+  });
+}
+
+function visaoSenioridade(lista) {
+  return quadro(agrupar(lista.sort(porNome), 'nivel', OPCOES.nivel.slice().reverse(), 'Sem nível'), (a) => esc(d(a, 'ingles')));
+}
+
+function visaoServico(lista) {
+  const ordemSt = (a) => (OPCOES.status.indexOf(d(a, 'status')) + 99) % 99;
+  const cols = agrupar(lista.sort((x, y) => ordemSt(x) - ordemSt(y) || porNome(x, y)), (a) => a.programa, OPCOES.programa, 'Sem programa');
+  return quadro(cols, (a) => {
+    const t = d(a, 'termino');
+    return '<span class="chip">' + esc(d(a, 'status') || 'Sem status') + '</span>' + (t ? ' até ' + fmt(t) : '');
+  });
+}
+
+function visaoResultados(lista) {
+  const cols = agrupar(lista.sort(porNome), 'momento', OPCOES.momento, 'Sem informação');
+  cols.forEach((c, i) => { c.tom = [null, 3, 2, 1][i]; });
+  return quadro(cols, (a) => [d(a, 'nivel'), d(a, 'ingles')].filter(Boolean).map(esc).join(' · '));
+}
+
+function visaoAniversarios(lista) {
+  const m0 = new Date().getMonth();
+  const cols = [];
+  for (let k = 0; k < 12; k++) {
+    const m = (m0 + k) % 12;
+    const itens = lista.filter((a) => { const dt = dataISO(d(a, 'aniversario')); return dt && dt.getMonth() === m; })
+      .sort((x, y) => dataISO(d(x, 'aniversario')).getDate() - dataISO(d(y, 'aniversario')).getDate());
+    cols.push({ titulo: MESES[m], itens, destaque: k === 0 });
   }
-  pend += '</div>';
-  return '<article class="aluno">' + info + pend + '</article>';
+  const sem = lista.filter((a) => !dataISO(d(a, 'aniversario')));
+  if (sem.length) cols.push({ titulo: 'Sem data', itens: sem.sort(porNome) });
+  return quadro(cols, (a) => { const v = d(a, 'aniversario'); return v ? 'Dia <strong>' + fmt(v, true) + '</strong>' : ''; }, { ocultarVazias: true });
+}
+
+function visaoSemana(lista) {
+  const num = (s) => { const m = /(\d{1,2})\s*\/\s*13/.exec(s || ''); return m ? +m[1] : 99; };
+  const valores = [...new Set(lista.map((a) => d(a, 'semana')).filter(Boolean))].sort((x, y) => num(x) - num(y) || x.localeCompare(y));
+  const cols = agrupar(lista.sort(porNome), 'semana', valores, 'Sem semana');
+  return quadro(cols, (a) => { const f = faseAtual(a); return f ? 'Fase: <strong>' + esc(f.fase) + '</strong>' : ''; });
+}
+
+/* ---------- tabelas ---------- */
+function visaoBase(lista) {
+  if (!lista.length) return '<p class="vazio">Nenhum aluno para esse filtro.</p>';
+  const cols = [
+    ['Programa', (a) => chipProg(a), 'curto'], ['Status', (a) => esc(d(a, 'status')), 'curto'], ['Momento', (a) => esc(d(a, 'momento')), 'curto'],
+    ['Nível', (a) => esc(d(a, 'nivel')), 'curto'], ['Fase atual', (a) => { const f = faseAtual(a); return f ? esc(f.fase) : (a.planilha ? 'Concluída' : '—'); }, 'curto'],
+    ['Semana', (a) => esc(d(a, 'semana')), 'curto'], ['Batata', (a) => esc(d(a, 'batata')), 'curto'],
+    ['Início', (a) => fmt(a.inicio), 'num'], ['Término', (a) => fmt(d(a, 'termino')), 'num'], ['Próx. contato', (a) => fmt(d(a, 'proximo_contato')), 'num'],
+    ['Próximo passo', (a) => esc(corte(d(a, 'proximo_passo'), 180)), 'texto'],
+  ];
+  return '<div class="tabela-box"><table><thead><tr><th class="nome">Aluno</th>' + cols.map((c) => '<th>' + c[0] + '</th>').join('') + '</tr></thead><tbody>'
+    + lista.sort(porNome).map((a) => '<tr><td class="nome"><button type="button" data-ficha="' + estado.alunos.indexOf(a) + '">' + esc(a.nome) + '</button></td>'
+      + cols.map((c) => '<td class="' + c[2] + '">' + c[1](a) + '</td>').join('') + '</tr>').join('') + '</tbody></table></div>';
+}
+
+function visaoChecklist(lista) {
+  const comJornada = lista.filter((a) => a.cards && a.cards.length);
+  if (!comJornada.length) return '<p class="vazio">Nenhum aluno com jornada para esse filtro.</p>';
+  const extras = [];
+  comJornada.forEach((a) => a.cards.forEach((c) => { if (!FASES_ORDEM.includes(c.fase) && !extras.includes(c.fase)) extras.push(c.fase); }));
+  const fases = FASES_ORDEM.concat(extras);
+  const sim = (a, f) => {
+    const c = a.cards.find((x) => x.fase === f);
+    if (!c) return '<td class="sim sim-x" title="Não faz parte da jornada">—</td>';
+    if (c.status === 'Concluída') return '<td class="sim sim-f" title="Concluída">✓</td>';
+    if (c.status === 'Em andamento') return '<td class="sim sim-a" title="Em andamento">…</td>';
+    return '<td class="sim sim-p" title="A fazer">!</td>';
+  };
+  return '<div class="tabela-box"><table><thead><tr><th class="nome">Aluno</th><th>Programa</th>' + fases.map((f) => '<th title="' + esc(f) + '">' + esc(FASES_CURTAS[f] || f) + '</th>').join('')
+    + '</tr></thead><tbody>' + comJornada.sort(porNome).map((a) => '<tr><td class="nome"><button type="button" data-ficha="' + estado.alunos.indexOf(a) + '">' + esc(a.nome) + '</button></td><td class="curto">' + chipProg(a) + '</td>'
+      + fases.map((f) => sim(a, f)).join('') + '</tr>').join('') + '</tbody></table></div>';
+}
+
+function visaoAcompanhamento(lista) {
+  if (!lista.length) return '<p class="vazio">Nenhum aluno para esse filtro.</p>';
+  const nums = Array.from({ length: 13 }, (_, i) => i + 1);
+  return '<div class="tabela-box"><table><thead><tr><th class="nome">Aluno</th><th>Feitos</th><th>Semana</th><th>Acompanhamentos 1 a 13</th></tr></thead><tbody>'
+    + lista.sort(porNome).map((a) => {
+      const idx = estado.alunos.indexOf(a);
+      const feitos = nums.filter((n) => d(a, 'ac' + n) === true).length;
+      return '<tr><td class="nome"><button type="button" data-ficha="' + idx + '">' + esc(a.nome) + '</button></td><td class="num">' + feitos + '/13</td><td class="curto">' + esc(d(a, 'semana')) + '</td><td><div class="acs">'
+        + nums.map((n) => {
+          const on = d(a, 'ac' + n) === true, nota = d(a, 'ac' + n + '_nota');
+          return '<button type="button" class="acb' + (on ? ' on' : '') + (nota ? ' nota' : '') + '" data-ac="' + n + '" data-a="' + idx + '" aria-pressed="' + on + '" title="Ac ' + n + '/13' + (nota ? ': ' + esc(corte(nota, 160)) : '') + '">' + n + '</button>';
+        }).join('') + '</div></td></tr>';
+    }).join('') + '</tbody></table></div>';
+}
+
+function visaoTimeline(lista) {
+  const com = lista.map((a) => ({ a, i: dataISO(a.inicio), t: dataISO(d(a, 'termino')) })).filter((x) => x.i);
+  if (!com.length) return '<p class="vazio">Nenhum aluno com data de início para esse filtro.</p>';
+  com.forEach((x) => { if (!x.t) { x.t = new Date(x.i); x.t.setMonth(x.t.getMonth() + 6); x.estimado = true; } });
+  let min = new Date(Math.min(...com.map((x) => x.i))), max = new Date(Math.max(...com.map((x) => x.t), Date.now()));
+  min = new Date(min.getFullYear(), min.getMonth(), 1); max = new Date(max.getFullYear(), max.getMonth() + 1, 1);
+  const total = max - min;
+  const pct = (dt) => ((dt - min) / total * 100).toFixed(2) + '%';
+  const meses = [];
+  for (let m = new Date(min); m < max; m.setMonth(m.getMonth() + 1)) meses.push(new Date(m));
+  const hoje = new Date();
+  return '<div class="tl"><div class="tl-grade"><div class="tl-meses" style="grid-template-columns:repeat(' + meses.length + ',1fr)">'
+    + meses.map((m) => '<span>' + MESES[m.getMonth()].slice(0, 3) + (m.getMonth() === 0 || m === meses[0] ? ' ' + String(m.getFullYear()).slice(2) : '') + '</span>').join('') + '</div>'
+    + com.sort((x, y) => x.i - y.i).map((x) => {
+      const cls = /destrava/i.test(x.a.programa) ? ' dti' : /plano/i.test(x.a.programa) ? ' plano' : '';
+      const atras = x.t < hoje && EM_ACOMP.includes(d(x.a, 'status')) && d(x.a, 'status') !== '';
+      return '<div class="tl-linha"><div class="tl-nome"><button type="button" data-ficha="' + estado.alunos.indexOf(x.a) + '">' + esc(x.a.nome) + '</button></div><div class="tl-trilho">'
+        + '<div class="tl-barra' + cls + (atras ? ' atrasado' : '') + '" style="left:' + pct(x.i) + ';width:calc(' + pct(x.t) + ' - ' + pct(x.i) + ')" title="' + fmt(x.a.inicio) + ' → ' + (x.estimado ? '(sem término)' : fmt(d(x.a, 'termino'))) + '">'
+        + fmt(x.a.inicio, true) + ' → ' + (x.estimado ? '?' : fmt(d(x.a, 'termino'), true)) + '</div></div></div>';
+    }).join('')
+    + '<div class="tl-hoje" style="left:calc(200px + (100% - 200px) * ' + ((hoje - min) / total).toFixed(4) + ')" title="Hoje"></div>'
+    + '</div></div>';
+}
+
+/* ---------- render ---------- */
+function render() {
+  const v = VISOES.find((x) => x.id === estado.visao) || VISOES[0];
+  $('#abas').innerHTML = VISOES.map((x) => '<button type="button" role="tab" class="aba" data-visao="' + x.id + '" aria-selected="' + (x.id === v.id) + '">' + x.nome + '</button>').join('');
+  $('#titulo-visao').innerHTML = v.titulo;
+  $('#desc-visao').textContent = v.desc;
+  const lista = filtrados();
+  const hora = estado.carregadoEm ? estado.carregadoEm.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '';
+  $('#kicker').textContent = lista.length + (lista.length === 1 ? ' aluno' : ' alunos') + ' no filtro · ' + estado.alunos.length + ' no total';
+  $('#atualizado').textContent = hora ? 'Atualizado às ' + hora : '';
+  $('#limpar').hidden = !estado.programa && estado.status === 'acomp' && !estado.busca && !estado.filtroResp;
+  const fn = {
+    pendencias: visaoPendencias, base: visaoBase, checklist: visaoChecklist, proxima: visaoProxima, batata: visaoBatata, livros: visaoLivros,
+    senioridade: visaoSenioridade, servico: visaoServico, resultados: visaoResultados, acompanhamento: visaoAcompanhamento,
+    aniversarios: visaoAniversarios, semana: visaoSemana, timeline: visaoTimeline,
+  }[v.id];
+  $('#visao').innerHTML = fn(lista.slice());
+}
+
+function irPara(id) {
+  if (!VISOES.some((x) => x.id === id)) id = 'pendencias';
+  estado.visao = id;
+  try { if (location.hash !== '#' + id) history.replaceState(null, '', '#' + id); } catch (_) {}
+  render();
+}
+
+/* ---------- ficha do aluno ---------- */
+let fichaIdx = null;
+function campo(id, rotulo, valor, tipo, opcoes, classe) {
+  const nome = 'fc-' + id;
+  let input;
+  if (tipo === 'lista') input = '<select id="' + nome + '" data-k="' + id + '"><option value=""></option>' + opcoes.map((o) => '<option' + (o === valor ? ' selected' : '') + '>' + esc(o) + '</option>').join('')
+    + (valor && !opcoes.includes(valor) ? '<option selected>' + esc(valor) + '</option>' : '') + '</select>';
+  else if (tipo === 'data') input = '<input id="' + nome + '" data-k="' + id + '" type="date" value="' + esc(/^\d{4}-\d{2}-\d{2}$/.test(valor) ? valor : '') + '">';
+  else if (tipo === 'area') input = '<textarea id="' + nome + '" data-k="' + id + '"' + (classe === 'alto' ? ' class="alto"' : '') + '>' + esc(valor) + '</textarea>';
+  else if (tipo === 'leitura') input = '<input id="' + nome + '" value="' + esc(valor) + '" readonly>';
+  else input = '<input id="' + nome + '" data-k="' + id + '" value="' + esc(valor) + '"' + (opcoes ? ' list="' + opcoes + '"' : '') + '>';
+  return '<div class="campo' + (tipo === 'area' ? ' largo' : '') + '"><label for="' + nome + '">' + rotulo + '</label>' + input + '</div>';
+}
+
+function abrirFicha(idx) {
+  const a = estado.alunos[idx];
+  if (!a) return;
+  fichaIdx = idx;
+  const semanas = [...new Set(estado.alunos.map((x) => d(x, 'semana')).filter(Boolean))];
+  const f = (k) => d(a, k);
+  let html = '<div class="ficha-topo"><div><p class="kicker">' + esc(a.programa || 'Sem programa') + (f('status') ? ' · ' + esc(f('status')) : '') + '</p><h2>' + esc(a.nome) + '</h2></div>' + linksAluno(a) + '</div>'
+    + '<datalist id="dl-semanas">' + semanas.map((s) => '<option value="' + esc(s) + '">').join('') + '</datalist>'
+    + '<section><h3>Perfil</h3><div class="campos">'
+    + campo('programa', 'Programa', a.programa, 'leitura') + campo('email', 'E-mail', a.email, 'texto') + campo('objetivo', 'Objetivo', a.objetivo, 'texto')
+    + campo('inicio', 'Início', a.inicio, 'data') + campo('termino', 'Término', f('termino'), 'data') + campo('status', 'Status', f('status'), 'lista', OPCOES.status)
+    + campo('momento', 'Momento', f('momento'), 'lista', OPCOES.momento) + campo('nivel', 'Nível técnico', f('nivel'), 'lista', OPCOES.nivel)
+    + campo('ingles', 'Nível de inglês', f('ingles'), 'lista', OPCOES.ingles) + campo('semana', 'Semana', f('semana'), 'texto', 'dl-semanas')
+    + campo('batata', 'Batata quente', f('batata'), 'lista', OPCOES.batata) + campo('responsavel', 'Responsável', f('responsavel'), 'texto')
+    + campo('batata_notas', 'Batata quente (nota)', f('batata_notas'), 'texto')
+    + campo('aniversario', 'Aniversário', f('aniversario'), 'data') + campo('status_notas', 'Status (anotações)', f('status_notas'), 'area')
+    + '</div></section>'
+    + '<section><h3>Próximos passos</h3><div class="campos">' + campo('proximo_contato', 'Próximo contato', f('proximo_contato'), 'data')
+    + campo('proximo_passo', 'Próximo passo', f('proximo_passo'), 'area') + '</div></section>'
+    + '<section><h3>Livro e administrativo</h3><div class="campos">'
+    + campo('livro', 'Livro', f('livro'), 'lista', OPCOES.livro) + campo('livro_ate', 'Enviar livro até', f('livro_ate'), 'data') + campo('livro_enviado', 'Livro enviado em', f('livro_enviado'), 'data')
+    + campo('administrativo', 'Administrativo', f('administrativo'), 'texto') + campo('acessos', 'Acessos', f('acessos'), 'texto') + campo('entregavel', 'Entregável', f('entregavel'), 'texto')
+    + campo('revisao', 'Revisão (Alana)', f('revisao'), 'texto') + campo('live_coding', 'Live Coding', f('live_coding'), 'texto')
+    + '</div></section>'
+    + '<section><h3>Acompanhamento semanal</h3><div class="acomp-lista">'
+    + Array.from({ length: 13 }, (_, i) => i + 1).map((n) => '<div class="acomp-linha"><label><input type="checkbox" data-k="ac' + n + '"' + (f('ac' + n) === true ? ' checked' : '') + '> Ac ' + n + '/13</label>'
+      + '<input type="text" data-k="ac' + n + '_nota" value="' + esc(f('ac' + n + '_nota')) + '" aria-label="Nota do acompanhamento ' + n + '" placeholder="Nota"></div>').join('')
+    + '</div></section>'
+    + '<section><h3>Histórico</h3><div class="campos">' + campo('historico', 'Histórico do aluno', f('historico'), 'area', null, 'alto') + '</div></section>'
+    + '<div class="ficha-acoes"><span class="status-txt">Só os campos alterados são gravados.</span><div><button class="btn" type="button" id="ficha-fechar">Fechar</button><button class="btn btn--rosa" type="button" id="ficha-salvar">Salvar</button></div></div>';
+  $('#form-ficha').innerHTML = html;
+  const dlg = $('#ficha');
+  if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
+  dlg.scrollTop = 0;
+}
+function fecharFicha() { const dlg = $('#ficha'); if (dlg.close) dlg.close(); else dlg.removeAttribute('open'); fichaIdx = null; }
+
+function valorAtual(a, k) { return ['email', 'objetivo', 'inicio'].includes(k) ? (a[k] || '') : d(a, k); }
+async function salvarFicha() {
+  const a = estado.alunos[fichaIdx];
+  if (!a) return;
+  const mudou = {};
+  $('#form-ficha').querySelectorAll('[data-k]').forEach((el) => {
+    const k = el.dataset.k;
+    const v = el.type === 'checkbox' ? el.checked : el.value.trim();
+    const antes = valorAtual(a, k);
+    if (el.type === 'checkbox' ? v !== (antes === true) : v !== String(antes || '')) mudou[k] = v;
+  });
+  if (!Object.keys(mudou).length) { fecharFicha(); toast('Nada foi alterado'); return; }
+  const ok = await gravarAluno(a, mudou);
+  if (ok) fecharFicha();
+}
+
+async function gravarAluno(a, campos) {
+  const antes = JSON.parse(JSON.stringify({ dados: a.dados, email: a.email, objetivo: a.objetivo, inicio: a.inicio }));
+  Object.keys(campos).forEach((k) => { if (['email', 'objetivo', 'inicio'].includes(k)) a[k] = campos[k]; else a.dados[k] = campos[k]; });
+  render();
+  if (DEMO) { toast('Salvo · demonstração, nada foi gravado'); return true; }
+  try {
+    const r = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ acao: 'salvarAluno', senha: estado.senha, linha: a.linha, nome: a.nome, campos }) });
+    const res = await r.json();
+    if (!res.ok) throw new Error(res.erro === 'senha' ? 'senha incorreta' : res.erro);
+    toast('Salvo na planilha · ' + a.nome);
+    return true;
+  } catch (e) {
+    Object.assign(a, { email: antes.email, objetivo: antes.objetivo, inicio: antes.inicio, dados: antes.dados });
+    render();
+    toast('Não salvou: ' + (e.message || 'sem conexão') + '. A mudança foi desfeita.', true);
+    return false;
+  }
 }
 
 /* ---------- dados ---------- */
 function aplicar(alunos) {
-  estado.alunos = (alunos || []).map((a) => Object.assign({}, a, { cards: a.erro ? [] : normalizarCards(a.cards) }));
+  estado.alunos = (alunos || []).map((a) => Object.assign({ dados: {} }, a, { cards: a.erro || !a.cards ? [] : normalizarCards(a.cards) }));
   estado.carregadoEm = new Date();
   render();
 }
-
 async function buscar(senha) {
   if (DEMO) {
     if (senha !== SENHA_DEMO) throw new Error('senha');
     return JSON.parse(JSON.stringify(DEMO_DADOS));
   }
   const r = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ acao: 'painel', senha }) });
-  const d = await r.json();
-  if (!d.ok) throw new Error(d.erro || 'Erro desconhecido.');
-  return d.alunos;
+  const res = await r.json();
+  if (!res.ok) throw new Error(res.erro || 'Erro desconhecido.');
+  return res.alunos;
 }
-
 function guardarSenha(s) { try { if (s) sessionStorage.setItem('dzti-senha', s); else sessionStorage.removeItem('dzti-senha'); } catch (_) {} }
 function lerSenha() { try { return sessionStorage.getItem('dzti-senha') || ''; } catch (_) { return ''; } }
 
@@ -401,24 +812,17 @@ async function entrar(senha, silencioso) {
     const alunos = await buscar(senha);
     estado.senha = senha;
     guardarSenha(senha);
-    $('#login').hidden = true;
-    $('#painel').hidden = false;
-    $('#acoes').hidden = false;
+    $('#login').hidden = true; $('#painel').hidden = false; $('#acoes').hidden = false;
     aplicar(alunos);
   } catch (e) {
     guardarSenha('');
     $('#login').hidden = false;
     if (!silencioso) {
-      $('#login-erro').textContent = e.message === 'senha'
-        ? (DEMO ? 'Senha incorreta. Na demonstração, a senha é dzti.' : 'Senha incorreta.')
-        : 'Não foi possível carregar: ' + e.message;
+      $('#login-erro').textContent = e.message === 'senha' ? (DEMO ? 'Senha incorreta. Na demonstração, a senha é dzti.' : 'Senha incorreta.') : 'Não foi possível carregar: ' + e.message;
       $('#login-erro').hidden = false;
     }
-  } finally {
-    btn.disabled = false; btn.textContent = 'Entrar';
-  }
+  } finally { btn.disabled = false; btn.textContent = 'Entrar'; }
 }
-
 async function atualizar() {
   const b = $('#btn-atualizar');
   b.disabled = true; b.textContent = 'Atualizando…';
@@ -428,7 +832,6 @@ async function atualizar() {
     else toast('Não foi possível atualizar: ' + e.message, true);
   } finally { b.disabled = false; b.textContent = 'Atualizar'; }
 }
-
 function sair() {
   guardarSenha('');
   estado.senha = ''; estado.alunos = [];
@@ -442,18 +845,16 @@ async function alternarItem(btn) {
   const card = a.cards.find((c) => c.id === btn.dataset.c);
   const item = card && card[btn.dataset.g][Number(btn.dataset.i)];
   if (!item) return;
-  item.feito = !item.feito;
-  item.marcadoAgora = true;
+  item.feito = !item.feito; item.marcadoAgora = true;
   render();
   if (DEMO) { toast((item.feito ? 'Feito' : 'Reaberto') + ' · demonstração, nada foi gravado'); return; }
   try {
     const r = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ acao: 'salvar', j: a.j, senha: estado.senha, cards: a.cards.map(paraPlanilha) }) });
-    const d = await r.json();
-    if (!d.ok) throw new Error(d.erro === 'senha' ? 'senha incorreta' : d.erro);
+    const res = await r.json();
+    if (!res.ok) throw new Error(res.erro === 'senha' ? 'senha incorreta' : res.erro);
     toast((item.feito ? 'Feito' : 'Reaberto') + ' · salvo na planilha de ' + a.nome);
   } catch (e) {
-    item.feito = !item.feito;
-    render();
+    item.feito = !item.feito; render();
     toast('Não salvou: ' + (e.message || 'sem conexão') + '. A mudança foi desfeita.', true);
   }
 }
@@ -462,26 +863,34 @@ async function alternarItem(btn) {
 $('#login').addEventListener('submit', (e) => { e.preventDefault(); entrar($('#senha').value); });
 $('#btn-atualizar').addEventListener('click', atualizar);
 $('#btn-sair').addEventListener('click', sair);
-$('#resumo').addEventListener('click', (e) => {
-  const b = e.target.closest('.resp');
-  if (!b) return;
-  estado.filtroResp = estado.filtroResp === b.dataset.resp ? null : b.dataset.resp;
-  render();
-});
-$('#seg-programa').addEventListener('click', (e) => {
-  const b = e.target.closest('button');
-  if (!b) return;
-  estado.programa = b.dataset.prog;
-  document.querySelectorAll('#seg-programa button').forEach((x) => x.setAttribute('aria-pressed', x === b));
-  render();
-});
+$('#abas').addEventListener('click', (e) => { const b = e.target.closest('[data-visao]'); if (b) irPara(b.dataset.visao); });
+$('#f-programa').addEventListener('change', (e) => { estado.programa = e.target.value; render(); });
+$('#f-status').addEventListener('change', (e) => { estado.status = e.target.value; render(); });
 $('#busca').addEventListener('input', (e) => { estado.busca = e.target.value; render(); });
-$('#so-pendentes').addEventListener('change', (e) => { estado.soPendentes = e.target.checked; render(); });
-$('#limpar').addEventListener('click', () => { estado.filtroResp = null; estado.busca = ''; $('#busca').value = ''; render(); });
-$('#lista').addEventListener('click', (e) => { const b = e.target.closest('.item'); if (b) alternarItem(b); });
+$('#limpar').addEventListener('click', () => {
+  estado.programa = ''; estado.status = 'acomp'; estado.busca = ''; estado.filtroResp = null;
+  $('#f-programa').value = ''; $('#f-status').value = 'acomp'; $('#busca').value = ''; render();
+});
+$('#visao').addEventListener('click', (e) => {
+  const r = e.target.closest('.resp');
+  if (r) { estado.filtroResp = estado.filtroResp === r.dataset.resp ? null : r.dataset.resp; render(); return; }
+  const it = e.target.closest('.item');
+  if (it) { alternarItem(it); return; }
+  const ac = e.target.closest('.acb');
+  if (ac) { const a = estado.alunos[+ac.dataset.a]; gravarAluno(a, { ['ac' + ac.dataset.ac]: d(a, 'ac' + ac.dataset.ac) !== true }); return; }
+  const f = e.target.closest('[data-ficha]');
+  if (f) abrirFicha(+f.dataset.ficha);
+});
+$('#visao').addEventListener('change', (e) => { if (e.target.id === 'so-pendentes') { estado.soPendentes = e.target.checked; render(); } });
+$('#form-ficha').addEventListener('click', (e) => {
+  if (e.target.id === 'ficha-fechar') fecharFicha();
+  if (e.target.id === 'ficha-salvar') salvarFicha();
+});
+window.addEventListener('hashchange', () => { const h = location.hash.slice(1); if (h && h !== estado.visao && !$('#painel').hidden) irPara(h); });
 
 /* ---------- início ---------- */
 $('#aviso-demo').hidden = !DEMO;
+{ const h = location.hash.slice(1); if (VISOES.some((x) => x.id === h)) estado.visao = h; }
 const guardada = lerSenha();
 if (guardada) entrar(guardada, true); else $('#login').hidden = false;
 </script>
