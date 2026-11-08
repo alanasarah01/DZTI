@@ -1,0 +1,942 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Jornada DZTI</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,800;1,9..144,700&family=Space+Grotesk:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap">
+<style>
+/* Layout: barra da marca, cabeçalho do aluno com a trilha de fases, quadro em 3 colunas
+   (Próximas · Em andamento · Concluídas) que vira 1 coluna no celular.
+   Cada card separa o que o aluno faz, o que a mentoria entrega e o que a equipe entrega.
+   Visual único e claro da marca (bege, rosa de ação, sombras duras, bordas pretas). */
+:root{
+  --bege:#ebe8e3;
+  --bege2:#ddcfc7;
+  --rosa:#bb2649;
+  --laranja:#fd7528;
+  --azul:#344c92;
+  --preto:#000000;
+  --tinta:#1a1716;
+  --suave:#5e5450;
+  --f-display:'Fraunces', Georgia, 'Times New Roman', serif;
+  --f-body:'Space Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --f-mono:'Space Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  color-scheme: light;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bege);color:var(--tinta);font-family:var(--f-body);font-size:15px;line-height:1.5;margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--azul);outline-offset:2px}
+
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:0 56px}
+
+/* ---------- topo ---------- */
+.topo{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding-block:16px;border-bottom:1.5px solid var(--preto)}
+.marca{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.marca b{font-family:var(--f-display);font-weight:800;font-size:28px;letter-spacing:-.02em;line-height:1}
+.marca span{font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+.acoes{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.salvando{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--suave)}
+
+.btn{font-family:var(--f-mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;background:var(--bege);border:1.5px solid var(--preto);padding:9px 14px;box-shadow:3px 3px 0 var(--preto);cursor:pointer;transition:transform .12s, box-shadow .12s}
+.btn:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--preto)}
+.btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--preto)}
+.btn--rosa{background:var(--rosa);color:var(--bege)}
+.btn--preto{background:var(--preto);color:var(--bege)}
+.btn--texto{box-shadow:none;border-color:transparent;background:transparent;text-decoration:underline;text-underline-offset:3px;padding-inline:4px}
+.btn--texto:hover,.btn--texto:active{transform:none;box-shadow:none}
+
+.login{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding-block:14px;border-bottom:1.5px solid var(--preto)}
+.login label{font-family:var(--f-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase}
+.login input{border:1.5px solid var(--preto);background:var(--bege);padding:8px 10px;width:min(220px,100%)}
+.login .erro{color:var(--rosa);font-size:13px;flex-basis:100%;margin:0}
+
+.aviso{margin:16px 0 0;border:1.5px dashed var(--azul);color:var(--azul);padding:8px 12px;font-family:var(--f-mono);font-size:12px;letter-spacing:.04em;display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px}
+.aviso strong{font-weight:700}
+.aviso .btn--texto{color:var(--azul);font-size:12px;padding-block:4px}
+
+/* ---------- cabeçalho do aluno ---------- */
+.hero{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:20px 32px;align-items:end;padding-block:36px 8px}
+.kicker{font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--azul);margin:0 0 10px}
+.hero h1{font-family:var(--f-display);font-weight:800;font-size:clamp(40px,7vw,78px);line-height:.98;letter-spacing:-.025em;margin:0;text-wrap:balance}
+.objetivo{margin:14px 0 0;font-size:17px;max-width:62ch}
+.objetivo mark{background:linear-gradient(transparent 55%, rgba(253,117,40,.45) 55%);color:inherit;padding:0 2px}
+.faixa-box{display:flex;align-items:center;gap:6px;padding-bottom:6px;min-width:0;max-width:100%}
+.faixa{display:inline-block;background:var(--rosa);color:var(--bege);font-family:var(--f-display);font-style:italic;font-weight:700;font-size:clamp(17px,2.2vw,22px);line-height:1.2;padding:10px 18px;transform:rotate(-2deg);max-width:min(440px,100%);text-wrap:balance}
+.cursor{width:26px;height:26px;margin-top:26px;flex:none}
+
+.trilha-cab{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px;margin-top:28px;font-family:var(--f-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase}
+.trilha{overflow-x:auto;margin-top:10px;padding-bottom:6px}
+.trilha ol{list-style:none;margin:0;padding:0;display:grid;grid-auto-flow:column;grid-auto-columns:minmax(112px,1fr);gap:6px}
+.trilha li{display:grid;gap:6px;min-width:0}
+.trilha .barra{height:12px;border:1.5px solid var(--preto);background:var(--bege2)}
+.trilha li.feito .barra{background:var(--preto)}
+.trilha li.atual .barra{background:var(--rosa)}
+.trilha .rot{font-family:var(--f-mono);font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--suave);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.trilha li.atual .rot{color:var(--tinta);font-weight:700}
+
+/* ---------- quadro ---------- */
+.quadro{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:28px;align-items:start}
+.coluna{border:1.5px solid var(--preto);background:var(--bege2);min-width:0}
+.coluna-cab{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-bottom:1.5px solid var(--preto);font-family:var(--f-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase}
+.coluna[data-status="Em andamento"] .coluna-cab{background:var(--rosa);color:var(--bege)}
+.coluna[data-status="Concluída"] .coluna-cab{background:var(--preto);color:var(--bege)}
+.conta{font-variant-numeric:tabular-nums;border:1.5px solid currentColor;padding:1px 7px}
+.coluna-corpo{display:flex;flex-direction:column;gap:16px;padding:16px 16px 20px;min-height:120px}
+.vazio{font-family:var(--f-mono);font-size:12px;color:var(--suave);border:1.5px dashed var(--suave);padding:14px;text-align:center;margin:0}
+
+.card{position:relative;background:var(--bege);border:1.5px solid var(--preto);padding:14px 16px 16px;box-shadow:4px 4px 0 var(--preto);display:grid;gap:10px;min-width:0}
+.card--andamento{box-shadow:6px 6px 0 var(--rosa)}
+.card::before,.card::after{content:"";position:absolute;width:14px;height:14px;border:2px solid var(--preto);opacity:0;transition:opacity .15s;pointer-events:none}
+.card::before{top:-9px;left:-9px;border-right:0;border-bottom:0}
+.card::after{bottom:-9px;right:-9px;border-left:0;border-top:0}
+.card:hover::before,.card:hover::after,.card:focus-visible::before,.card:focus-visible::after{opacity:1}
+.card-topo{display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:22px}
+.card-kicker{font-family:var(--f-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--suave)}
+.card-kicker .ok{color:var(--tinta)}
+.card-kicker .ok svg{vertical-align:-2px}
+.card h3{font-family:var(--f-display);font-weight:700;font-size:22px;line-height:1.12;letter-spacing:-.01em;margin:0;overflow-wrap:anywhere;text-wrap:balance}
+.card--concluida h3{text-decoration:line-through;text-decoration-color:var(--rosa);text-decoration-thickness:2px}
+.chip{justify-self:start;font-family:var(--f-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;border:1.5px solid var(--preto);padding:2px 8px;background:var(--bege2)}
+.chip--mai{background:var(--azul);border-color:var(--azul);color:var(--bege)}
+.chip--sem{background:transparent;border-style:dashed;color:var(--suave);border-color:var(--suave)}
+.card-desc{margin:0;font-size:14px;color:var(--suave)}
+
+.grupo{display:grid;gap:6px;padding-top:10px;border-top:1.5px solid var(--bege2)}
+.grupo-rot{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--azul)}
+.grupo--aluno .grupo-rot{color:var(--rosa);font-weight:700}
+.entregas{list-style:none;margin:0;padding:0;display:grid;gap:5px}
+.entrega{display:flex;gap:9px;align-items:flex-start;font-size:14px;line-height:1.35;background:none;border:0;padding:0;text-align:left;width:100%}
+.caixa{flex:none;width:15px;height:15px;border:1.5px solid var(--preto);margin-top:1px;display:grid;place-items:center;background:var(--bege)}
+.entrega.feita .caixa{background:var(--preto)}
+.entrega.feita .txt{color:var(--suave)}
+.card-rodape{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--suave);font-variant-numeric:tabular-nums}
+
+.alca{display:none;width:34px;height:30px;border:1.5px solid var(--preto);background:var(--bege2);cursor:grab;touch-action:none;place-items:center;padding:0;flex:none}
+.alca:active{cursor:grabbing}
+.em-edicao .alca{display:grid}
+.em-edicao .card{cursor:pointer}
+.em-edicao .entrega{cursor:pointer}
+.em-edicao .entrega:hover .txt{text-decoration:underline;text-underline-offset:3px}
+.add{display:none;border:1.5px dashed var(--preto);background:transparent;padding:12px;font-family:var(--f-mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer}
+.add:hover{background:var(--bege)}
+.em-edicao .add{display:block}
+
+.fantasma{position:fixed;z-index:50;pointer-events:none;margin:0;transform:rotate(2deg);box-shadow:10px 10px 0 var(--laranja)}
+.ph{border:1.5px dashed var(--preto);background:rgba(187,38,73,.1)}
+.arrastando{user-select:none;-webkit-user-select:none}
+
+.estado{margin-top:48px;font-family:var(--f-mono);font-size:13px;letter-spacing:.04em;border:1.5px solid var(--preto);padding:18px;max-width:60ch;background:var(--bege2)}
+
+/* ---------- editor ---------- */
+dialog{border:1.5px solid var(--preto);background:var(--bege2);color:var(--tinta);padding:0;width:min(600px, calc(100vw - 32px));max-height:calc(100vh - 32px);box-shadow:10px 10px 0 var(--preto)}
+dialog::backdrop{background:rgba(0,0,0,.4)}
+.editor{display:grid;gap:14px;padding:22px}
+.editor h2{font-family:var(--f-display);font-weight:800;font-size:28px;margin:0;letter-spacing:-.02em}
+.campo{display:grid;gap:6px;min-width:0}
+.campo label{font-family:var(--f-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase}
+.campo input,.campo select,.campo textarea{border:1.5px solid var(--preto);background:var(--bege);padding:9px 10px;width:100%}
+.campo textarea{resize:vertical;min-height:72px}
+.dica{font-size:12px;color:var(--suave);margin:0}
+.linha2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.linha3{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:12px}
+.editor-acoes{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;margin-top:4px}
+.editor-acoes div{display:flex;gap:10px;flex-wrap:wrap}
+
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom, 0px));z-index:60;background:var(--preto);color:var(--bege);font-family:var(--f-mono);font-size:12px;letter-spacing:.04em;padding:11px 16px;max-width:calc(100vw - 32px);box-shadow:4px 4px 0 var(--laranja)}
+.toast.erro{box-shadow:4px 4px 0 var(--rosa)}
+
+@media (max-width: 900px){
+  .quadro{grid-template-columns:minmax(0,1fr)}
+  .hero{grid-template-columns:minmax(0,1fr)}
+  .faixa-box{justify-self:start}
+}
+@media (max-width: 520px){
+  .linha2,.linha3{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion: reduce){
+  *{transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<div class="wrap" id="app">
+  <header class="topo">
+    <div class="marca"><b id="marca-sigla">DZTI</b><span id="marca-nome">Do Zero à TI · Jornada do aluno</span></div>
+    <div class="acoes">
+      <span class="salvando" id="salvando" hidden>Salvando…</span>
+      <button class="btn" id="btn-edicao" type="button">Modo edição</button>
+    </div>
+  </header>
+
+  <form class="login" id="login" hidden>
+    <label for="senha">Senha da equipe</label>
+    <input id="senha" type="password" autocomplete="current-password" required>
+    <button class="btn btn--preto" type="submit">Entrar</button>
+    <button class="btn btn--texto" type="button" id="login-cancelar">Cancelar</button>
+    <p class="erro" id="login-erro" hidden></p>
+  </form>
+
+  <p class="aviso" id="aviso-demo" hidden>
+    <span><strong>Demonstração</strong> · aluno fictício · nada é gravado · senha do modo edição: <strong>dzti</strong></span>
+    <button class="btn btn--texto" type="button" id="trocar-demo">Ver exemplo Destrava TI</button>
+  </p>
+
+  <div id="conteudo"></div>
+</div>
+
+<dialog id="editor">
+  <form class="editor" id="form-editor">
+    <h2 id="ed-titulo-dialogo">Editar fase</h2>
+    <div class="campo">
+      <label for="ed-fase">Nome da fase</label>
+      <input id="ed-fase" required maxlength="70">
+    </div>
+    <div class="linha3">
+      <div class="campo">
+        <label for="ed-call">Call</label>
+        <input id="ed-call" maxlength="40" placeholder="Ex.: Call · 30 min">
+      </div>
+      <div class="campo">
+        <label for="ed-status">Status</label>
+        <select id="ed-status">
+          <option>Próxima</option>
+          <option>Em andamento</option>
+          <option>Concluída</option>
+        </select>
+      </div>
+      <div class="campo">
+        <label for="ed-prazo">Prazo</label>
+        <input id="ed-prazo" type="date">
+      </div>
+    </div>
+    <div class="campo">
+      <label for="ed-desc">Descrição (opcional)</label>
+      <input id="ed-desc" maxlength="160">
+    </div>
+    <div class="campo">
+      <label for="ed-aluno">Você faz (tarefas do aluno)</label>
+      <textarea id="ed-aluno" rows="3"></textarea>
+    </div>
+    <div class="linha2">
+      <div class="campo">
+        <label for="ed-mentora">Mentoria entrega</label>
+        <textarea id="ed-mentora" rows="3"></textarea>
+      </div>
+      <div class="campo">
+        <label for="ed-equipe">Equipe entrega</label>
+        <textarea id="ed-equipe" rows="3"></textarea>
+      </div>
+    </div>
+    <p class="dica">Um item por linha. Comece a linha com [x] para marcar como feito.</p>
+    <div class="editor-acoes">
+      <button class="btn btn--texto" type="button" id="ed-excluir">Excluir fase</button>
+      <div>
+        <button class="btn" type="button" id="ed-cancelar">Cancelar</button>
+        <button class="btn btn--rosa" type="submit">Salvar</button>
+      </div>
+    </div>
+  </form>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<script>
+/* =========================================================
+   CONFIGURAÇÃO
+   Cole entre as aspas a URL do App da Web do Apps Script
+   (termina em /exec). Enquanto estiver vazia, a página roda
+   em modo demonstração com alunos fictícios.
+   ========================================================= */
+const API_URL = 'https://script.google.com/macros/s/AKfycbysKP_5-o-R2ECK7TfgbFlgmch4THkdrXgfi52_LvYD2N_efZ8Vy6l_jAeathitJo5L/exec';
+
+const COLUNAS = [
+  { status: 'Próxima', titulo: 'Próximas' },
+  { status: 'Em andamento', titulo: 'Em andamento' },
+  { status: 'Concluída', titulo: 'Concluídas' },
+];
+const ORDEM_JORNADA = ['Concluída', 'Em andamento', 'Próxima'];
+const STATUS_VALIDOS = ORDEM_JORNADA;
+const GRUPOS = [
+  { chave: 'aluno', rotulo: 'Você faz' },
+  { chave: 'mentora', rotulo: 'Mentoria entrega' },
+  { chave: 'equipe', rotulo: 'Equipe entrega' },
+];
+const MARCAS = {
+  dzti: { sigla: 'DZTI', nome: 'Do Zero à TI' },
+  dti: { sigla: 'DTI', nome: 'Destrava TI' },
+};
+
+let params;
+try { params = new URLSearchParams(location.search); } catch (_) { params = new URLSearchParams(''); }
+const ID = params.get('j');
+const DEMO = !API_URL || params.has('demo');
+const SENHA_DEMO = 'dzti';
+
+const estado = { aluno: {}, cards: [], edicao: false, senha: '', demo: 'dzti' };
+const $ = (s) => document.querySelector(s);
+
+/* ---------- dados de demonstração (gerados a partir do template) ---------- */
+const DEMOS = {
+ "dzti": {
+  "aluno": {
+   "nome": "Marina Duarte",
+   "programa": "Do Zero à TI",
+   "inicio": "2026-10-06",
+   "objetivo": "Analista de Dados Pleno em empresa internacional"
+  },
+  "cards": [
+   {
+    "id": "d1",
+    "fase": "Onboarding",
+    "descricao": "",
+    "call": "",
+    "status": "Concluída",
+    "ordem": 1,
+    "prazo": "",
+    "aluno": "",
+    "mentora": "",
+    "equipe": ""
+   },
+   {
+    "id": "d2",
+    "fase": "Plano de estudos",
+    "descricao": "Na call, a Alana conhece você e monta o seu plano.",
+    "call": "Call · 30 min",
+    "status": "Concluída",
+    "ordem": 2,
+    "prazo": "",
+    "aluno": "[x] Preencher o formulário\n[x] Agendar a call de plano de estudos",
+    "mentora": "",
+    "equipe": "[x] Na semana 4 do plano: agente para criar o formulário do LinkedIn"
+   },
+   {
+    "id": "d3",
+    "fase": "Call rotina com Mai",
+    "descricao": "",
+    "call": "Call com a Mai",
+    "status": "Concluída",
+    "ordem": 3,
+    "prazo": "",
+    "aluno": "[x] Preencher os links de rotina\n[x] Agendar a call com a Mai",
+    "mentora": "[x] Links de rotina para preencher",
+    "equipe": "[x] Calendário da Mai"
+   },
+   {
+    "id": "d4",
+    "fase": "LinkedIn e CV + Aplicação Estratégica",
+    "descricao": "",
+    "call": "Sem call",
+    "status": "Em andamento",
+    "ordem": 4,
+    "prazo": "",
+    "aluno": "[x] Rodar o agente de LinkedIn\n[x] Entregar o formulário em até 1 semana",
+    "mentora": "[x] Textos do LinkedIn, 1 semana após a entrega do formulário\n[ ] Explicação por áudio\n[ ] Revisão depois das suas mudanças, com espaço para dúvidas\n[ ] Acompanhamento semanal dos resultados",
+    "equipe": "[x] Apostilas de LinkedIn, CV e Aplicação Estratégica"
+   },
+   {
+    "id": "d5",
+    "fase": "Speech",
+    "descricao": "",
+    "call": "Call · 30 min",
+    "status": "Próxima",
+    "ordem": 5,
+    "prazo": "",
+    "aluno": "[ ] Agendar a call de speech",
+    "mentora": "[ ] Sugestão de speech, depois da call",
+    "equipe": "[ ] Apostila de speech, antes da call"
+   },
+   {
+    "id": "d6",
+    "fase": "Simulação de entrevista de RH",
+    "descricao": "",
+    "call": "Call · 1h",
+    "status": "Próxima",
+    "ordem": 6,
+    "prazo": "",
+    "aluno": "[ ] Agendar a call de RH",
+    "mentora": "[ ] Diagnóstico, depois da call",
+    "equipe": "[ ] Apostila de Entrevista de RH, antes da call"
+   },
+   {
+    "id": "d7",
+    "fase": "Call Mentalidade com Mai",
+    "descricao": "",
+    "call": "Call com a Mai",
+    "status": "Próxima",
+    "ordem": 7,
+    "prazo": "",
+    "aluno": "[ ] Agendar a call com a Mai",
+    "mentora": "",
+    "equipe": ""
+   },
+   {
+    "id": "d8",
+    "fase": "Simulação de entrevista técnica",
+    "descricao": "",
+    "call": "Call · 1h",
+    "status": "Próxima",
+    "ordem": 8,
+    "prazo": "",
+    "aluno": "[ ] Agendar a call técnica",
+    "mentora": "[ ] Diagnóstico, depois da call",
+    "equipe": "[ ] Apostila de Entrevista Técnica, antes da call"
+   },
+   {
+    "id": "d9",
+    "fase": "Apresentação de Portfólio + Aprendizado Contínuo",
+    "descricao": "",
+    "call": "Call · 1h",
+    "status": "Próxima",
+    "ordem": 9,
+    "prazo": "",
+    "aluno": "[ ] Preparar a apresentação de um projeto do seu plano de estudos\n[ ] Agendar a call",
+    "mentora": "[ ] Diagnóstico de carreira e próximos passos, durante a call",
+    "equipe": ""
+   }
+  ]
+ },
+ "dti": {
+  "aluno": {
+   "nome": "Rafael Lima",
+   "programa": "Destrava TI",
+   "inicio": "2026-11-02",
+   "objetivo": "Engenheiro de Dados em vaga remota"
+  },
+  "cards": [
+   {
+    "id": "t1",
+    "fase": "LinkedIn e CV + Aplicação Estratégica",
+    "descricao": "",
+    "call": "Sem call",
+    "status": "Em andamento",
+    "ordem": 1,
+    "prazo": "",
+    "aluno": "[x] Rodar o agente de LinkedIn\n[ ] Entregar o formulário em até 1 semana",
+    "mentora": "[ ] Textos do LinkedIn, 1 semana após a entrega do formulário\n[ ] Áudios explicando como aplicar\n[ ] Dúvidas tiradas pelo WhatsApp",
+    "equipe": "[x] Apostilas de LinkedIn, CV e Aplicação Estratégica"
+   },
+   {
+    "id": "t2",
+    "fase": "Speech",
+    "descricao": "",
+    "call": "Call · 30 min",
+    "status": "Próxima",
+    "ordem": 2,
+    "prazo": "",
+    "aluno": "[ ] Agendar a call de speech",
+    "mentora": "[ ] Sugestão de speech, depois da call",
+    "equipe": "[ ] Apostila de speech, antes da call"
+   },
+   {
+    "id": "t3",
+    "fase": "Simulação de entrevista de RH",
+    "descricao": "",
+    "call": "Call · 1h",
+    "status": "Próxima",
+    "ordem": 3,
+    "prazo": "",
+    "aluno": "[ ] Agendar a call de RH",
+    "mentora": "[ ] Diagnóstico, depois da call",
+    "equipe": "[ ] Apostila de Entrevista de RH, antes da call"
+   },
+   {
+    "id": "t4",
+    "fase": "Call Mentalidade com Mai",
+    "descricao": "",
+    "call": "Call com a Mai",
+    "status": "Próxima",
+    "ordem": 4,
+    "prazo": "",
+    "aluno": "[ ] Agendar a call com a Mai",
+    "mentora": "",
+    "equipe": ""
+   },
+   {
+    "id": "t5",
+    "fase": "Simulação de entrevista técnica",
+    "descricao": "",
+    "call": "Call · 1h",
+    "status": "Próxima",
+    "ordem": 5,
+    "prazo": "",
+    "aluno": "[ ] Agendar a call técnica",
+    "mentora": "[ ] Diagnóstico, depois da call",
+    "equipe": "[ ] Apostila de Entrevista Técnica, antes da call"
+   }
+  ]
+ }
+};
+
+/* ---------- utilitários ---------- */
+function esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+function fmtData(iso, curta) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || '');
+  if (!m) return iso || '';
+  return curta ? m[3] + '/' + m[2] : m[3] + '/' + m[2] + '/' + m[1];
+}
+function lerLista(txt) {
+  if (Array.isArray(txt)) return txt;
+  return String(txt || '').split(/\r?\n/).map((l) => l.trim()).filter((l) => l && !/^nada$/i.test(l)).map((l) => ({
+    feito: /^\[x\]/i.test(l),
+    texto: l.replace(/^\[\s*x?\s*\]\s*/i, ''),
+  }));
+}
+function escreverLista(lista) {
+  return lista.map((e) => (e.feito ? '[x] ' : '[ ] ') + e.texto).join('\n');
+}
+function normalizar(lista) {
+  return (lista || []).map((c, i) => ({
+    id: String(c.id || 'n' + i),
+    fase: String(c.fase || 'Sem nome'),
+    descricao: String(c.descricao || ''),
+    call: String(c.call || ''),
+    status: STATUS_VALIDOS.includes(c.status) ? c.status : 'Próxima',
+    ordem: Number(c.ordem) || i + 1,
+    prazo: String(c.prazo || ''),
+    aluno: lerLista(c.aluno),
+    mentora: lerLista(c.mentora),
+    equipe: lerLista(c.equipe),
+  }));
+}
+function paraPlanilha(c) {
+  return {
+    id: c.id, fase: c.fase, descricao: c.descricao, call: c.call, status: c.status, ordem: c.ordem, prazo: c.prazo,
+    aluno: escreverLista(c.aluno), mentora: escreverLista(c.mentora), equipe: escreverLista(c.equipe),
+  };
+}
+const copiar = (cards) => JSON.parse(JSON.stringify(cards));
+const porOrdem = (a, b) => a.ordem - b.ordem;
+const marcaAtual = () => (/destrava/i.test(estado.aluno.programa || '') ? MARCAS.dti : MARCAS.dzti);
+
+function renumerar() {
+  let n = 1;
+  ORDEM_JORNADA.forEach((st) => {
+    estado.cards.filter((c) => c.status === st).sort(porOrdem).forEach((c) => { c.ordem = n++; });
+  });
+}
+
+let toastTimer;
+function toast(msg, erro) {
+  const t = $('#toast');
+  t.textContent = msg;
+  t.classList.toggle('erro', !!erro);
+  t.hidden = false;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.hidden = true; }, erro ? 6000 : 3000);
+}
+
+const ICONE_OK = '<svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M1.5 6.5l3 3 6-7" fill="none" stroke="#fd7528" stroke-width="2.2"/></svg>';
+const ICONE_CHECK_BRANCO = '<svg width="10" height="10" viewBox="0 0 12 12" aria-hidden="true"><path d="M1.5 6.5l3 3 6-7" fill="none" stroke="#ebe8e3" stroke-width="2.4"/></svg>';
+const ICONE_ALCA = '<svg width="14" height="16" viewBox="0 0 14 16" aria-hidden="true"><g fill="#000"><circle cx="4" cy="3" r="1.6"/><circle cx="10" cy="3" r="1.6"/><circle cx="4" cy="8" r="1.6"/><circle cx="10" cy="8" r="1.6"/><circle cx="4" cy="13" r="1.6"/><circle cx="10" cy="13" r="1.6"/></g></svg>';
+const ICONE_CURSOR = '<svg class="cursor" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 2l15 9.5-6.6 1.3 3.9 7.4-2.9 1.5-3.9-7.4L4 18.6z" fill="#000" stroke="#ebe8e3" stroke-width="1.2" stroke-linejoin="round"/></svg>';
+
+/* ---------- renderização ---------- */
+function mostrarEstado(msg) {
+  $('#conteudo').innerHTML = '<p class="estado">' + esc(msg) + '</p>';
+}
+
+function render() {
+  const marca = marcaAtual();
+  $('#marca-sigla').textContent = marca.sigla;
+  $('#marca-nome').textContent = marca.nome + ' · Jornada do aluno';
+  document.title = 'Jornada ' + marca.sigla;
+
+  document.body.classList.toggle('em-edicao', estado.edicao);
+  $('#btn-edicao').textContent = estado.edicao ? 'Sair da edição' : 'Modo edição';
+  $('#btn-edicao').classList.toggle('btn--preto', estado.edicao);
+  $('#aviso-demo').hidden = !DEMO;
+  $('#trocar-demo').textContent = estado.demo === 'dzti' ? 'Ver exemplo Destrava TI' : 'Ver exemplo Do Zero à TI';
+
+  const a = estado.aluno;
+  const ordenados = [...estado.cards].sort(porOrdem);
+  const pos = {};
+  ordenados.forEach((c, i) => { pos[c.id] = i + 1; });
+  const atual = ordenados.find((c) => c.status === 'Em andamento') || ordenados.find((c) => c.status === 'Próxima');
+  const feitas = ordenados.filter((c) => c.status === 'Concluída').length;
+
+  const meta = ['Mentoria ' + marca.nome];
+  if (a.inicio) meta.push('início ' + fmtData(a.inicio));
+
+  const faixa = atual ? 'Fase atual: ' + atual.fase : (ordenados.length ? 'Jornada concluída' : 'Jornada em montagem');
+
+  let html = '<section class="hero"><div>'
+    + '<p class="kicker">' + esc(meta.join(' · ')) + '</p>'
+    + '<h1>' + esc(a.nome || 'Sua jornada') + '</h1>'
+    + (a.objetivo ? '<p class="objetivo">Seu objetivo: <mark>' + esc(a.objetivo) + '</mark></p>' : '')
+    + '</div><div class="faixa-box"><span class="faixa">' + esc(faixa) + '</span>' + ICONE_CURSOR + '</div></section>';
+
+  html += '<div class="trilha-cab"><span>' + (atual ? 'Fase ' + pos[atual.id] + ' de ' + ordenados.length : ordenados.length + ' fases') + '</span><span>'
+    + feitas + (feitas === 1 ? ' concluída' : ' concluídas') + '</span></div>'
+    + '<div class="trilha" aria-label="Trilha de fases"><ol>'
+    + ordenados.map((c) => {
+      const cls = c.status === 'Concluída' ? 'feito' : (c.status === 'Em andamento' || (atual && c.id === atual.id) ? 'atual' : '');
+      return '<li class="' + cls + '"><span class="barra"></span><span class="rot" title="' + esc(c.fase) + '">' + String(pos[c.id]).padStart(2, '0') + ' ' + esc(c.fase) + '</span></li>';
+    }).join('')
+    + '</ol></div>';
+
+  html += '<section class="quadro" id="quadro" aria-label="Quadro de fases">'
+    + COLUNAS.map((col) => {
+      const cards = estado.cards.filter((c) => c.status === col.status).sort(porOrdem);
+      return '<div class="coluna" data-status="' + col.status + '">'
+        + '<div class="coluna-cab"><span>' + col.titulo + '</span><span class="conta">' + cards.length + '</span></div>'
+        + '<div class="coluna-corpo" data-status="' + col.status + '">'
+        + (cards.length ? cards.map((c) => cardHTML(c, pos[c.id])).join('') : '<p class="vazio">Nenhuma fase aqui.</p>')
+        + (col.status === 'Próxima' ? '<button class="add" type="button" data-acao="nova">+ Nova fase</button>' : '')
+        + '</div></div>';
+    }).join('')
+    + '</section>';
+
+  $('#conteudo').innerHTML = html;
+}
+
+function chipCall(call) {
+  if (!call) return '';
+  const cls = /sem call/i.test(call) ? ' chip--sem' : (/mai\b/i.test(call) ? ' chip--mai' : '');
+  return '<span class="chip' + cls + '">' + esc(call) + '</span>';
+}
+
+function cardHTML(c, n) {
+  const classe = c.status === 'Em andamento' ? ' card--andamento' : (c.status === 'Concluída' ? ' card--concluida' : '');
+  let kicker = 'Fase ' + String(n).padStart(2, '0');
+  if (c.status === 'Concluída') kicker += ' · <span class="ok">' + ICONE_OK + ' feita</span>';
+  else if (c.prazo) kicker += ' · até ' + esc(fmtData(c.prazo, true));
+  const tag = estado.edicao ? 'button type="button"' : 'div';
+  const tagFim = estado.edicao ? 'button' : 'div';
+
+  let total = 0, feitos = 0;
+  const grupos = GRUPOS.map((g) => {
+    const lista = c[g.chave];
+    if (!lista.length) return '';
+    total += lista.length;
+    feitos += lista.filter((e) => e.feito).length;
+    return '<div class="grupo grupo--' + g.chave + '"><span class="grupo-rot">' + g.rotulo + '</span><ul class="entregas">'
+      + lista.map((e, i) => '<li><' + tag + ' class="entrega' + (e.feito ? ' feita' : '') + '" data-g="' + g.chave + '" data-i="' + i + '"'
+        + (estado.edicao ? ' aria-pressed="' + e.feito + '"' : '') + '>'
+        + '<span class="caixa">' + (e.feito ? ICONE_CHECK_BRANCO : '') + '</span><span class="txt">' + esc(e.texto) + '</span></' + tagFim + '></li>').join('')
+      + '</ul></div>';
+  }).join('');
+
+  return '<article class="card' + classe + '" data-id="' + esc(c.id) + '"' + (estado.edicao ? ' tabindex="0" aria-label="Editar fase ' + esc(c.fase) + '"' : '') + '>'
+    + '<div class="card-topo"><span class="card-kicker">' + kicker + '</span>'
+    + '<button class="alca" type="button" data-acao="arrastar" aria-label="Arrastar fase ' + esc(c.fase) + '" title="Arraste para mover">' + ICONE_ALCA + '</button></div>'
+    + '<h3>' + esc(c.fase) + '</h3>'
+    + chipCall(c.call)
+    + (c.descricao ? '<p class="card-desc">' + esc(c.descricao) + '</p>' : '')
+    + grupos
+    + (total ? '<span class="card-rodape">' + feitos + '/' + total + ' itens feitos</span>' : '')
+    + '</article>';
+}
+
+/* ---------- carregar e salvar ---------- */
+function carregarDemo() {
+  const d = DEMOS[estado.demo];
+  estado.aluno = Object.assign({}, d.aluno);
+  estado.cards = normalizar(copiar(d.cards));
+  render();
+}
+
+async function carregar() {
+  if (DEMO) { carregarDemo(); return; }
+  if (!ID) { mostrarEstado('Este link está incompleto. Peça o seu link da jornada para a equipe da mentoria.'); return; }
+  mostrarEstado('Carregando a sua jornada…');
+  try {
+    const r = await fetch(API_URL + '?j=' + encodeURIComponent(ID));
+    const d = await r.json();
+    if (!d.ok) throw new Error(d.erro || 'Resposta inválida.');
+    estado.aluno = d.aluno || {};
+    estado.cards = normalizar(d.cards);
+    render();
+  } catch (e) {
+    mostrarEstado('Não foi possível abrir a jornada. ' + (e.message || '') + ' Recarregue a página ou fale com a equipe da mentoria.');
+  }
+}
+
+async function salvar(anterior, msg) {
+  if (DEMO) { toast(msg + ' · demonstração, nada foi gravado'); return; }
+  $('#salvando').hidden = false;
+  try {
+    const r = await fetch(API_URL, {
+      method: 'POST',
+      body: JSON.stringify({ acao: 'salvar', j: ID, senha: estado.senha, cards: estado.cards.map(paraPlanilha) }),
+    });
+    const d = await r.json();
+    if (!d.ok) {
+      if (d.erro === 'senha') { sairEdicao(); throw new Error('A senha não confere. Entre de novo no modo edição.'); }
+      throw new Error(d.erro || 'Erro desconhecido.');
+    }
+    toast(msg + ' · salvo na planilha');
+  } catch (e) {
+    estado.cards = anterior;
+    render();
+    toast('Não salvou: ' + (e.message || 'sem conexão') + ' A mudança foi desfeita.', true);
+  } finally {
+    $('#salvando').hidden = true;
+  }
+}
+
+$('#trocar-demo').addEventListener('click', () => {
+  estado.demo = estado.demo === 'dzti' ? 'dti' : 'dzti';
+  carregarDemo();
+});
+
+/* ---------- modo edição ---------- */
+function lerSenhaGuardada() { try { return sessionStorage.getItem('dzti-senha') || ''; } catch (_) { return ''; } }
+function guardarSenha(s) { try { if (s) sessionStorage.setItem('dzti-senha', s); else sessionStorage.removeItem('dzti-senha'); } catch (_) {} }
+
+function entrarEdicao(senha) {
+  estado.edicao = true;
+  estado.senha = senha;
+  guardarSenha(senha);
+  $('#login').hidden = true;
+  $('#senha').value = '';
+  render();
+}
+function sairEdicao() {
+  estado.edicao = false;
+  estado.senha = '';
+  guardarSenha('');
+  render();
+}
+
+$('#btn-edicao').addEventListener('click', () => {
+  if (estado.edicao) { sairEdicao(); toast('Modo edição desligado'); return; }
+  const f = $('#login');
+  f.hidden = !f.hidden;
+  $('#login-erro').hidden = true;
+  if (!f.hidden) $('#senha').focus();
+});
+$('#login-cancelar').addEventListener('click', () => { $('#login').hidden = true; });
+$('#login').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const s = $('#senha').value;
+  const erro = $('#login-erro');
+  erro.hidden = true;
+  if (DEMO) {
+    if (s === SENHA_DEMO) { entrarEdicao(s); toast('Modo edição ativo: arraste pela alça ou clique no card'); }
+    else { erro.textContent = 'Senha incorreta. Na demonstração, a senha é dzti.'; erro.hidden = false; }
+    return;
+  }
+  try {
+    const r = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ acao: 'verificar', senha: s }) });
+    const d = await r.json();
+    if (d.ok) { entrarEdicao(s); toast('Modo edição ativo'); }
+    else { erro.textContent = 'Senha incorreta.'; erro.hidden = false; }
+  } catch (_) {
+    erro.textContent = 'Sem conexão com a planilha. Tente de novo.';
+    erro.hidden = false;
+  }
+});
+
+/* ---------- cliques no quadro ---------- */
+document.addEventListener('click', (e) => {
+  if (!estado.edicao || drag) return;
+  if (!e.target.closest('#quadro')) return;
+  if (e.target.closest('[data-acao="nova"]')) { abrirEditor(null); return; }
+  if (e.target.closest('.alca')) return;
+  const card = e.target.closest('.card');
+  if (!card) return;
+  const ent = e.target.closest('.entrega');
+  if (ent) { alternarItem(card.dataset.id, ent.dataset.g, Number(ent.dataset.i)); return; }
+  abrirEditor(card.dataset.id);
+});
+document.addEventListener('keydown', (e) => {
+  if (!estado.edicao || e.key !== 'Enter') return;
+  const card = e.target.closest && e.target.closest('.card');
+  if (card && e.target === card) { e.preventDefault(); abrirEditor(card.dataset.id); }
+});
+
+function alternarItem(id, grupo, i) {
+  const anterior = copiar(estado.cards);
+  const c = estado.cards.find((x) => x.id === id);
+  if (!c || !c[grupo] || !c[grupo][i]) return;
+  c[grupo][i].feito = !c[grupo][i].feito;
+  render();
+  salvar(anterior, c[grupo][i].feito ? 'Item marcado como feito' : 'Item reaberto');
+}
+
+/* ---------- arrastar e soltar (mouse e toque) ---------- */
+let drag = null;
+
+document.addEventListener('pointerdown', (e) => {
+  const alca = e.target.closest('.alca');
+  if (!alca || !estado.edicao) return;
+  e.preventDefault();
+  const card = alca.closest('.card');
+  const r = card.getBoundingClientRect();
+  drag = { id: card.dataset.id, card, x0: e.clientX, y0: e.clientY, dx: e.clientX - r.left, dy: e.clientY - r.top, w: r.width, h: r.height, fantasma: null, ph: null };
+  document.addEventListener('pointermove', moverDrag);
+  document.addEventListener('pointerup', soltarDrag);
+  document.addEventListener('pointercancel', cancelarDrag);
+});
+
+function moverDrag(e) {
+  if (!drag) return;
+  if (!drag.fantasma) {
+    if (Math.hypot(e.clientX - drag.x0, e.clientY - drag.y0) < 4) return;
+    drag.fantasma = drag.card.cloneNode(true);
+    drag.fantasma.classList.add('fantasma');
+    drag.fantasma.style.width = drag.w + 'px';
+    document.body.appendChild(drag.fantasma);
+    drag.ph = document.createElement('div');
+    drag.ph.className = 'ph';
+    drag.ph.style.height = Math.min(drag.h, 160) + 'px';
+    drag.card.parentNode.insertBefore(drag.ph, drag.card);
+    drag.card.hidden = true;
+    document.body.classList.add('arrastando');
+  }
+  drag.fantasma.style.left = (e.clientX - drag.dx) + 'px';
+  drag.fantasma.style.top = (e.clientY - Math.min(drag.dy, 40)) + 'px';
+
+  const alvo = document.elementFromPoint(e.clientX, e.clientY);
+  const coluna = alvo && alvo.closest('.coluna');
+  if (coluna) {
+    const corpo = coluna.querySelector('.coluna-corpo');
+    const vazio = corpo.querySelector('.vazio');
+    if (vazio) vazio.hidden = true;
+    const cards = [...corpo.querySelectorAll('.card:not([hidden])')];
+    const antes = cards.find((c) => {
+      const r = c.getBoundingClientRect();
+      return e.clientY < r.top + r.height / 2;
+    });
+    if (antes) corpo.insertBefore(drag.ph, antes);
+    else {
+      const add = corpo.querySelector('.add');
+      if (add) corpo.insertBefore(drag.ph, add); else corpo.appendChild(drag.ph);
+    }
+  }
+
+  const borda = 60;
+  if (e.clientY < borda) window.scrollBy(0, -12);
+  else if (e.clientY > window.innerHeight - borda) window.scrollBy(0, 12);
+}
+
+function limparDrag() {
+  document.removeEventListener('pointermove', moverDrag);
+  document.removeEventListener('pointerup', soltarDrag);
+  document.removeEventListener('pointercancel', cancelarDrag);
+  document.body.classList.remove('arrastando');
+  if (drag && drag.fantasma) drag.fantasma.remove();
+  if (drag && drag.ph) drag.ph.remove();
+}
+
+function soltarDrag() {
+  if (!drag) return;
+  if (!drag.fantasma) { limparDrag(); drag = null; return; }
+  const novo = {};
+  document.querySelectorAll('#quadro .coluna-corpo').forEach((corpo) => {
+    const st = corpo.dataset.status;
+    novo[st] = [];
+    corpo.querySelectorAll('.card, .ph').forEach((el) => {
+      if (el.classList.contains('ph')) novo[st].push(drag.id);
+      else if (el.dataset.id !== drag.id) novo[st].push(el.dataset.id);
+    });
+  });
+  const anterior = copiar(estado.cards);
+  let n = 1;
+  ORDEM_JORNADA.forEach((st) => {
+    (novo[st] || []).forEach((id) => {
+      const c = estado.cards.find((x) => x.id === id);
+      if (c) { c.status = st; c.ordem = n++; }
+    });
+  });
+  const assinatura = (lista) => JSON.stringify(lista.map((c) => [c.id, c.status, c.ordem]));
+  const mudou = assinatura(anterior) !== assinatura(estado.cards);
+  const movido = estado.cards.find((x) => x.id === drag.id);
+  limparDrag();
+  setTimeout(() => { drag = null; }, 0); // evita abrir o editor com o clique do fim do arraste
+  render();
+  if (mudou) salvar(anterior, movido.fase + ' → ' + movido.status);
+}
+
+function cancelarDrag() {
+  limparDrag();
+  drag = null;
+  render();
+}
+
+/* ---------- editor de fase ---------- */
+let editandoId = null;
+let confirmarTimer;
+const dlg = $('#editor');
+
+function abrirEditor(id) {
+  editandoId = id;
+  const c = id ? estado.cards.find((x) => x.id === id) : null;
+  $('#ed-titulo-dialogo').textContent = c ? 'Editar fase' : 'Nova fase';
+  $('#ed-fase').value = c ? c.fase : '';
+  $('#ed-call').value = c ? c.call : '';
+  $('#ed-desc').value = c ? c.descricao : '';
+  $('#ed-status').value = c ? c.status : 'Próxima';
+  $('#ed-prazo').value = c && /^\d{4}-\d{2}-\d{2}$/.test(c.prazo) ? c.prazo : '';
+  GRUPOS.forEach((g) => { $('#ed-' + g.chave).value = c ? escreverLista(c[g.chave]) : ''; });
+  const exc = $('#ed-excluir');
+  exc.hidden = !c;
+  exc.textContent = 'Excluir fase';
+  delete exc.dataset.confirmar;
+  if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
+  $('#ed-fase').focus();
+}
+function fecharEditor() { if (dlg.close) dlg.close(); else dlg.removeAttribute('open'); }
+
+$('#ed-cancelar').addEventListener('click', fecharEditor);
+$('#form-editor').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const anterior = copiar(estado.cards);
+  const dados = {
+    fase: $('#ed-fase').value.trim() || 'Sem nome',
+    call: $('#ed-call').value.trim(),
+    descricao: $('#ed-desc').value.trim(),
+    status: $('#ed-status').value,
+    prazo: $('#ed-prazo').value,
+  };
+  GRUPOS.forEach((g) => { dados[g.chave] = lerLista($('#ed-' + g.chave).value); });
+  let msg;
+  if (editandoId) {
+    const c = estado.cards.find((x) => x.id === editandoId);
+    if (c.status !== dados.status) c.ordem = 9999;
+    Object.assign(c, dados);
+    msg = 'Fase atualizada';
+  } else {
+    estado.cards.push(Object.assign({ id: 'n' + Date.now().toString(36), ordem: 9999 }, dados));
+    msg = 'Fase criada';
+  }
+  renumerar();
+  fecharEditor();
+  render();
+  salvar(anterior, msg);
+});
+$('#ed-excluir').addEventListener('click', (e) => {
+  const b = e.currentTarget;
+  if (!b.dataset.confirmar) {
+    b.dataset.confirmar = '1';
+    b.textContent = 'Clique de novo para excluir';
+    clearTimeout(confirmarTimer);
+    confirmarTimer = setTimeout(() => { delete b.dataset.confirmar; b.textContent = 'Excluir fase'; }, 4000);
+    return;
+  }
+  const anterior = copiar(estado.cards);
+  const c = estado.cards.find((x) => x.id === editandoId);
+  estado.cards = estado.cards.filter((x) => x.id !== editandoId);
+  renumerar();
+  fecharEditor();
+  render();
+  salvar(anterior, 'Fase ' + (c ? c.fase : '') + ' excluída');
+});
+
+/* ---------- início ---------- */
+const guardada = lerSenhaGuardada();
+if (guardada && (!DEMO || guardada === SENHA_DEMO)) { estado.edicao = true; estado.senha = guardada; }
+carregar();
+</script>
+</body>
+</html>
