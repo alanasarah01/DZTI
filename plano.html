@@ -1,0 +1,826 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Plano de Estudos DZTI</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,800;1,9..144,700&family=Space+Grotesk:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
+<style>
+/* Layout: barra da marca; cabeçalho do aluno com faixa da semana; 4 números (progresso, horas, ritmo, semana);
+   faixa das 6 semanas; abas Backlog e Board. Board = 3 colunas (A fazer, Fazendo, Feito) com arrastar;
+   Backlog = blocos (features) com o porquê, entregáveis e tarefas. Visual da marca DZTI. */
+:root{
+  --bege:#ebe8e3;
+  --bege2:#ddcfc7;
+  --rosa:#bb2649;
+  --laranja:#fd7528;
+  --azul:#344c92;
+  --verde:#2f6b4f;
+  --preto:#000000;
+  --tinta:#1a1716;
+  --suave:#5e5450;
+  --f-display:'Fraunces', Georgia, 'Times New Roman', serif;
+  --f-body:'Space Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --f-mono:'Space Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  color-scheme: light;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bege);color:var(--tinta);font-family:var(--f-body);font-size:15px;line-height:1.5;margin:0}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--azul);outline-offset:2px}
+a{color:inherit}
+
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:0 56px}
+
+.topo{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding-block:16px;border-bottom:1.5px solid var(--preto)}
+.marca{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.marca b{font-family:var(--f-display);font-weight:800;font-size:28px;letter-spacing:-.02em;line-height:1}
+.marca span{font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+.acoes{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.salvando{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--suave)}
+
+.btn{font-family:var(--f-mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;background:var(--bege);border:1.5px solid var(--preto);padding:9px 14px;box-shadow:3px 3px 0 var(--preto);cursor:pointer;transition:transform .12s, box-shadow .12s;text-decoration:none;display:inline-block}
+.btn:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--preto)}
+.btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--preto)}
+.btn--preto{background:var(--preto);color:var(--bege)}
+
+.aviso{margin:16px 0 0;border:1.5px dashed var(--azul);color:var(--azul);padding:8px 12px;font-family:var(--f-mono);font-size:12px;letter-spacing:.04em}
+.estado{margin-top:48px;font-family:var(--f-mono);font-size:13px;letter-spacing:.04em;border:1.5px solid var(--preto);padding:18px;max-width:62ch;background:var(--bege2)}
+
+/* ---------- cabeçalho ---------- */
+.hero{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px 32px;align-items:end;padding-block:32px 4px}
+.kicker{font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--azul);margin:0 0 10px}
+.hero h1{font-family:var(--f-display);font-weight:800;font-size:clamp(36px,6vw,68px);line-height:.98;letter-spacing:-.025em;margin:0;text-wrap:balance}
+.hero h1 em{font-style:italic;color:var(--rosa)}
+.hero p{margin:12px 0 0;font-size:16px;max-width:62ch}
+.faixa{display:inline-block;background:var(--rosa);color:var(--bege);font-family:var(--f-display);font-style:italic;font-weight:700;font-size:clamp(17px,2.2vw,22px);padding:10px 18px;transform:rotate(-2deg);white-space:nowrap}
+
+.numeros{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-top:26px}
+.num{border:1.5px solid var(--preto);background:var(--bege);padding:14px 16px;box-shadow:4px 4px 0 var(--preto);display:grid;gap:2px;min-width:0}
+.num span{font-family:var(--f-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase}
+.num b{font-family:var(--f-display);font-weight:800;font-size:40px;line-height:1.05;font-variant-numeric:tabular-nums}
+.num small{font-size:12.5px;color:var(--suave)}
+.num--alerta{box-shadow:6px 6px 0 var(--rosa)}
+.num--alerta b{color:var(--rosa)}
+.num--ok{box-shadow:6px 6px 0 var(--verde)}
+
+/* ---------- 6 semanas ---------- */
+.semanas{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:26px}
+.sem{border:1.5px solid var(--preto);background:var(--bege);padding:10px 12px;text-align:left;cursor:pointer;display:grid;gap:4px;min-width:0}
+.sem:hover{background:var(--bege2)}
+.sem[aria-pressed="true"]{outline:3px solid var(--azul);outline-offset:-1px}
+.sem.atual{background:var(--preto);color:var(--bege)}
+.sem.atual small{color:var(--bege2)}
+.sem b{font-family:var(--f-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase}
+.sem small{font-size:12px;color:var(--suave);font-variant-numeric:tabular-nums}
+.sem-barra{height:6px;border:1px solid currentColor;background:transparent;position:relative;overflow:hidden}
+.sem-barra i{position:absolute;inset:0 auto 0 0;background:var(--rosa)}
+.sem.atual .sem-barra i{background:var(--laranja)}
+.sem.cal{outline:2px dashed var(--rosa);outline-offset:-4px}
+
+/* ---------- abas e filtros ---------- */
+.barra-abas{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;margin-top:28px;padding-block:12px;border-top:1.5px solid var(--preto);border-bottom:1.5px solid var(--preto)}
+.abas{display:flex;border:1.5px solid var(--preto)}
+.abas button{font-family:var(--f-mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;background:var(--bege);border:0;padding:8px 16px;cursor:pointer}
+.abas button+button{border-left:1.5px solid var(--preto)}
+.abas button[aria-selected="true"]{background:var(--preto);color:var(--bege)}
+.barra-abas label{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;display:flex;align-items:center;gap:8px}
+.barra-abas select{border:1.5px solid var(--preto);background:var(--bege);padding:7px 10px;max-width:260px;min-width:0}
+.dica{font-size:12.5px;color:var(--suave);margin:10px 0 0}
+
+/* ---------- board ---------- */
+.board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:16px;align-items:start}
+.coluna{border:1.5px solid var(--preto);background:var(--bege2);min-width:0}
+.coluna-cab{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-bottom:1.5px solid var(--preto);font-family:var(--f-mono);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;background:var(--bege)}
+.coluna[data-status="doing"] .coluna-cab{background:var(--rosa);color:var(--bege)}
+.coluna[data-status="done"] .coluna-cab{background:var(--preto);color:var(--bege)}
+.conta{font-variant-numeric:tabular-nums;border:1.5px solid currentColor;padding:0 6px}
+.coluna-corpo{display:flex;flex-direction:column;gap:10px;padding:12px;min-height:110px}
+.vazio{font-family:var(--f-mono);font-size:11.5px;color:var(--suave);border:1.5px dashed var(--suave);padding:12px;text-align:center;margin:0}
+
+.card{--c:var(--preto);position:relative;background:var(--bege);border:1.5px solid var(--preto);border-left:6px solid var(--c);padding:10px 12px;display:grid;gap:6px;cursor:grab;box-shadow:3px 3px 0 var(--preto);touch-action:pan-y;user-select:none;-webkit-user-select:none;text-align:left;width:100%}
+.card:hover{box-shadow:4px 4px 0 var(--preto)}
+.card-topo{display:flex;justify-content:space-between;gap:8px;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--suave)}
+.card b{font-weight:500;font-size:14px;line-height:1.35;overflow-wrap:anywhere}
+.card.feito b{text-decoration:line-through;text-decoration-color:var(--rosa);color:var(--suave)}
+.chips{display:flex;flex-wrap:wrap;gap:4px}
+.chip{font-family:var(--f-mono);font-size:10px;letter-spacing:.05em;text-transform:uppercase;border:1.5px solid var(--preto);padding:0 6px;background:var(--bege2);white-space:nowrap}
+.chip--bloco{background:var(--c);border-color:var(--c);color:var(--bege)}
+.chip--rev{background:var(--azul);border-color:var(--azul);color:var(--bege)}
+.chip--atr{background:var(--rosa);border-color:var(--rosa);color:var(--bege)}
+.chip--check{background:var(--laranja);border-color:var(--laranja);color:var(--preto)}
+.fantasma{position:fixed;z-index:50;pointer-events:none;margin:0;transform:rotate(2deg);box-shadow:10px 10px 0 var(--laranja)}
+.ph{border:1.5px dashed var(--preto);background:rgba(187,38,73,.1);min-height:60px}
+.arrastando{user-select:none;-webkit-user-select:none;cursor:grabbing}
+
+/* ---------- backlog ---------- */
+.backlog{display:grid;gap:14px;margin-top:16px}
+.epico{--c:var(--preto);border:1.5px solid var(--preto);border-left:8px solid var(--c);background:var(--bege)}
+.epico > summary{list-style:none;cursor:pointer;padding:14px 16px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 16px;align-items:center}
+.epico > summary::-webkit-details-marker{display:none}
+.epico-nome{font-family:var(--f-display);font-weight:700;font-size:21px;line-height:1.15;margin:0}
+.epico-nome small{display:block;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--suave);font-weight:400;margin-bottom:4px}
+.epico-meta{display:grid;gap:6px;justify-items:end;font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-variant-numeric:tabular-nums;white-space:nowrap}
+.prog{width:140px;height:8px;border:1.5px solid var(--preto);position:relative;background:var(--bege2)}
+.prog i{position:absolute;inset:0 auto 0 0;background:var(--preto)}
+.epico-corpo{border-top:1.5px solid var(--bege2);padding:14px 16px 16px;display:grid;gap:16px}
+.porque{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:16px}
+.porque section{background:var(--bege2);padding:12px 14px;border:1.5px solid var(--preto)}
+.porque h3{font-family:var(--f-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;margin:0 0 6px;color:var(--azul)}
+.porque p{margin:0;font-size:14px}
+.porque ul{margin:0;padding-left:18px;font-size:14px;display:grid;gap:3px}
+.tarefas{list-style:none;margin:0;padding:0;border:1.5px solid var(--preto)}
+.tarefa{display:grid;grid-template-columns:110px 54px minmax(0,1fr) 92px 60px 80px;gap:10px;align-items:center;padding:8px 12px;border-top:1px solid var(--bege2);width:100%;background:none;border-left:0;border-right:0;border-bottom:0;text-align:left;cursor:pointer;font-size:14px}
+.tarefa:first-child{border-top:0}
+.tarefa:hover{background:var(--bege2)}
+.tarefa.feito .t-tit{text-decoration:line-through;color:var(--suave)}
+.st{justify-self:start;font-family:var(--f-mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;border:1.5px solid var(--preto);padding:1px 7px;white-space:nowrap}
+.st-doing{background:var(--rosa);border-color:var(--rosa);color:var(--bege)}
+.st-done{background:var(--preto);color:var(--bege)}
+.t-id,.t-meta{font-family:var(--f-mono);font-size:11px;color:var(--suave);font-variant-numeric:tabular-nums;white-space:nowrap}
+.t-tit{min-width:0;overflow-wrap:anywhere}
+
+/* ---------- lista de tarefas (formato do roadmap) ---------- */
+.lista{margin-top:8px}
+.fase{font-family:var(--f-mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;margin:36px 0 16px;display:flex;align-items:center;gap:12px}
+.fase::after{content:"";flex:1;height:1.5px;background:var(--preto)}
+.fase em{font-style:normal;background:var(--rosa);color:var(--bege);padding:2px 8px;letter-spacing:.1em}
+.fase small{font-size:11px;letter-spacing:.08em;color:var(--suave);text-transform:none}
+.intro-lista{margin-top:18px}
+.bloco{position:relative;border:1.5px solid var(--preto);background:var(--bege);margin-bottom:22px;display:grid;grid-template-columns:110px minmax(0,1fr);transition:box-shadow .2s}
+.bloco:hover{box-shadow:10px 10px 0 var(--laranja)}
+.bloco::before,.bloco::after{content:"";position:absolute;width:16px;height:16px;border:2.5px solid var(--preto);opacity:0;transition:opacity .2s;pointer-events:none}
+.bloco::before{top:-9px;left:-9px;border-right:0;border-bottom:0}
+.bloco::after{bottom:-9px;right:-9px;border-left:0;border-top:0}
+.bloco:hover::before,.bloco:hover::after{opacity:1}
+.bloco .numb{border-right:1.5px solid var(--preto);display:flex;flex-direction:column;align-items:center;padding:22px 8px;background:var(--bege2);gap:6px}
+.bloco .numb b{font-family:var(--f-display);font-size:54px;font-weight:800;color:var(--rosa);line-height:1}
+.bloco .numb small{font-family:var(--f-mono);font-size:11px;letter-spacing:.08em;text-align:center}
+.bloco .corpo{padding:24px 26px;min-width:0}
+.bloco h3{font-family:var(--f-display);font-size:clamp(23px,3.2vw,30px);font-weight:800;letter-spacing:-.02em;line-height:1.02;margin:0 0 8px}
+.bloco .porque-txt{font-size:15.5px;max-width:720px;margin:0 0 6px}
+.rot{font-family:var(--f-mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:var(--azul);margin:18px 0 8px}
+.checks{list-style:none;margin:0;padding:0;border:1.5px solid var(--preto);background:#fff}
+.checks li{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:4px 12px;align-items:start;padding:10px 12px;border-top:1px solid var(--bege2)}
+.checks li:first-child{border-top:0}
+.checks li.feito{background:var(--bege)}
+.chk{display:contents;cursor:pointer}
+.chk input{appearance:none;-webkit-appearance:none;width:22px;height:22px;margin:0;border:1.5px solid var(--preto);background:#fff;cursor:pointer;display:grid;place-content:center;flex:none}
+.chk input:checked{background:var(--rosa);border-color:var(--rosa)}
+.chk input:checked::after{content:"✓";color:#fff;font-size:14px;font-weight:700;line-height:1}
+.chk-txt{min-width:0;cursor:pointer;font-size:15px;line-height:1.35}
+.chk-txt b{font-weight:500;overflow-wrap:anywhere}
+.chk-txt small{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center;margin-top:4px;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--suave)}
+.feito .chk-txt b{text-decoration:line-through;text-decoration-color:var(--rosa);color:var(--suave)}
+.ver{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;background:none;border:0;border-bottom:2px solid var(--rosa);padding:2px 0;cursor:pointer;white-space:nowrap;align-self:center}
+.ver:hover{color:var(--rosa)}
+.yt{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.yt li{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px}
+.yt a{text-decoration:none;font-family:var(--f-mono);font-size:13px;background:var(--preto);color:var(--bege);border:1.5px solid var(--preto);padding:7px 12px;display:inline-flex;align-items:center;gap:8px;text-align:left;max-width:100%}
+.yt a::before{content:"▶";color:var(--laranja);font-size:10px}
+.yt a:hover{background:var(--rosa);border-color:var(--rosa);color:#fff}
+.yt a:visited{background:var(--azul);border-color:var(--azul)}
+.yt small{font-size:13.5px;color:var(--suave)}
+.goal{font-size:15px;border-left:4px solid var(--laranja);padding:2px 0 2px 12px;max-width:720px;margin:0}
+ul.goal{list-style:none;display:grid;gap:4px}
+.bloco .material-box{margin-top:18px}
+.pe{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;margin-top:20px;padding-top:14px;border-top:1.5px dashed var(--preto);font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+.pe .prog{flex:1;min-width:120px;max-width:320px}
+.pe .prog i{background:var(--rosa)}
+.selo-ok{background:var(--azul);color:var(--bege);padding:3px 8px}
+.bloco.concluido{background:var(--bege2)}
+.bloco.concluido .numb b{color:var(--azul)}
+@media (max-width:640px){
+  .bloco{grid-template-columns:1fr}
+  .bloco .numb{flex-direction:row;gap:12px;border-right:0;border-bottom:1.5px solid var(--preto);padding:12px 18px}
+  .bloco .numb b{font-size:40px}
+  .bloco .corpo{padding:18px 16px}
+  .checks li{grid-template-columns:auto minmax(0,1fr)}
+  .ver{grid-column:2;justify-self:start}
+}
+
+/* ---------- material do bloco (conteúdo do documento, com links) ---------- */
+.material-box{border:1.5px solid var(--preto);background:var(--bege)}
+.material-box > summary{cursor:pointer;padding:12px 16px;background:var(--preto);color:var(--bege);list-style:none;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:6px 16px;transition:background .15s}
+.material-box > summary:hover{background:var(--azul)}
+.material-box > summary::-webkit-details-marker{display:none}
+.mb-titulo{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase}
+.mb-acao{font-family:var(--f-body);font-size:14px;font-weight:700;background:var(--laranja);color:var(--preto);padding:5px 12px;border:1.5px solid var(--bege);box-shadow:3px 3px 0 var(--rosa)}
+.mb-acao::after{content:attr(data-fechado)}
+.material-box[open] .mb-acao{background:var(--bege);box-shadow:none}
+.material-box[open] .mb-acao::after{content:attr(data-aberto)}
+.material{padding:6px 18px 18px;font-size:14.5px;line-height:1.6;max-width:none;overflow-wrap:anywhere}
+.material h1,.material h2,.material h3,.material h4{font-family:var(--f-display);font-weight:700;line-height:1.2;margin:18px 0 6px;font-size:18px}
+.material p{margin:8px 0}
+.material ul,.material ol{padding-left:22px;margin:8px 0}
+.material a{color:var(--azul);font-weight:500;text-underline-offset:3px}
+.material blockquote{margin:12px 0;border-left:5px solid var(--rosa);background:var(--bege2);padding:6px 14px}
+.material table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%;margin:10px 0;font-size:13.5px}
+.material th,.material td{border:1px solid var(--suave);padding:6px 9px;text-align:left;vertical-align:top;min-width:110px}
+.material th{background:var(--bege2)}
+.material code{font-family:var(--f-mono);font-size:12.5px;background:var(--bege2);padding:0 4px}
+.material pre{margin:10px 0;background:var(--bege2);border:1.5px solid var(--preto);padding:10px 12px;overflow-x:auto;max-width:100%;line-height:1.45}
+.material pre code{background:none;padding:0;font-size:12.5px;white-space:pre}
+.material mark{background:rgba(253,117,40,.35)}
+.intro{border:1.5px solid var(--preto);border-left:8px solid var(--azul);background:var(--bege)}
+.intro > summary{cursor:pointer;padding:14px 16px;font-family:var(--f-display);font-weight:700;font-size:21px;list-style:none}
+.intro > summary::-webkit-details-marker{display:none}
+.intro > summary small{display:block;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--suave);font-weight:400}
+.det .btn-link{justify-self:start;background:none;border:0;padding:0;font-family:var(--f-mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;text-decoration:underline;text-underline-offset:3px;cursor:pointer;color:var(--azul)}
+
+/* ---------- detalhe ---------- */
+dialog{border:1.5px solid var(--preto);background:var(--bege);color:var(--tinta);padding:0;width:min(720px, calc(100vw - 24px));max-height:calc(100vh - 24px);overflow:auto;box-shadow:10px 10px 0 var(--preto)}
+dialog::backdrop{background:rgba(0,0,0,.45)}
+.det{display:grid;gap:14px;padding:22px}
+.det:focus{outline:0}
+.det .kicker{margin:0}
+.det h2{font-family:var(--f-display);font-weight:800;font-size:26px;line-height:1.15;margin:0;letter-spacing:-.01em;text-wrap:balance}
+.det dl{display:grid;grid-template-columns:130px minmax(0,1fr);gap:8px 14px;margin:0;font-size:14px}
+.det dt{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;padding-top:2px}
+.det dd{margin:0;min-width:0;overflow-wrap:anywhere}
+.det .opcoes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.det .opcoes button{font-family:var(--f-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;border:1.5px solid var(--preto);background:var(--bege);padding:10px 6px;cursor:pointer}
+.det .opcoes button[aria-pressed="true"]{background:var(--preto);color:var(--bege)}
+.det-acoes{display:flex;justify-content:flex-end}
+.det-meta{display:flex;flex-wrap:wrap;gap:6px}
+.det-meta span:not(.chip){font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;border:1.5px solid var(--preto);padding:3px 8px;background:#fff}
+.det-meta .chip{font-size:11px;padding:3px 8px}
+.det-sec{display:grid;gap:8px}
+.det-sec h3{font-family:var(--f-mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:var(--azul);margin:0}
+.det-pronto{border:1.5px solid var(--preto);border-left:6px solid var(--laranja);background:#fff;padding:12px 14px;font-size:15px;display:flex;gap:10px;align-items:flex-start}
+.det-pronto::before{content:"✓";font-weight:700;color:var(--laranja)}
+.det-tipo{margin:0;font-size:14px;color:var(--suave);font-style:italic}
+.det-passos{list-style:none;margin:0;padding:0;border:1.5px solid var(--preto);background:#fff}
+.det-passos li{padding:10px 14px;border-top:1px solid var(--bege2);font-size:14.5px;line-height:1.5;overflow-wrap:anywhere}
+.det-passos li:first-child{border-top:0}
+.det-passos li p{margin:0}
+.det-passos a{color:var(--azul);font-weight:600;text-underline-offset:3px}
+.det-passos code{font-family:var(--f-mono);font-size:12.5px;background:var(--bege2);padding:0 4px}
+.det-dep{background:var(--azul);color:var(--bege);padding:10px 14px;font-size:14px}
+.det-ent{margin:0;padding:2px 0 2px 12px;border-left:4px solid var(--laranja);list-style:none;display:grid;gap:4px;font-size:14px}
+.det-mat{border:1.5px solid var(--preto)}
+.det-mat > summary{cursor:pointer;padding:10px 14px;background:var(--preto);color:var(--bege);font-family:var(--f-mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;list-style:none}
+.det-mat > summary::-webkit-details-marker{display:none}
+.det-mat > summary::after{content:" ▾"}
+.det-mat[open] > summary::after{content:" ▴"}
+.det-rodape{position:sticky;bottom:0;background:var(--bege);border-top:1.5px solid var(--preto);margin:0 -22px -22px;padding:14px 22px;display:grid;gap:10px}
+.det-rodape h3{font-family:var(--f-mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;margin:0}
+.det-rodape .linha{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center}
+@media (max-width:560px){ .det-rodape .linha{grid-template-columns:1fr} .det-rodape .det-acoes{justify-content:stretch} .det-rodape .det-acoes .btn{width:100%} }
+
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom, 0px));z-index:60;background:var(--preto);color:var(--bege);font-family:var(--f-mono);font-size:12px;letter-spacing:.04em;padding:11px 16px;max-width:calc(100vw - 32px);box-shadow:4px 4px 0 var(--laranja)}
+.toast.erro{box-shadow:4px 4px 0 var(--rosa)}
+
+@media (max-width: 980px){
+  .board{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .semanas{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .tarefa{grid-template-columns:96px minmax(0,1fr) 60px;}
+  .tarefa .t-id,.tarefa .t-tipo,.tarefa .t-sem{display:none}
+}
+@media (max-width: 700px){
+  .hero{grid-template-columns:minmax(0,1fr)}
+  .faixa{justify-self:start}
+  .numeros{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .board{grid-template-columns:minmax(0,1fr)}
+  .porque{grid-template-columns:minmax(0,1fr)}
+  .epico > summary{grid-template-columns:minmax(0,1fr)}
+  .epico-meta{justify-items:start}
+  .num b{font-size:32px}
+  .det dl{grid-template-columns:minmax(0,1fr)}
+  .tarefa{grid-template-columns:auto minmax(0,1fr);gap:4px 10px}
+  .tarefa .st{grid-row:1}
+  .tarefa .t-meta:not(.t-tipo):not(.t-sem){grid-row:1;justify-self:end}
+  .tarefa .t-tit{grid-column:1/-1;grid-row:2}
+}
+@media (prefers-reduced-motion: reduce){ *{transition:none!important} }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="topo">
+    <div class="marca"><b>DZTI</b><span>Plano de estudos</span></div>
+    <div class="acoes">
+      <span class="salvando" id="salvando" hidden>Salvando…</span>
+      <a class="btn" id="link-jornada" href="#" hidden>Minha jornada</a>
+    </div>
+  </header>
+
+  <p class="aviso" id="aviso-demo" hidden><strong>Demonstração</strong> · plano Pleno com progresso fictício · as mudanças ficam só nesta tela</p>
+
+  <div id="conteudo"></div>
+</div>
+
+<dialog id="detalhe"><div class="det" id="det" tabindex="-1"></div></dialog>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<script>
+/* Mesma URL do App da Web usada na jornada. Vazia = modo demonstração. */
+const API_URL = 'https://script.google.com/macros/s/AKfycbysKP_5-o-R2ECK7TfgbFlgmch4THkdrXgfi52_LvYD2N_efZ8Vy6l_jAeathitJo5L/exec';
+const PAGINA_JORNADA = '/jornada.html';
+const SEMANAS = 6;
+
+const STATUS = [
+  { id: 'todo', nome: 'A fazer' }, { id: 'doing', nome: 'Fazendo' }, { id: 'done', nome: 'Feito' },
+];
+const TIPOS = { pratica: 'Prática', curso: 'Curso', leitura: 'Leitura', livro: 'Livro', entregavel: 'Entregável', linkedin: 'LinkedIn', checkpoint: 'Checkpoint' };
+const CORES_BLOCO = ['#000000', '#bb2649', '#344c92', '#fd7528', '#2f6b4f', '#5e5450'];
+
+let params;
+try { params = new URLSearchParams(location.search); } catch (_) { params = new URLSearchParams(''); }
+const ID = params.get('j');
+const DEMO = !API_URL; // a versão publicada não leva dados de demonstração
+const DEMO_DADOS = null;
+
+const estado = { aluno: {}, nivel: '', inicio: '', blocos: [], tarefas: [], status: {}, aba: 'lista', semana: 'agora', bloco: '' };
+const $ = (s) => document.querySelector(s);
+
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+const copiar = (x) => JSON.parse(JSON.stringify(x));
+const st = (id) => { const v = estado.status[id]; return v === 'done' ? 'done' : v === 'doing' || v === 'review' ? 'doing' : 'todo'; };
+const fmtH = (h) => (Math.round(h * 10) / 10).toString().replace('.', ',') + ' h';
+function dataISO(s) { const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(s || ''); return m ? new Date(+m[1], +m[2] - 1, +m[3]) : null; }
+const dd = (dt) => String(dt.getDate()).padStart(2, '0') + '/' + String(dt.getMonth() + 1).padStart(2, '0');
+const somaDias = (dt, n) => { const x = new Date(dt); x.setDate(x.getDate() + n); return x; };
+
+let toastTimer;
+function toast(msg, erro) {
+  const t = $('#toast');
+  t.textContent = msg; t.classList.toggle('erro', !!erro); t.hidden = false;
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.hidden = true; }, erro ? 6000 : 2500);
+}
+
+/* ---------- semanas: as tarefas são distribuídas nas 6 semanas pelas horas, na ordem do plano ---------- */
+function planejar() {
+  const total = estado.tarefas.reduce((s, t) => s + t.horas, 0) || 1;
+  // a semana vem da planilha do aluno; se faltar em alguma tarefa, distribui pelas horas
+  if (estado.tarefas.some((t) => !(t.semana >= 1))) {
+    const porSemana = total / SEMANAS;
+    let acum = 0;
+    estado.tarefas.forEach((t) => {
+      if (!(t.semana >= 1)) t.semana = Math.min(SEMANAS, Math.floor((acum + t.horas / 2) / porSemana) + 1);
+      acum += t.horas;
+    });
+  }
+  estado.nSem = Math.max(SEMANAS, ...estado.tarefas.map((t) => t.semana));
+  estado.total = total;
+  estado.intro = estado.blocos.filter((b) => b.num < 0);
+  const blocos = estado.blocos.filter((b) => b.num >= 0);
+  // tarefas de um bloco que não existe no modelo (ex.: bloco extra criado só para este aluno)
+  estado.tarefas.forEach((t) => {
+    if (!blocos.some((b) => b.num === t.bloco)) blocos.push({ num: t.bloco, nome: 'Bloco ' + t.bloco, porque_titulo: '', porque: '', resumo: '', entregaveis: [], material: '' });
+  });
+  estado.blocos = blocos.filter((b) => estado.tarefas.some((t) => t.bloco === b.num)); // bloco sem tarefas no plano do aluno não aparece
+  estado.blocos.forEach((b, i) => {
+    b.tarefas = estado.tarefas.filter((t) => t.bloco === b.num);
+    b.cor = CORES_BLOCO[i % CORES_BLOCO.length];
+    b.semanas = [Math.min(...b.tarefas.map((t) => t.semana)), Math.max(...b.tarefas.map((t) => t.semana))];
+  });
+  const ini = dataISO(estado.inicio);
+  const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+  estado.semanaAtual = ini ? Math.floor((hoje - ini) / 864e5 / 7) + 1 : null;
+  estado.fracSemana = ini ? (((hoje - ini) / 864e5) % 7 + 1) / 7 : 0;
+}
+const blocoDe = (t) => estado.blocos.find((b) => b.num === t.bloco) || { nome: 'Bloco ' + t.bloco, cor: '#000' };
+function datasSemana(n) {
+  const ini = dataISO(estado.inicio);
+  if (!ini) return '';
+  const de = somaDias(ini, (n - 1) * 7);
+  return dd(de) + ' a ' + dd(somaDias(de, 6));
+}
+const rotuloSemanas = (s) => s[0] === s[1] ? 'Semana ' + s[0] : 'Semanas ' + s[0] + ' a ' + s[1];
+const atrasada = (t) => estado.semanaAtual && t.semana < estado.semanaAtual && st(t.id) !== 'done';
+/* Semana do aluno = a primeira semana que ainda tem tarefa por fazer (avança quando ele fecha a semana).
+   O calendário (estado.semanaAtual, pela data de início) serve para o ritmo e para marcar atrasos. */
+function semanaProgresso() {
+  const abertas = estado.tarefas.filter((t) => st(t.id) !== 'done');
+  return abertas.length ? Math.min(...abertas.map((t) => t.semana)) : null;
+}
+
+/* ---------- material em markdown (vem da planilha) ---------- */
+function renderMarkdown(md) {
+  if (!md) return '';
+  let html;
+  if (window.marked && window.DOMPurify) {
+    html = DOMPurify.sanitize(marked.parse(md, { mangle: false, headerIds: false }), { ADD_ATTR: ['target'] });
+  } else { // sem as bibliotecas: texto simples com links clicáveis
+    html = esc(md).replace(/\[([^\]]+)\]\((https?:[^)\s]+)\)/g, '<a href="$2">$1</a>').replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>').replace(/&lt;\/?u&gt;/g, '').replace(/\n/g, '<br>');
+  }
+  const div = document.createElement('div');
+  div.innerHTML = html;
+  div.querySelectorAll('a[href]').forEach((a) => { a.target = '_blank'; a.rel = 'noopener'; });
+  return div.innerHTML;
+}
+const contaLinks = (md) => (String(md || '').match(/\]\(https?:/g) || []).length;
+
+/* ---------- render ---------- */
+function mostrarEstado(msg) { $('#conteudo').innerHTML = '<p class="estado">' + esc(msg) + '</p>'; }
+
+function render() {
+  const N = estado.nSem || SEMANAS;
+  $('#aviso-demo').hidden = !DEMO;
+  const lj = $('#link-jornada');
+  lj.hidden = !ID;
+  if (ID) lj.href = PAGINA_JORNADA + '?j=' + encodeURIComponent(ID);
+
+  const nome = (estado.aluno.nome || '').split(' ')[0];
+  const feitas = estado.tarefas.filter((t) => st(t.id) === 'done');
+  const hFeitas = feitas.reduce((s, t) => s + t.horas, 0);
+  const pct = Math.round(hFeitas / estado.total * 100);
+  const sa = estado.semanaAtual;   // calendário
+  const sp = semanaProgresso();     // progresso
+  let esperado = null;
+  if (sa) {
+    const ate = Math.min(sa, N + 1);
+    esperado = estado.tarefas.filter((t) => t.semana < ate).reduce((s, t) => s + t.horas, 0)
+      + (sa <= N ? estado.tarefas.filter((t) => t.semana === sa).reduce((s, t) => s + t.horas, 0) * estado.fracSemana : 0);
+  }
+  const diff = esperado == null ? null : hFeitas - esperado;
+  const faixa = sp == null ? 'Plano concluído!' : sa != null && sa < 1 ? 'Começa em ' + dd(dataISO(estado.inicio)) : 'Semana ' + sp + ' de ' + N;
+  const calTxt = sa == null ? 'sem data de início' : sa < 1 ? 'começa em ' + dd(dataISO(estado.inicio)) : sa > N ? 'prazo do calendário encerrado' : 'pelo calendário: semana ' + sa + (datasSemana(sa) ? ' (' + datasSemana(sa) + ')' : '');
+
+  let html = '<section class="hero"><div><p class="kicker">Engenharia de Dados · ' + esc(estado.nivel) + '</p>'
+    + '<h1>' + (nome ? esc(nome) + ', seu plano de <em>' + N + ' semanas</em>' : 'Seu plano de <em>' + N + ' semanas</em>') + '</h1>'
+    + '<p>Cada bloco tem um porquê, um entregável e o material com os links. Mova as tarefas no board conforme você avança: o que você marca aqui a mentoria acompanha.</p></div>'
+    + '<span class="faixa">' + esc(faixa) + '</span></section>';
+
+  html += '<section class="numeros" aria-label="Resumo">'
+    + num('Progresso', pct + '%', feitas.length + ' de ' + estado.tarefas.length + ' tarefas feitas')
+    + num('Horas', fmtH(hFeitas).replace(' h', ''), 'de ' + fmtH(estado.total) + ' · cerca de ' + fmtH(estado.total / N) + ' por semana')
+    + (diff == null ? num('Ritmo', '—', 'a data de início ainda não foi definida')
+      : diff >= -1 ? num('Ritmo', 'No ritmo', diff > 1 ? fmtH(diff) + ' adiantado' : 'você está em dia', false, true)
+        : num('Ritmo', fmtH(-diff), 'atrás do planejado até hoje', true))
+    + num('Sua semana', sp == null ? 'Fim' : sp + '/' + N, sp == null ? 'todas as tarefas feitas' : calTxt, sp != null && sa != null && sa > sp && sa >= 1)
+    + '</section>';
+
+  html += '<section class="semanas" aria-label="Semanas">' + Array.from({ length: N }, (_, i) => i + 1).map((n) => {
+    const ts = estado.tarefas.filter((t) => t.semana === n);
+    const h = ts.reduce((s, t) => s + t.horas, 0);
+    const hf = ts.filter((t) => st(t.id) === 'done').reduce((s, t) => s + t.horas, 0);
+    const fechada = h > 0 && hf >= h;
+    return '<button type="button" class="sem' + (n === sp ? ' atual' : '') + (n === sa && n !== sp ? ' cal' : '') + '" data-semana="' + n + '" aria-pressed="' + (estado.semana === String(n)) + '">'
+      + '<b>Semana ' + n + (fechada ? ' ✓' : '') + (n === sa && n !== sp ? ' · hoje' : '') + '</b><small>' + (datasSemana(n) ? datasSemana(n) + ' · ' : '') + fmtH(h) + '</small>'
+      + '<span class="sem-barra"><i style="width:' + (h ? Math.round(hf / h * 100) : 0) + '%"></i></span></button>';
+  }).join('') + '</section>';
+
+  const semOpcoes = '<option value="agora"' + (estado.semana === 'agora' ? ' selected' : '') + '>' + 'O que fazer agora' + '</option>'
+    + '<option value=""' + (estado.semana === '' ? ' selected' : '') + '>Todas as semanas</option>'
+    + Array.from({ length: N }, (_, i) => '<option value="' + (i + 1) + '"' + (estado.semana === String(i + 1) ? ' selected' : '') + '>Semana ' + (i + 1) + '</option>').join('');
+  html += '<div class="barra-abas"><div class="abas" role="tablist"><button type="button" role="tab" data-aba="lista" aria-selected="' + (estado.aba === 'lista') + '">Lista de tarefas</button>'
+    + '<button type="button" role="tab" data-aba="backlog" aria-selected="' + (estado.aba === 'backlog') + '">Backlog</button>'
+    + '<button type="button" role="tab" data-aba="board" aria-selected="' + (estado.aba === 'board') + '">Board</button></div>'
+    + (estado.aba === 'board' ? '<label for="f-semana">Semana <select id="f-semana">' + semOpcoes + '</select></label>' : '')
+    + '<label for="f-bloco">Bloco <select id="f-bloco"><option value="">Todos</option>' + estado.blocos.map((b) => '<option value="' + b.num + '"' + (String(b.num) === estado.bloco ? ' selected' : '') + '>Bloco ' + b.num + ' · ' + esc(b.nome) + '</option>').join('') + '</select></label></div>';
+
+  html += estado.aba === 'board' ? board() : estado.aba === 'backlog' ? backlog() : lista();
+  // mantém abertos/fechados os blocos e materiais que o aluno mexeu, e o foco no check
+  const antes = {}; document.querySelectorAll('#conteudo details[id]').forEach((d) => { antes[d.id] = d.open; });
+  const foco = document.activeElement && document.activeElement.dataset ? document.activeElement.dataset.check : null;
+  $('#conteudo').innerHTML = html;
+  Object.keys(antes).forEach((id) => { const d = document.getElementById(id); if (d) d.open = antes[id]; });
+  if (foco) { const el = document.querySelector('[data-check="' + foco + '"]'); if (el) el.focus({ preventScroll: true }); }
+}
+
+function num(rotulo, valor, sub, alerta, ok) {
+  return '<div class="num' + (alerta ? ' num--alerta' : ok ? ' num--ok' : '') + '"><span>' + rotulo + '</span><b>' + esc(valor) + '</b><small>' + esc(sub) + '</small></div>';
+}
+
+function filtradas() {
+  const sa = estado.semanaAtual;
+  return estado.tarefas.filter((t) => {
+    if (estado.bloco && String(t.bloco) !== estado.bloco) return false;
+    if (estado.aba !== 'board' || estado.semana === '') return true;
+    if (estado.semana === 'agora') {
+      const sp = semanaProgresso() || estado.nSem || SEMANAS;
+      const ate = Math.max(sp, Math.min(sa || 0, estado.nSem || SEMANAS));
+      return (t.semana >= sp && t.semana <= ate) || st(t.id) === 'doing';
+    }
+    return String(t.semana) === estado.semana;
+  });
+}
+
+function cartao(t) {
+  const b = blocoDe(t);
+  const s = st(t.id);
+  return '<button type="button" class="card' + (s === 'done' ? ' feito' : '') + '" data-id="' + esc(t.id) + '" style="--c:' + b.cor + '">'
+    + '<span class="card-topo"><span>' + esc(t.id) + ' · Semana ' + t.semana + '</span><span>' + fmtH(t.horas) + '</span></span>'
+    + '<b>' + esc(t.titulo) + '</b>'
+    + '<span class="chips"><span class="chip chip--bloco">Bloco ' + b.num + '</span>'
+    + (t.tipo === 'checkpoint' ? '<span class="chip chip--check">Checkpoint</span>' : '<span class="chip">' + esc(TIPOS[t.tipo] || t.tipo) + '</span>')
+    + (/revis/i.test(t.depende) ? '<span class="chip chip--rev">Revisão da Alana</span>' : '')
+    + (atrasada(t) ? '<span class="chip chip--atr">Atrasada</span>' : '') + '</span></button>';
+}
+
+function board() {
+  const ts = filtradas();
+  return '<p class="dica">Arraste a tarefa para outra coluna, ou toque nela para ver os detalhes e mudar o status.</p><section class="board" id="board">'
+    + STATUS.map((c) => {
+      const lista = ts.filter((t) => st(t.id) === c.id);
+      return '<div class="coluna" data-status="' + c.id + '"><div class="coluna-cab"><span>' + c.nome + '</span><span class="conta">' + lista.length + '</span></div>'
+        + '<div class="coluna-corpo" data-status="' + c.id + '">' + (lista.length ? lista.map(cartao).join('') : '<p class="vazio">Nada aqui.</p>') + '</div></div>';
+    }).join('') + '</section>';
+}
+
+function backlog() {
+  const blocos = estado.blocos.filter((b) => !estado.bloco || String(b.num) === estado.bloco);
+  const sa = estado.semanaAtual;
+  const intro = estado.bloco ? '' : (estado.intro || []).map((b) => '<details class="intro"><summary><small>Sobre o plano</small>' + esc(b.nome) + '</summary>'
+    + '<div class="material">' + renderMarkdown(b.material) + '</div></details>').join('');
+  return '<section class="backlog">' + intro + blocos.map((b) => {
+    const h = b.tarefas.reduce((s, t) => s + t.horas, 0);
+    const feitas = b.tarefas.filter((t) => st(t.id) === 'done');
+    const pct = b.tarefas.length ? Math.round(feitas.length / b.tarefas.length * 100) : 0;
+    const spB = semanaProgresso();
+    const aberto = estado.bloco || (spB != null && b.semanas[0] <= spB && b.semanas[1] >= spB && b.tarefas.some((t) => st(t.id) !== 'done'));
+    return '<details class="epico" id="epico-' + b.num + '" style="--c:' + b.cor + '"' + (aberto ? ' open' : '') + '><summary>'
+      + '<h2 class="epico-nome"><small>Bloco ' + b.num + ' · ' + rotuloSemanas(b.semanas) + '</small>' + esc(b.nome) + '</h2>'
+      + '<span class="epico-meta"><span>' + feitas.length + '/' + b.tarefas.length + ' tarefas · ' + fmtH(h) + '</span><span class="prog"><i style="width:' + pct + '%"></i></span></span></summary>'
+      + '<div class="epico-corpo"><div class="porque"><section><h3>' + esc(b.porque_titulo || 'Por que esse bloco existe') + '</h3><p>' + esc(b.porque) + '</p></section>'
+      + '<section><h3>O que você vai entregar</h3>' + (b.entregaveis.length ? '<ul>' + b.entregaveis.map((e) => '<li>' + esc(e) + '</li>').join('') + '</ul>' : '<p>' + esc(b.resumo) + '</p>') + '</section></div>'
+      + (b.material ? '<details class="material-box" id="material-' + b.num + '"' + (estado.abrirMaterial === b.num ? ' open' : '') + '><summary><span class="mb-titulo">Material do bloco: passo a passo e links' + (contaLinks(b.material) ? ' (' + contaLinks(b.material) + ')' : '') + '</span>'
+        + '<span class="mb-acao" data-fechado="Clique aqui para ver os detalhes do bloco ▾" data-aberto="Clique aqui para esconder ▴"></span></summary>'
+        + '<div class="material">' + renderMarkdown(b.material) + '</div></details>' : '')
+      + '<ul class="tarefas">' + b.tarefas.map((t) => {
+        const s = st(t.id);
+        return '<li><button type="button" class="tarefa' + (s === 'done' ? ' feito' : '') + '" data-id="' + esc(t.id) + '">'
+          + '<span class="st st-' + s + '">' + STATUS.find((x) => x.id === s).nome + '</span><span class="t-id">' + esc(t.id) + '</span>'
+          + '<span class="t-tit">' + esc(t.titulo) + (atrasada(t) ? ' <span class="chip chip--atr">Atrasada</span>' : '') + (/revis/i.test(t.depende) ? ' <span class="chip chip--rev">Revisão da Alana</span>' : '') + '</span>'
+          + '<span class="t-meta t-tipo">' + esc(TIPOS[t.tipo] || t.tipo) + '</span><span class="t-meta">' + fmtH(t.horas) + '</span><span class="t-meta t-sem">Semana ' + t.semana + '</span></button></li>';
+      }).join('') + '</ul></div></details>';
+  }).join('') + '</section>';
+}
+
+function lista() {
+  const blocos = estado.blocos.filter((b) => !estado.bloco || String(b.num) === estado.bloco);
+  const sp = semanaProgresso();
+  const intro = estado.bloco ? '' : (estado.intro || []).map((b, i) => '<details class="intro intro-lista" id="intro-l-' + i + '"><summary><small>Sobre o plano</small>' + esc(b.nome) + '</summary>'
+    + '<div class="material">' + renderMarkdown(b.material) + '</div></details>').join('');
+  let semAnterior = null;
+  return '<p class="dica">Marque cada atividade quando terminar. O que você marca aqui aparece também no Backlog e no Board, e a mentoria acompanha.</p>'
+    + '<section class="lista">' + intro + blocos.map((b) => {
+      let fase = '';
+      if (b.semanas[0] !== semAnterior) {
+        semAnterior = b.semanas[0];
+        const ds = datasSemana(b.semanas[0]);
+        fase = '<p class="fase">Semana ' + b.semanas[0] + (ds ? ' <small>' + ds + '</small>' : '') + (b.semanas[0] === sp ? ' <em>Você está aqui</em>' : '') + '</p>';
+      }
+      const h = b.tarefas.reduce((s, t) => s + t.horas, 0);
+      const feitas = b.tarefas.filter((t) => st(t.id) === 'done').length;
+      const ok = b.tarefas.length && feitas === b.tarefas.length;
+      const pct = b.tarefas.length ? Math.round(feitas / b.tarefas.length * 100) : 0;
+      return fase + '<article class="bloco' + (ok ? ' concluido' : '') + '">'
+        + '<div class="numb"><b>' + b.num + '</b><small>~' + fmtH(h).replace(' h', 'h') + '</small><small>' + rotuloSemanas(b.semanas) + '</small></div>'
+        + '<div class="corpo"><h3>' + esc(b.nome) + '</h3>'
+        + (b.porque ? '<p class="porque-txt">' + esc(b.porque) + '</p>' : '')
+        + '<p class="rot">Atividades</p><ul class="checks">' + b.tarefas.map((t) => {
+          const s = st(t.id);
+          return '<li class="' + (s === 'done' ? 'feito' : '') + '"><label class="chk"><input type="checkbox" data-check="' + esc(t.id) + '"' + (s === 'done' ? ' checked' : '') + ' aria-label="Concluí: ' + esc(t.titulo) + '">'
+            + '<span class="chk-txt"><b>' + esc(t.titulo) + '</b><small><span>' + esc(TIPOS[t.tipo] || t.tipo) + '</span><span>' + fmtH(t.horas) + '</span><span>Semana ' + t.semana + '</span>'
+            + (s === 'doing' ? '<span class="chip chip--rev">Fazendo</span>' : '')
+            + (atrasada(t) ? '<span class="chip chip--atr">Atrasada</span>' : '') + (/revis/i.test(t.depende) ? '<span class="chip chip--rev">Revisão da Alana</span>' : '') + '</small></span></label>'
+            + '<button type="button" class="ver" data-id="' + esc(t.id) + '">Detalhes</button></li>';
+        }).join('') + '</ul>'
+        + (() => { const v = videosDoBloco(b); return v.length ? '<p class="rot">Vídeos sugeridos</p><ul class="yt">' + v.map((x) => '<li><a href="' + esc(x.url) + '" target="_blank" rel="noopener">' + esc(x.titulo) + '</a>' + (x.nota ? '<small>' + esc(x.nota) + '</small>' : '') + '</li>').join('') + '</ul>' : ''; })()
+        + '<p class="rot">Entregável</p>' + (b.entregaveis.length > 1 ? '<ul class="goal">' + b.entregaveis.map((e) => '<li>' + esc(e) + '</li>').join('') + '</ul>' : '<p class="goal">' + esc(b.entregaveis[0] || b.resumo || '') + '</p>')
+        + (b.material ? '<details class="material-box" id="material-l-' + b.num + '"' + (estado.abrirMaterial === b.num ? ' open' : '') + '><summary><span class="mb-titulo">Material do bloco: passo a passo e links' + (contaLinks(b.material) ? ' (' + contaLinks(b.material) + ')' : '') + '</span>'
+          + '<span class="mb-acao" data-fechado="Clique aqui para ver os detalhes do bloco ▾" data-aberto="Clique aqui para esconder ▴"></span></summary>'
+          + '<div class="material">' + renderMarkdown(b.material) + '</div></details>' : '')
+        + '<div class="pe"><span>' + feitas + ' de ' + b.tarefas.length + ' atividades</span><span class="prog"><i style="width:' + pct + '%"></i></span>'
+        + (ok ? '<span class="selo-ok">Bloco concluído ✓</span>' : '') + '</div>'
+        + '</div></article>';
+    }).join('') + '</section>';
+}
+
+/* ---------- detalhe da tarefa ---------- */
+const DICA_TIPO = {
+  pratica: 'Mão na massa: faça no seu computador, não só assista.',
+  curso: 'Assista com o editor aberto e anote o que for novo. Um ou dois vídeos bastam, não precisa maratonar.',
+  leitura: 'Leia e anote, em poucas linhas e com suas palavras, o que entendeu.',
+  livro: 'Leitura complementar: vá no seu ritmo, focando nos capítulos indicados.',
+  entregavel: 'Algo que fica pronto e visível, de preferência no GitHub. Só marque como Feito quando existir.',
+  linkedin: 'Publique no LinkedIn e guarde o link do post.',
+  checkpoint: 'Pausa para conferir se o bloco está fechado: revise o entregável do bloco antes de marcar.'
+};
+const PARADAS = new Set('para com como seus suas sobre cada entre mais isso esse essa este esta voce fazer usar usando depois antes ainda muito pelo pela pelos pelas numa uma dos das nos nas que opcional seu sua aqui onde quando bloco'.split(' '));
+const semAcento = (x) => String(x || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+const palavras = (x) => new Set((semAcento(x).match(/[a-z0-9]+/g) || []).filter((w) => w.length >= 4 && !PARADAS.has(w)));
+/* Procura no material do bloco os trechos (passos da tabela, itens e links) que falam desta tarefa */
+function trechosDaTarefa(t, b) {
+  if (!b.material) return [];
+  const chave = palavras(t.titulo + ' ' + (t.pronto || ''));
+  if (!chave.size) return [];
+  const linhas = b.material.split('\n');
+  const ehItem = (x) => /^([-*•]|\d+[.)])\s+/.test(x);
+  const grupos = [];
+  linhas.forEach((l, i) => {
+    const x = l.trim();
+    if (!x || /^#/.test(x) || /^\|?[\s:|-]+$/.test(x) || /^>\s*$/.test(x)) return;
+    let md = x;
+    if (x.startsWith('|')) {
+      if (/-{3}/.test(linhas[i + 1] || '') && /^\|?[\s:|-]+$/.test((linhas[i + 1] || '').trim())) return; // cabeçalho da tabela
+      const cel = x.replace(/^\||\|$/g, '').split('|').map((c) => c.trim()).filter(Boolean);
+      if (!cel.length) return;
+      grupos.push({ i, linhas: ['**' + cel[0].replace(/\*\*/g, '') + '**' + (cel.length > 1 ? ': ' + cel.slice(1).join(' · ') : '')] });
+      return;
+    }
+    md = x.replace(/^>\s*/, '');
+    const ant = grupos[grupos.length - 1];
+    // item de lista: junta com a lista anterior (e com a frase que termina em ":" logo antes dela)
+    if (ehItem(md) && ant && ant.fim >= i - 2 && (ant.lista || /:\**\s*$/.test(ant.linhas[ant.linhas.length - 1]))) {
+      ant.linhas.push(md); ant.lista = true; ant.fim = i; return;
+    }
+    if (ehItem(md) && ant && ant.lista && ant.fim >= i - 2) { ant.linhas.push(md); ant.fim = i; return; } // lista com linha em branco entre itens
+    grupos.push({ i, fim: i, linhas: [md], lista: ehItem(md) });
+  });
+  const pontua = (g) => {
+    const texto = palavras(g.linhas.join(' ').replace(/\]\([^)]*\)/g, ']').replace(/https?:\/\/\S+/g, ''));
+    let p = 0; chave.forEach((w) => { if (texto.has(w)) p++; }); return p;
+  };
+  return grupos.map((g) => Object.assign(g, { pontos: pontua(g) }))
+    .filter((g) => g.pontos >= Math.min(2, chave.size))
+    .sort((a, c) => c.pontos - a.pontos).slice(0, 4).sort((a, c) => a.i - c.i)
+    .map((g) => g.linhas.map((x, k) => (k > 0 && !ehItem(x) ? '- ' : '') + x).join('\n'));
+}
+
+/* Vídeos do YouTube citados no material do bloco (para mostrar à vista, como no roadmap) */
+function videosDoBloco(b) {
+  const out = [], vistos = new Set();
+  const re = /\[([^\]]+)\]\((https?:\/\/(?:www\.|m\.)?(?:youtube\.com|youtu\.be)[^)\s]*)\)([^\n\[]*)/g;
+  let m;
+  while ((m = re.exec(b.material || ''))) {
+    if (vistos.has(m[2])) continue; vistos.add(m[2]);
+    const nota = m[3].replace(/^[\s:()\-–—]+|[\s)]+$/g, '').replace(/\s*>\s*/g, ' ').trim();
+    out.push({ titulo: m[1].replace(/<\/?u>/g, '').replace(/\s*>\s*/g, ' ').replace(/\*\*/g, '').trim(), url: m[2], nota });
+  }
+  return out;
+}
+
+const dlg = $('#detalhe');
+function abrirDetalhe(id) {
+  const t = estado.tarefas.find((x) => x.id === id);
+  if (!t) return;
+  const b = blocoDe(t);
+  const s = st(t.id);
+  const passos = trechosDaTarefa(t, b);
+  const ds = datasSemana(t.semana);
+  $('#det').innerHTML = '<p class="kicker">' + esc(t.id) + ' · Bloco ' + b.num + ' · ' + esc(b.nome) + '</p><h2>' + esc(t.titulo) + '</h2>'
+    + '<div class="det-meta"><span>' + esc(TIPOS[t.tipo] || t.tipo) + '</span><span>' + fmtH(t.horas) + ' esperadas</span><span>Semana ' + t.semana + (ds ? ' · ' + ds : '') + '</span>'
+    + (atrasada(t) ? '<span class="chip chip--atr">Atrasada</span>' : '') + (s === 'doing' ? '<span class="chip chip--rev">Fazendo</span>' : '') + (s === 'done' ? '<span class="chip chip--check">Feito</span>' : '') + '</div>'
+    + (t.pronto ? '<section class="det-sec"><h3>Pronto quando</h3><div class="det-pronto">' + esc(t.pronto) + '</div></section>' : '')
+    + '<section class="det-sec"><h3>Como fazer</h3>' + (DICA_TIPO[t.tipo] ? '<p class="det-tipo">' + DICA_TIPO[t.tipo] + '</p>' : '')
+    + (passos.length ? '<ul class="det-passos">' + passos.map((m) => '<li>' + renderMarkdown(m) + '</li>').join('') + '</ul>'
+      : '<p class="det-tipo">O passo a passo e os links estão no material do bloco, logo abaixo.</p>') + '</section>'
+    + (t.depende ? '<div class="det-dep"><b>Depende de:</b> ' + esc(t.depende) + (/revis/i.test(t.depende) ? '. Quando terminar, avise a equipe para a Alana revisar.' : '') + '</div>' : '')
+    + (b.entregaveis && b.entregaveis.length ? '<section class="det-sec"><h3>Esta tarefa ajuda a entregar</h3><ul class="det-ent">' + b.entregaveis.map((e) => '<li>' + esc(e) + '</li>').join('') + '</ul></section>' : '')
+    + (b.material ? '<details class="det-mat"><summary>Material completo do Bloco ' + b.num + (contaLinks(b.material) ? ' (' + contaLinks(b.material) + ' links)' : '') + '</summary><div class="material">' + renderMarkdown(b.material) + '</div></details>' : '')
+    + '<div class="det-rodape"><h3>Status da tarefa</h3><div class="linha"><div class="opcoes" role="group" aria-label="Status">' + STATUS.map((x) => '<button type="button" data-st="' + x.id + '" aria-pressed="' + (s === x.id) + '">' + x.nome + '</button>').join('') + '</div>'
+    + '<div class="det-acoes"><button class="btn" type="button" id="det-fechar">Fechar</button></div></div></div>';
+  dlg.dataset.id = id;
+  if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
+  dlg.scrollTop = 0; $('#det').focus({ preventScroll: true }); // abre no topo, sem destacar o primeiro link
+}
+function fecharDetalhe() { if (dlg.close) dlg.close(); else dlg.removeAttribute('open'); }
+$('#det').addEventListener('click', (e) => {
+  if (e.target.id === 'det-fechar') { fecharDetalhe(); return; }
+  if (e.target.id === 'det-material') {
+    const n = Number(e.target.dataset.bloco);
+    fecharDetalhe();
+    if (estado.aba === 'board') estado.aba = 'lista';
+    estado.abrirMaterial = n; render(); estado.abrirMaterial = null;
+    const alvo = document.getElementById((estado.aba === 'lista' ? 'material-l-' : 'material-') + n);
+    if (alvo) { alvo.open = true; const ep = alvo.closest('.epico'); if (ep) ep.open = true; alvo.scrollIntoView({ block: 'start' }); }
+    return;
+  }
+  const b = e.target.closest('[data-st]');
+  if (b) { mudarStatus(dlg.dataset.id, b.dataset.st); fecharDetalhe(); }
+});
+
+function mudarStatus(id, novo) {
+  if (st(id) === novo) return;
+  const anterior = copiar(estado.status);
+  if (novo === 'todo') delete estado.status[id]; else estado.status[id] = novo;
+  render();
+  const t = estado.tarefas.find((x) => x.id === id);
+  salvar(anterior, (t ? t.id : '') + ' → ' + STATUS.find((s) => s.id === novo).nome);
+}
+
+/* ---------- arrastar (mouse e toque) ---------- */
+let drag = null, ignorarClique = false;
+document.addEventListener('pointerdown', (e) => {
+  const card = e.target.closest('#board .card');
+  if (!card || e.button > 0) return;
+  const r = card.getBoundingClientRect();
+  drag = { id: card.dataset.id, card, x0: e.clientX, y0: e.clientY, dx: e.clientX - r.left, dy: e.clientY - r.top, w: r.width, h: r.height, ativo: false, tipo: e.pointerType };
+  document.addEventListener('pointermove', mover);
+  document.addEventListener('pointerup', soltar);
+  document.addEventListener('pointercancel', cancelar);
+});
+function mover(e) {
+  if (!drag) return;
+  const dist = Math.hypot(e.clientX - drag.x0, e.clientY - drag.y0);
+  if (!drag.ativo) {
+    // no toque, só arrasta com movimento mais horizontal (o vertical rola a página)
+    if (dist < 8 || (drag.tipo === 'touch' && Math.abs(e.clientY - drag.y0) > Math.abs(e.clientX - drag.x0))) { if (drag.tipo === 'touch' && dist >= 8) limpar(); return; }
+    drag.ativo = true;
+    drag.fantasma = drag.card.cloneNode(true);
+    drag.fantasma.classList.add('fantasma');
+    drag.fantasma.style.width = drag.w + 'px';
+    document.body.appendChild(drag.fantasma);
+    drag.ph = document.createElement('div'); drag.ph.className = 'ph'; drag.ph.style.height = drag.h + 'px';
+    drag.card.parentNode.insertBefore(drag.ph, drag.card);
+    drag.card.hidden = true;
+    document.body.classList.add('arrastando');
+  }
+  e.preventDefault();
+  drag.fantasma.style.left = (e.clientX - drag.dx) + 'px';
+  drag.fantasma.style.top = (e.clientY - Math.min(drag.dy, 30)) + 'px';
+  const alvo = document.elementFromPoint(e.clientX, e.clientY);
+  const corpo = alvo && alvo.closest('.coluna') && alvo.closest('.coluna').querySelector('.coluna-corpo');
+  if (corpo && drag.ph.parentNode !== corpo) { const v = corpo.querySelector('.vazio'); if (v) v.hidden = true; corpo.appendChild(drag.ph); }
+  if (e.clientY < 60) window.scrollBy(0, -12); else if (e.clientY > innerHeight - 60) window.scrollBy(0, 12);
+}
+function limpar() {
+  document.removeEventListener('pointermove', mover);
+  document.removeEventListener('pointerup', soltar);
+  document.removeEventListener('pointercancel', cancelar);
+  document.body.classList.remove('arrastando');
+  if (drag && drag.fantasma) drag.fantasma.remove();
+  if (drag && drag.ph) drag.ph.remove();
+  if (drag && drag.card) drag.card.hidden = false;
+  drag = null;
+}
+function soltar() {
+  if (!drag) return;
+  if (!drag.ativo) { limpar(); return; } // foi um toque/clique: o evento de clique abre o detalhe
+  const novo = drag.ph.parentNode && drag.ph.parentNode.dataset.status;
+  const id = drag.id;
+  ignorarClique = true; setTimeout(() => { ignorarClique = false; }, 50);
+  limpar();
+  if (novo) mudarStatus(id, novo); else render();
+}
+function cancelar() { limpar(); render(); }
+
+/* ---------- dados ---------- */
+async function carregar() {
+  if (DEMO) { aplicar(copiar(DEMO_DADOS)); return; }
+  if (!ID) { mostrarEstado('Este link está incompleto. Use o link do plano que a equipe da mentoria enviou.'); return; }
+  mostrarEstado('Carregando seu plano de estudos…');
+  try {
+    const r = await fetch(API_URL + '?plano=1&j=' + encodeURIComponent(ID));
+    const d = await r.json();
+    if (!d.ok) throw new Error(d.erro || 'Resposta inválida.');
+    if (!d.pronto) { mostrarEstado('Seu plano de estudos está sendo preparado pela equipe da mentoria. Assim que ele estiver pronto, ele aparece aqui, neste mesmo link.'); return; }
+    aplicar(d);
+  } catch (e) {
+    mostrarEstado('Não foi possível abrir seu plano. ' + (e.message || '') + ' Recarregue a página ou fale com a equipe da mentoria.');
+  }
+}
+function aplicar(d) {
+  estado.aluno = d.aluno || {}; estado.nivel = d.nivel || ''; estado.inicio = d.inicio || '';
+  estado.blocos = d.blocos || []; estado.tarefas = (d.tarefas || []).map((t) => Object.assign({}, t, { horas: Number(t.horas) || 0 }));
+  estado.status = d.estado || {};
+  planejar();
+  render();
+}
+async function salvar(anterior, msg) {
+  if (DEMO) { toast(msg + ' · demonstração'); return; }
+  $('#salvando').hidden = false;
+  try {
+    const r = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ acao: 'salvarPlano', j: ID, estado: estado.status }) });
+    const d = await r.json();
+    if (!d.ok) throw new Error(d.erro || 'Erro desconhecido.');
+    toast(msg + ' · salvo');
+  } catch (e) {
+    estado.status = anterior; render();
+    toast('Não salvou: ' + (e.message || 'sem conexão') + ' A mudança foi desfeita.', true);
+  } finally { $('#salvando').hidden = true; }
+}
+
+/* ---------- eventos ---------- */
+$('#conteudo').addEventListener('click', (e) => {
+  const aba = e.target.closest('[data-aba]');
+  if (aba) { estado.aba = aba.dataset.aba; render(); return; }
+  const sem = e.target.closest('[data-semana]');
+  if (sem) { estado.aba = 'board'; estado.semana = estado.semana === sem.dataset.semana ? 'agora' : sem.dataset.semana; render(); return; }
+  if (ignorarClique) return;
+  const c = e.target.closest('[data-id]');
+  if (c) abrirDetalhe(c.dataset.id);
+});
+$('#conteudo').addEventListener('change', (e) => {
+  if (e.target.dataset && e.target.dataset.check) { mudarStatus(e.target.dataset.check, e.target.checked ? 'done' : 'todo'); return; }
+  if (e.target.id === 'f-semana') { estado.semana = e.target.value; render(); }
+  if (e.target.id === 'f-bloco') { estado.bloco = e.target.value; render(); }
+});
+
+carregar();
+</script>
+</body>
+</html>

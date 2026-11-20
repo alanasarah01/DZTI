@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>LinkedIn Estratégico DZTI</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,800;1,9..144,700&family=Space+Grotesk:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap">
+<style>
+/* Guia de LinkedIn do aluno: explicação fixa de cada seção + os textos do aluno,
+   prontos para copiar (EN e PT). A equipe edita os textos e o status no Modo edição. */
+:root{
+  --bege:#ebe8e3; --bege2:#ddcfc7; --rosa:#bb2649; --laranja:#fd7528; --azul:#344c92; --verde:#2f6b4f;
+  --preto:#000000; --tinta:#1a1716; --suave:#5e5450; --branco:#fffdfa;
+  --f-display:'Fraunces', Georgia, 'Times New Roman', serif;
+  --f-body:'Space Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --f-mono:'Space Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  color-scheme: light;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{background:var(--bege);scroll-behavior:smooth}
+body{background:var(--bege);color:var(--tinta);font-family:var(--f-body);font-size:16px;line-height:1.55;margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--azul);outline-offset:2px}
+a{color:inherit}
+.wrap{max-width:900px;margin:0 auto;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-bottom:96px}
+@media (prefers-reduced-motion:reduce){ html{scroll-behavior:auto} *{transition:none!important} }
+
+.topo{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding-block:16px;border-bottom:1.5px solid var(--preto)}
+.marca{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;text-decoration:none}
+.marca b{font-family:var(--f-display);font-weight:800;font-size:28px;letter-spacing:-.02em;line-height:1}
+.marca span{font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+.acoes{display:flex;gap:10px;flex-wrap:wrap}
+.btn{font-family:var(--f-mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;background:var(--bege);border:1.5px solid var(--preto);padding:9px 14px;box-shadow:3px 3px 0 var(--preto);cursor:pointer;transition:transform .12s, box-shadow .12s;text-decoration:none;display:inline-flex;align-items:center;gap:8px}
+.btn:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--preto)}
+.btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--preto)}
+.btn--preto{background:var(--preto);color:var(--bege)}
+.btn--rosa{background:var(--rosa);color:var(--bege);border-color:var(--preto)}
+.aviso{margin:16px 0 0;border:1.5px dashed var(--azul);color:var(--azul);padding:8px 12px;font-family:var(--f-mono);font-size:12px;letter-spacing:.04em}
+.estado{margin:40px 0 0;border:1.5px solid var(--preto);background:var(--bege2);padding:18px 20px;max-width:560px;font-family:var(--f-mono);font-size:13px;line-height:1.6}
+
+/* ---------- topo do guia ---------- */
+.hero{padding-block:40px 8px}
+.tag{display:inline-block;background:var(--rosa);color:var(--branco);font-family:var(--f-display);font-style:italic;font-weight:700;font-size:17px;padding:5px 14px;transform:rotate(-2deg);box-shadow:5px 5px 0 var(--preto);margin-bottom:22px}
+.kicker{font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--azul);margin:0 0 8px;font-weight:700}
+.hero h1{font-family:var(--f-display);font-weight:800;font-size:clamp(36px,6vw,62px);line-height:.98;letter-spacing:-.025em;margin:0;max-width:16ch}
+.hero h1 em{font-style:italic;color:var(--rosa)}
+.hero .lead{font-size:18px;margin:18px 0 0;max-width:60ch}
+.para{display:inline-flex;margin-top:20px;font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;border:1.5px solid var(--preto);background:var(--branco);padding:7px 12px}
+.para b{margin-left:6px;color:var(--rosa)}
+
+.indice{margin-top:30px;border:1.5px solid var(--preto);background:var(--branco);padding:18px 20px;box-shadow:6px 6px 0 var(--preto)}
+.indice h2{margin:0 0 10px;font-family:var(--f-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase}
+.indice ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 24px}
+.indice a{text-decoration:none;display:flex;gap:10px;padding:4px 0;border-bottom:1px solid var(--bege2)}
+.indice a:hover{color:var(--rosa)}
+.indice a span{font-family:var(--f-mono);font-size:12px;color:var(--rosa);min-width:22px}
+.indice a .seu{margin-left:auto;font-family:var(--f-mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--azul)}
+
+/* ---------- seções ---------- */
+.sec{padding-top:56px;scroll-margin-top:12px}
+.sec > h2{display:flex;align-items:baseline;gap:14px;margin:0 0 14px;font-family:var(--f-display);font-weight:800;font-size:clamp(26px,4vw,36px);line-height:1.05;letter-spacing:-.02em}
+.sec > h2 span{font-family:var(--f-display);color:var(--rosa);font-size:.9em;min-width:1.4em}
+.sec h3{font-family:var(--f-body);font-weight:700;font-size:18px;margin:26px 0 8px}
+.sec p{margin:0 0 12px;max-width:72ch}
+.sec ul.pontos{margin:0 0 14px;padding:0;list-style:none;display:grid;gap:8px}
+.sec ul.pontos li{position:relative;padding-left:24px;max-width:72ch}
+.sec ul.pontos li::before{content:"";position:absolute;left:2px;top:.55em;width:10px;height:10px;background:var(--laranja);border:1.5px solid var(--preto)}
+.sec ul.pontos li b{font-weight:700}
+.passos{list-style:none;counter-reset:p;margin:0 0 16px;padding:0;display:grid;gap:8px}
+.passos li{counter-increment:p;position:relative;padding-left:38px;min-height:26px;max-width:72ch}
+.passos li::before{content:counter(p);position:absolute;left:0;top:0;width:26px;height:26px;border-radius:50%;background:var(--preto);color:var(--bege);font-family:var(--f-mono);font-size:12px;display:grid;place-items:center}
+.dica,.alerta{border:1.5px solid var(--preto);padding:12px 16px;margin:14px 0;max-width:76ch;font-size:15px}
+.dica{background:var(--bege2);border-left:6px solid var(--laranja)}
+.alerta{background:var(--branco);border-left:6px solid var(--rosa)}
+.dica b,.alerta b{font-weight:700}
+.formula{font-family:var(--f-mono);font-size:14px;background:var(--preto);color:var(--bege);padding:12px 16px;margin:14px 0;display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;justify-content:space-between}
+.formula .btn{box-shadow:none;background:var(--bege);color:var(--preto);padding:6px 10px;font-size:11px}
+.exemplos{display:grid;gap:8px;margin:0 0 14px}
+.exemplos div{font-family:var(--f-mono);font-size:13px;border:1.5px solid var(--preto);background:var(--branco);padding:9px 12px;overflow-wrap:anywhere}
+.duas{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:14px 0}
+.ruim,.bom{border:1.5px solid var(--preto);padding:12px 14px;font-size:14.5px}
+.ruim{background:#f6e3e7;border-left:6px solid var(--rosa)}
+.bom{background:#e3efe8;border-left:6px solid var(--verde)}
+.ruim b,.bom b{display:block;font-family:var(--f-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:4px}
+.cartoes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:14px 0}
+.cartoes div{border:1.5px solid var(--preto);background:var(--branco);padding:12px 14px;font-size:14.5px}
+.cartoes b{display:block;font-family:var(--f-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--azul);margin-bottom:4px}
+figure{margin:18px 0;max-width:100%}
+figure img{display:block;max-width:100%;height:auto;border:1.5px solid var(--preto);box-shadow:6px 6px 0 var(--preto);background:#fff}
+figure.par{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:start}
+.passos-img{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin:18px 0}
+.passos-img figure{margin:0;display:flex;flex-direction:column;gap:10px}
+.passos-img.uma{grid-template-columns:1fr}
+.passos-img.uma figure{max-width:100%}
+.sec .dica p,.sec .alerta p{margin:0}
+.sec code{font-family:var(--f-mono);font-size:13px;background:var(--bege2);padding:0 4px}
+.passos-img figure:nth-child(3){grid-column:1 / -1;max-width:560px;justify-self:center;width:100%}
+.passos-img figcaption{margin:0;font-family:var(--f-body);font-size:14px;color:var(--tinta);font-weight:500}
+.passos-img img{box-shadow:4px 4px 0 var(--preto)}
+figcaption{font-family:var(--f-mono);font-size:11.5px;color:var(--suave);margin-top:12px;letter-spacing:.03em}
+.citacao{border-left:4px solid var(--laranja);padding:4px 0 4px 14px;font-style:italic;margin:10px 0 14px;max-width:72ch}
+
+/* ---------- textos do aluno ---------- */
+.seu-texto{margin:18px 0}
+.seu-texto > .rot{font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--rosa);margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.seu-texto > .rot::before{content:"";width:18px;height:2px;background:var(--rosa)}
+.copia{border:1.5px solid var(--preto);background:var(--branco);margin-bottom:12px;box-shadow:4px 4px 0 var(--preto)}
+.copia-topo{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 10px 8px 14px;border-bottom:1.5px solid var(--preto);background:var(--bege)}
+.copia-topo span{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase}
+.copia-topo .btn{box-shadow:none;padding:6px 12px;font-size:11px;background:var(--preto);color:var(--bege)}
+.copia-topo .btn.ok{background:var(--verde);border-color:var(--verde)}
+.copia-corpo{padding:14px 16px;white-space:pre-wrap;overflow-wrap:anywhere;font-size:14.5px;line-height:1.6}
+.copia-corpo.modelo{color:var(--suave)}
+.copia textarea{display:block;width:100%;min-height:160px;overflow:hidden;border:0;padding:14px 16px;font-size:14.5px;line-height:1.6;resize:vertical;background:#fffef5}
+.copia textarea[data-campo="headline"]{min-height:70px}
+.copia textarea:focus{outline:3px solid var(--azul);outline-offset:-3px}
+.contador{font-family:var(--f-mono);font-size:11px;color:var(--suave);padding:6px 14px;border-top:1px dashed var(--bege2)}
+.contador.passou{color:var(--rosa);font-weight:700}
+.vazio{font-size:14px;color:var(--suave);border:1.5px dashed var(--preto);padding:12px 14px;margin:0 0 12px}
+
+/* ---------- checklists ---------- */
+.checks{list-style:none;margin:14px 0;padding:0;display:grid;gap:8px}
+.checks.duas-col{grid-template-columns:repeat(2,minmax(0,1fr))}
+.checks label{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;align-items:start;border:1.5px solid var(--preto);background:var(--branco);padding:12px 14px;cursor:pointer;font-size:15px}
+.checks input{appearance:none;-webkit-appearance:none;width:22px;height:22px;margin:0;border:1.5px solid var(--preto);background:#fff;cursor:pointer;display:grid;place-content:center}
+.checks input:checked{background:var(--rosa);border-color:var(--rosa)}
+.checks input:checked::after{content:"✓";color:#fff;font-size:14px;font-weight:700;line-height:1}
+.checks label:has(input:checked){background:var(--bege2)}
+.checks label:has(input:checked) .txt{text-decoration:line-through;text-decoration-color:var(--rosa)}
+.checks small{display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:4px;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--suave)}
+.checks a{color:var(--azul);font-weight:600}
+.progresso{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;display:flex;align-items:center;gap:12px;margin-top:8px}
+.progresso .barra{flex:1;max-width:280px;height:10px;border:1.5px solid var(--preto);background:var(--branco)}
+.progresso .barra i{display:block;height:100%;background:var(--rosa);transition:width .3s}
+
+/* ---------- modo edição ---------- */
+.barra-edicao{position:fixed;left:0;right:0;bottom:0;z-index:40;background:var(--preto);color:var(--bege);border-top:1.5px solid var(--preto);padding:10px max(16px, env(safe-area-inset-left, 0px)) calc(10px + env(safe-area-inset-bottom, 0px))}
+.barra-edicao .in{max-width:900px;margin:0 auto;display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+.barra-edicao label{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;display:flex;gap:8px;align-items:center}
+.barra-edicao select{background:var(--bege);color:var(--preto);border:1.5px solid var(--bege);padding:6px 8px;font-family:var(--f-mono);font-size:12px}
+.barra-edicao .msg{font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;color:var(--bege2);flex:1;min-width:160px}
+.barra-edicao .btn{box-shadow:none;color:var(--preto)}
+.barra-edicao .btn--rosa{color:var(--bege)}
+.barra-edicao .btn--rosa{border-color:var(--rosa)}
+dialog{border:1.5px solid var(--preto);background:var(--bege);color:var(--tinta);padding:0;width:min(440px, calc(100vw - 24px));box-shadow:10px 10px 0 var(--preto)}
+dialog::backdrop{background:rgba(0,0,0,.45)}
+dialog form{display:grid;gap:12px;padding:22px}
+dialog h2{margin:0;font-family:var(--f-display);font-weight:800;font-size:26px}
+dialog input{border:1.5px solid var(--preto);background:var(--branco);padding:10px}
+dialog .erro{color:var(--rosa);font-size:13px}
+dialog .linha{display:flex;gap:10px;justify-content:flex-end}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(76px + env(safe-area-inset-bottom, 0px));z-index:90;background:var(--preto);color:var(--bege);font-family:var(--f-mono);font-size:12px;letter-spacing:.04em;padding:11px 16px;max-width:calc(100vw - 32px);box-shadow:4px 4px 0 var(--laranja)}
+.toast.erro{box-shadow:4px 4px 0 var(--rosa)}
+
+@media (max-width:640px){
+  .indice ol,.duas,.cartoes,figure.par,.checks.duas-col,.passos-img{grid-template-columns:1fr}
+  .hero .lead{font-size:16px}
+  .marca b{font-size:24px}
+}
+@media print{ .topo .acoes,.barra-edicao,.copia-topo .btn{display:none!important} .copia-corpo{max-height:none} }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="topo">
+    <a class="marca" id="marca" href="#"><b>DZTI</b><span>LinkedIn estratégico</span></a>
+    <div class="acoes">
+      <a class="btn" id="link-jornada" href="#" hidden>Minha jornada</a>
+      <button class="btn" type="button" id="btn-edicao">Modo edição</button>
+    </div>
+  </header>
+  <p class="aviso" id="aviso-demo" hidden><strong>Demonstração</strong> · aluno fictício · nada é gravado · senha do modo edição: <strong>dzti</strong></p>
+  <div id="conteudo" aria-live="polite"><p class="estado">Carregando o seu guia de LinkedIn…</p></div>
+</div>
+
+<div class="barra-edicao" id="barra-edicao" hidden>
+  <div class="in">
+    <label>Status da página
+      <select id="ed-status"><option>Rascunho</option><option>Ativa</option></select>
+    </label>
+    <span class="msg" id="ed-msg">Edite os textos nas caixas e clique em Salvar.</span>
+    <button class="btn btn--rosa" type="button" id="ed-salvar">Salvar</button>
+    <button class="btn" type="button" id="ed-sair">Sair da edição</button>
+  </div>
+</div>
+
+<dialog id="dlg-senha" aria-labelledby="dlg-senha-t">
+  <form id="form-senha" method="dialog">
+    <h2 id="dlg-senha-t">Modo edição</h2>
+    <label for="senha">Senha da equipe</label>
+    <input id="senha" type="password" autocomplete="current-password" required>
+    <span class="erro" id="senha-erro" hidden></span>
+    <div class="linha"><button class="btn" type="button" id="senha-cancelar">Cancelar</button><button class="btn btn--preto" type="submit" id="senha-ok">Entrar</button></div>
+  </form>
+</dialog>
+
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+const API_URL = 'https://script.google.com/macros/s/AKfycbysKP_5-o-R2ECK7TfgbFlgmch4THkdrXgfi52_LvYD2N_efZ8Vy6l_jAeathitJo5L/exec';
+const params = new URLSearchParams(location.search);
+const ID = params.get('j') || '';
+const DEMO = !API_URL; // a versão publicada não leva dados de demonstração
+const SENHA_DEMO = '';
+const DEMO_DADOS = null;
+const $ = (s, el = document) => el.querySelector(s);
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const estado = { aluno: {}, textos: {}, conteudo: [], imagens: {}, ativo: false, status: 'Rascunho', edicao: false, senha: '', sujo: false };
+const CAMPOS = ['headline', 'sobre_en', 'sobre_pt', 'featured_en', 'featured_pt', 'experiencia_en', 'experiencia_pt', 'educacao_en', 'educacao_pt', 'recomendacoes_en', 'recomendacoes_pt'];
+/* rótulos das caixas de texto do aluno, por seção (coluna "Campos do aluno" da aba Conteúdo) */
+const SEU = {
+  headline: ['Sua headline (copie e cole)', [['headline', 'Headline · English', 220]]],
+  sobre: ['Seu "Sobre" (copie cada versão no idioma certo)'],
+  featured: ['Seus destaques (estrutura recomendada)'],
+  experiencia: ['Suas experiências (copie cada versão no idioma certo)'],
+  educacao: ['Sua educação e certificações (copie cada versão no idioma certo)'],
+  recomendacoes: ['Suas mensagens para pedir recomendação'],
+};
+const enPt = (b) => [[b + '_en', '🇺🇸 English (perfil principal)'], [b + '_pt', '🇧🇷 Português (versão complementar)']];
+
+/* ---------- caixas de texto do aluno ---------- */
+function caixa(campo, rotulo, limite, modelo) {
+  const v = estado.textos[campo] || '';
+  if (estado.edicao && !modelo) {
+    return '<div class="copia"><div class="copia-topo"><span>' + esc(rotulo) + '</span></div>'
+      + '<textarea data-campo="' + campo + '" aria-label="' + esc(rotulo) + '" placeholder="Cole aqui o texto desta seção">' + esc(v) + '</textarea>'
+      + (limite ? '<div class="contador" data-contador="' + campo + '"></div>' : '') + '</div>';
+  }
+  const texto = v.trim() ? v : (modelo || '');
+  if (!texto) return '';
+  return '<div class="copia"><div class="copia-topo"><span>' + esc(rotulo) + (v.trim() ? '' : ' · modelo para personalizar') + '</span>'
+    + '<button type="button" class="btn" data-copiar>Copiar</button></div>'
+    + '<div class="copia-corpo' + (v.trim() ? '' : ' modelo') + '">' + esc(texto) + '</div>'
+    + (limite && v.trim() ? '<div class="contador' + (v.length > limite ? ' passou' : '') + '">' + v.length + ' de ' + limite + ' caracteres</div>' : '') + '</div>';
+}
+function seuTexto(base) {
+  const def = SEU[base]; if (!def) return '';
+  const caixas = def[1] || enPt(base);
+  let corpo = caixas.map(([c, r, lim]) => caixa(c, r, lim)).join('');
+  if (!estado.edicao && !corpo) {
+    const modelo = (estado.conteudo || []).find((x) => x.tipo === 'modelo' && x.campos === base);
+    corpo = modelo ? caixa(base + '_modelo', base === 'recomendacoes' ? '💬 Modelo de mensagem' : '📌 Estrutura recomendada', 0, modelo.texto)
+      : '<p class="vazio">O seu texto desta seção ainda está sendo preparado pela mentoria.</p>';
+  }
+  return '<div class="seu-texto"><p class="rot">' + def[0] + '</p>' + corpo + '</div>';
+}
+
+/* ---------- conteúdo da planilha (markdown + blocos especiais) ---------- */
+const imgHTML = (nome, legenda) => {
+  const src = (estado.imagens || {})[String(nome).trim()];
+  return src ? '<figure><figcaption>' + esc(legenda || '') + '</figcaption><img src="' + esc(src) + '" alt="' + esc(legenda || nome) + '" loading="lazy"></figure>' : '';
+};
+const linhas = (t) => String(t).split('\n').map((l) => l.trim()).filter(Boolean);
+const inline = (t) => (window.marked && window.DOMPurify) ? DOMPurify.sanitize(marked.parseInline(String(t))) : esc(t);
+const BLOCOS = {
+  cartoes: (t) => '<div class="cartoes">' + linhas(t).map((l) => { const i = l.indexOf(':'); return '<div><b>' + inline(i > 0 ? l.slice(0, i) : '') + '</b>' + inline(i > 0 ? l.slice(i + 1).trim() : l) + '</div>'; }).join('') + '</div>',
+  'evite-prefira': (t) => '<div class="duas">' + linhas(t).map((l) => { const i = l.indexOf(':'); const evite = /^evite/i.test(l); return '<div class="' + (evite ? 'ruim' : 'bom') + '"><b>' + (evite ? '❌ ' : '✅ ') + inline(i > 0 ? l.slice(0, i) : '') + '</b>' + inline(i > 0 ? l.slice(i + 1).trim() : l) + '</div>'; }).join('') + '</div>',
+  formula: (t) => '<div class="formula"><span>' + esc(t.trim()) + '</span></div>',
+  exemplos: (t) => '<div class="exemplos">' + linhas(t).map((l) => '<div>' + esc(l) + '</div>').join('') + '</div>',
+  citacao: (t) => '<p class="citacao">' + inline(t.trim()) + '</p>',
+  imagens: (t) => { const it = linhas(t).map((l) => l.split('|').map((x) => x.trim())); const h = it.map(([n, leg]) => imgHTML(n, leg)).join(''); return h ? '<div class="passos-img' + (it.length === 1 ? ' uma' : '') + '">' + h + '</div>' : ''; },
+};
+if (window.marked) marked.use({ renderer: { code(code, lang) { const f = BLOCOS[String(lang || '').trim()]; return f ? f(code) : false; } } });
+function md(texto) {
+  let html;
+  if (window.marked && window.DOMPurify) html = DOMPurify.sanitize(marked.parse(String(texto || ''), { mangle: false, headerIds: false }), { ADD_ATTR: ['target'], ADD_DATA_URI_TAGS: ['img'] });
+  else html = '<p>' + esc(texto).replace(/\n/g, '<br>') + '</p>';
+  const d = document.createElement('div'); d.innerHTML = html;
+  d.querySelectorAll('a[href]').forEach((a) => { a.target = '_blank'; a.rel = 'noopener'; });
+  [...d.children].forEach((el) => {
+    if (el.tagName === 'UL') el.classList.add('pontos');
+    if (el.tagName === 'OL') el.classList.add('passos');
+    if (el.tagName === 'BLOCKQUOTE') { const x = document.createElement('div'); x.className = /⚠/.test(el.textContent) ? 'alerta' : 'dica'; x.innerHTML = el.innerHTML.replace(/<\/?p>/g, ' '); el.replaceWith(x); }
+  });
+  return d.innerHTML;
+}
+
+/* ---------- checklists (marcações ficam no navegador do aluno) ---------- */
+const chaveCheck = () => 'dzti-linkedin-' + (ID || 'demo');
+function lerChecks() { try { return JSON.parse(localStorage.getItem(chaveCheck())) || {}; } catch (_) { return {}; } }
+function gravarChecks(c) { try { localStorage.setItem(chaveCheck(), JSON.stringify(c)); } catch (_) {} }
+function checklist(prefixo, texto, comTempo) {
+  const c = lerChecks();
+  const todas = String(texto).split('\n');
+  const item = (l) => /^\s*[-*]\s+/.test(l);
+  const itens = todas.filter(item).map((l) => l.replace(/^\s*[-*]\s+/, ''));
+  const intro = todas.filter((l) => !item(l)).join('\n').trim();
+  return (intro ? md(intro) : '') + '<ul class="checks' + (comTempo ? '' : ' duas-col') + '" data-lista="' + prefixo + '">' + itens.map((it, i) => {
+    const [txt, tempo, impacto] = comTempo ? it.split('|').map((x) => x.trim()) : [it];
+    const id = prefixo + i;
+    return '<li><label><input type="checkbox" data-check="' + id + '"' + (c[id] ? ' checked' : '') + '><span><span class="txt">' + inline(txt) + '</span>'
+      + (tempo ? '<small><span>⏱ ' + esc(tempo) + '</span>' + (impacto ? '<span>' + esc(impacto) + '</span>' : '') + '</small>' : '') + '</span></label></li>';
+  }).join('') + '</ul><div class="progresso" data-progresso="' + prefixo + '"></div>';
+}
+function atualizarProgresso() {
+  document.querySelectorAll('[data-progresso]').forEach((p) => {
+    const l = document.querySelector('[data-lista="' + p.dataset.progresso + '"]');
+    const t = l.querySelectorAll('input').length, f = l.querySelectorAll('input:checked').length;
+    p.innerHTML = '<span>' + f + ' de ' + t + ' feitos</span><span class="barra"><i style="width:' + (t ? f / t * 100 : 0) + '%"></i></span>';
+  });
+}
+
+/* ---------- página ---------- */
+function guia() {
+  const nome = String(estado.aluno.nome || '').trim();
+  const secoes = (estado.conteudo || []).filter((x) => x.tipo !== 'modelo' && String(x.titulo).trim()).sort((a, b) => (Number(a.ordem) || 0) - (Number(b.ordem) || 0));
+  const topo = '<section class="hero"><span class="tag">Guia estratégico</span><p class="kicker">LinkedIn · Área de dados</p>'
+    + '<h1>Seu LinkedIn pronto para <em>recrutadores globais</em></h1>'
+    + '<p class="lead">O passo a passo para estruturar cada seção do seu perfil, com os seus textos prontos para copiar em inglês e português.</p>'
+    + (nome ? '<p class="para">Feito para<b>' + esc(nome) + '</b></p>' : '') + '</section>';
+  if (!secoes.length) return topo + '<p class="estado">O conteúdo do guia não foi encontrado na planilha (aba Conteúdo). Use o menu Mentoria → LinkedIn dos alunos → Restaurar o conteúdo padrão do guia.</p>';
+  const marca = /<p>\s*\[\[TEXTO DO ALUNO\]\]\s*<\/p>/;
+  return topo
+    + '<nav class="indice" aria-label="Neste guia"><h2>Neste guia</h2><ol>' + secoes.map((s, i) => '<li><a href="#s' + (i + 1) + '"><span>' + String(i + 1).padStart(2, '0') + '</span>' + esc(s.titulo) + (SEU[s.campos] ? '<em class="seu">seu texto</em>' : '') + '</a></li>').join('') + '</ol></nav>'
+    + secoes.map((s, i) => {
+      const n = i + 1;
+      let corpo;
+      if (s.tipo === 'plano' || s.tipo === 'checklist') corpo = checklist((s.tipo === 'plano' ? 'a' : 'c') + n, s.texto, s.tipo === 'plano');
+      else {
+        corpo = md(s.texto);
+        if (SEU[s.campos]) corpo = marca.test(corpo) ? corpo.replace(marca, () => seuTexto(s.campos)) : corpo + seuTexto(s.campos);
+        else corpo = corpo.replace(marca, '');
+      }
+      return '<section class="sec" id="s' + n + '" aria-labelledby="t' + n + '"><h2 id="t' + n + '"><span>' + String(n).padStart(2, '0') + '</span>' + esc(s.titulo) + '</h2>' + corpo + '</section>';
+    }).join('');
+}
+
+function render() {
+  const lj = $('#link-jornada');
+  lj.hidden = !ID || DEMO;
+  if (ID) { lj.href = '/jornada.html?j=' + encodeURIComponent(ID); $('#marca').href = lj.href; }
+  $('#aviso-demo').hidden = !DEMO;
+  $('#btn-edicao').textContent = estado.edicao ? 'Sair da edição' : 'Modo edição';
+  $('#btn-edicao').classList.toggle('btn--preto', estado.edicao);
+  $('#barra-edicao').hidden = !estado.edicao;
+  $('#ed-status').value = estado.status;
+  if (!estado.ativo && !estado.edicao) {
+    $('#conteudo').innerHTML = '<p class="estado">Seu guia de LinkedIn está sendo preparado pela equipe da mentoria. Assim que ele estiver pronto, aparece aqui, neste mesmo link.</p>';
+    return;
+  }
+  $('#conteudo').innerHTML = guia();
+  atualizarProgresso();
+  document.querySelectorAll('[data-contador]').forEach(contar);
+  document.querySelectorAll('textarea[data-campo]').forEach(crescer);
+  document.title = 'LinkedIn' + (estado.aluno.nome ? ' · ' + estado.aluno.nome : '') + ' · DZTI';
+}
+/* a caixa de edição cresce até mostrar o texto inteiro, sem barra de rolagem */
+function crescer(t) { t.style.height = 'auto'; t.style.height = (t.scrollHeight + 4) + 'px'; }
+addEventListener('resize', () => document.querySelectorAll('textarea[data-campo]').forEach(crescer));
+function contar(el) {
+  const ta = document.querySelector('textarea[data-campo="' + el.dataset.contador + '"]');
+  const n = ta ? ta.value.length : 0;
+  el.textContent = n + ' de 220 caracteres';
+  el.classList.toggle('passou', n > 220);
+}
+
+/* ---------- copiar ---------- */
+async function copiar(texto, botao) {
+  let ok = false;
+  try { await navigator.clipboard.writeText(texto); ok = true; }
+  catch (_) {
+    const ta = document.createElement('textarea'); ta.value = texto; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select(); try { ok = document.execCommand('copy'); } catch (__) {} ta.remove();
+  }
+  if (botao) { const t = botao.textContent; botao.textContent = ok ? 'Copiado ✓' : 'Selecione e copie'; botao.classList.toggle('ok', ok); setTimeout(() => { botao.textContent = t; botao.classList.remove('ok'); }, 1800); }
+}
+document.addEventListener('click', (e) => {
+  const b = e.target.closest('[data-copiar]');
+  if (b) { copiar(b.closest('.copia').querySelector('.copia-corpo').textContent, b); return; }
+  const f = e.target.closest('[data-copiar-texto]');
+  if (f) copiar(f.dataset.copiarTexto, f);
+});
+document.addEventListener('change', (e) => {
+  const c = e.target.closest('[data-check]');
+  if (!c) return;
+  const m = lerChecks(); m[c.dataset.check] = c.checked; gravarChecks(m); atualizarProgresso();
+});
+
+/* ---------- API ---------- */
+async function api(corpo) {
+  const r = await fetch(API_URL, { method: 'POST', body: JSON.stringify(corpo) });
+  const d = await r.json();
+  if (!d.ok) throw new Error(d.erro || 'erro');
+  return d;
+}
+async function carregar() {
+  if (DEMO) { Object.assign(estado, JSON.parse(JSON.stringify(DEMO_DADOS))); render(); return; }
+  if (!ID) { $('#conteudo').innerHTML = '<p class="estado">Link incompleto. Abra o guia pelo botão LinkedIn da sua jornada.</p>'; return; }
+  try {
+    const r = await fetch(API_URL + '?linkedin=1&j=' + encodeURIComponent(ID));
+    const d = await r.json();
+    if (!d.ok) throw new Error(d.erro || 'erro');
+    Object.assign(estado, { aluno: d.aluno || {}, ativo: !!d.ativo, textos: d.textos || {}, conteudo: d.conteudo || [], imagens: d.imagens || {}, status: d.ativo ? 'Ativa' : 'Rascunho' });
+    render();
+  } catch (e) {
+    $('#conteudo').innerHTML = '<p class="estado">Não foi possível carregar o guia (' + esc(e.message) + '). Tente recarregar a página.</p>';
+  }
+}
+
+/* ---------- modo edição ---------- */
+const dlg = $('#dlg-senha');
+const lerSenha = () => { try { return sessionStorage.getItem('dzti-senha') || ''; } catch (_) { return ''; } };
+const guardarSenha = (s) => { try { if (s) sessionStorage.setItem('dzti-senha', s); else sessionStorage.removeItem('dzti-senha'); } catch (_) {} };
+async function entrarEdicao(senha, silencioso) {
+  $('#senha-erro').hidden = true; $('#senha-ok').disabled = true;
+  try {
+    if (DEMO) { if (senha !== SENHA_DEMO) throw new Error('senha'); }
+    else {
+      const d = await api({ acao: 'linkedinLer', senha, j: ID });
+      Object.assign(estado, { aluno: d.aluno || estado.aluno, textos: d.textos || {}, conteudo: d.conteudo || [], imagens: d.imagens || {}, status: d.status || 'Rascunho' });
+    }
+    estado.senha = senha; estado.edicao = true; estado.sujo = false; guardarSenha(senha);
+    if (dlg.open) dlg.close();
+    render(); $('#ed-msg').textContent = 'Edite os textos nas caixas e clique em Salvar.';
+  } catch (e) {
+    if (silencioso) { guardarSenha(''); abrirSenha(); return; }
+    $('#senha-erro').textContent = e.message === 'senha' ? (DEMO ? 'Senha incorreta. Na demonstração, a senha é dzti.' : 'Senha incorreta.') : 'Não foi possível abrir: ' + e.message;
+    $('#senha-erro').hidden = false;
+  } finally { $('#senha-ok').disabled = false; }
+}
+function abrirSenha() { $('#senha').value = ''; $('#senha-erro').hidden = true; if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', ''); $('#senha').focus(); }
+function coletar() {
+  document.querySelectorAll('textarea[data-campo]').forEach((t) => { estado.textos[t.dataset.campo] = t.value; });
+}
+async function salvar() {
+  coletar();
+  const b = $('#ed-salvar'); b.disabled = true; $('#ed-msg').textContent = 'Salvando…';
+  const status = $('#ed-status').value;
+  try {
+    if (!DEMO) {
+      const textos = {}; CAMPOS.forEach((c) => { textos[c] = estado.textos[c] || ''; });
+      const d = await api({ acao: 'linkedinSalvar', senha: estado.senha, j: ID, textos, status });
+      estado.status = d.status || status;
+    } else estado.status = status;
+    estado.ativo = estado.status === 'Ativa'; estado.sujo = false;
+    $('#ed-msg').textContent = 'Salvo às ' + new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) + (estado.ativo ? ' · página ativa para o aluno' : ' · página em rascunho (o aluno ainda não vê)');
+    toast(DEMO ? 'Demonstração: nada foi gravado' : 'Textos salvos');
+  } catch (e) {
+    if (e.message === 'senha') { sairEdicao(true); toast('A senha mudou. Entre de novo.', true); }
+    else { $('#ed-msg').textContent = 'Não salvou: ' + e.message; toast('Não foi possível salvar: ' + e.message, true); }
+  } finally { b.disabled = false; }
+}
+function sairEdicao(forcar) {
+  if (!forcar && estado.sujo && !confirmarSaida()) return;
+  estado.edicao = false; estado.sujo = false;
+  if (!DEMO) carregar(); else render();
+}
+let avisoSaida = 0;
+function confirmarSaida() {
+  // sem diálogo do navegador: o 1º clique avisa, o 2º sai
+  if (Date.now() - avisoSaida < 4000) return true;
+  avisoSaida = Date.now(); toast('Há alterações não salvas. Clique de novo em Sair para descartar.', true); return false;
+}
+$('#btn-edicao').addEventListener('click', () => {
+  if (estado.edicao) return sairEdicao();
+  const s = lerSenha();
+  if (s) entrarEdicao(s, true); else abrirSenha();
+});
+$('#form-senha').addEventListener('submit', (e) => { e.preventDefault(); entrarEdicao($('#senha').value); });
+$('#senha-cancelar').addEventListener('click', () => dlg.close());
+$('#ed-salvar').addEventListener('click', salvar);
+$('#ed-sair').addEventListener('click', () => sairEdicao());
+$('#ed-status').addEventListener('change', () => { estado.sujo = true; $('#ed-msg').textContent = 'Status alterado. Clique em Salvar para aplicar.'; });
+document.addEventListener('input', (e) => {
+  const t = e.target.closest('textarea[data-campo]');
+  if (!t) return;
+  estado.sujo = true; $('#ed-msg').textContent = 'Alterações não salvas.';
+  crescer(t);
+  const c = document.querySelector('[data-contador="' + t.dataset.campo + '"]'); if (c) contar(c);
+});
+window.addEventListener('beforeunload', (e) => { if (estado.sujo) { e.preventDefault(); e.returnValue = ''; } });
+
+let toastT;
+function toast(msg, erro) { const t = $('#toast'); t.textContent = msg; t.classList.toggle('erro', !!erro); t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, 4000); }
+
+carregar();
+</script>
+</body>
+</html>

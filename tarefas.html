@@ -1,0 +1,531 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tarefas da Equipe DZTI</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,800;1,9..144,700&family=Space+Grotesk:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap">
+<style>
+/* Quadro de tarefas da equipe: três colunas (Para não esquecer, Em andamento, Concluído),
+   cards criados na própria coluna, arrastados com o mouse ou o dedo, e editados num diálogo.
+   Mesmo visual do painel: bege, bordas pretas, sombras duras. */
+:root{
+  --bege:#ebe8e3; --bege2:#ddcfc7; --rosa:#bb2649; --laranja:#fd7528; --azul:#344c92; --verde:#2f6b4f;
+  --preto:#000000; --tinta:#1a1716; --suave:#5e5450; --branco:#fffdfa;
+  --f-display:'Fraunces', Georgia, 'Times New Roman', serif;
+  --f-body:'Space Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --f-mono:'Space Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  color-scheme: light;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{background:var(--bege)}
+body{background:var(--bege);color:var(--tinta);font-family:var(--f-body);font-size:15px;line-height:1.5;margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--azul);outline-offset:2px}
+a{color:inherit}
+.wrap{max-width:1280px;margin:0 auto;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:0 56px}
+
+.topo{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding-block:16px;border-bottom:1.5px solid var(--preto)}
+.marca{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.marca b{font-family:var(--f-display);font-weight:800;font-size:28px;letter-spacing:-.02em;line-height:1}
+.marca span{font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+.acoes{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.status-txt{font-family:var(--f-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--suave)}
+.status-txt.erro{color:var(--rosa)}
+
+.btn{font-family:var(--f-mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;background:var(--bege);border:1.5px solid var(--preto);padding:9px 14px;box-shadow:3px 3px 0 var(--preto);cursor:pointer;transition:transform .12s, box-shadow .12s;text-decoration:none;display:inline-block}
+.btn:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--preto)}
+.btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--preto)}
+.btn--preto{background:var(--preto);color:var(--bege)}
+.btn--rosa{background:var(--rosa);color:var(--bege);border-color:var(--rosa)}
+.btn--link{box-shadow:none;border:0;border-bottom:2px solid var(--rosa);padding:4px 0}
+.btn--link:hover,.btn--link:active{transform:none;box-shadow:none;color:var(--rosa)}
+
+.aviso{margin:16px 0 0;border:1.5px dashed var(--azul);color:var(--azul);padding:8px 12px;font-family:var(--f-mono);font-size:12px;letter-spacing:.04em}
+
+.login{margin:56px 0 0;max-width:460px;border:1.5px solid var(--preto);background:var(--bege2);padding:24px;box-shadow:8px 8px 0 var(--preto);display:grid;gap:14px}
+.login h1{font-family:var(--f-display);font-weight:800;font-size:34px;line-height:1;margin:0;letter-spacing:-.02em}
+.login p{margin:0;color:var(--suave)}
+.login label{font-family:var(--f-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase}
+.login input{border:1.5px solid var(--preto);background:var(--bege);padding:10px;min-width:0}
+.login .erro{color:var(--rosa);font-size:13px}
+.login-linha{display:flex;gap:10px;flex-wrap:wrap}
+.login-linha input{flex:1 1 200px}
+
+.hero{padding-block:28px 0}
+.kicker{font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--azul);margin:0 0 8px}
+.hero h1{font-family:var(--f-display);font-weight:800;font-size:clamp(34px,5vw,54px);line-height:1;letter-spacing:-.025em;margin:0}
+.hero h1 em{font-style:italic;color:var(--rosa)}
+.hero p{margin:10px 0 0;color:var(--suave);max-width:70ch}
+
+.filtros{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;margin-top:22px;padding-block:12px;border-block:1.5px solid var(--preto)}
+.filtros .rot{font-family:var(--f-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase}
+.pessoas{display:flex;flex-wrap:wrap;gap:6px}
+.pessoa{font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;background:var(--bege);border:1.5px solid var(--preto);padding:6px 10px;cursor:pointer}
+.pessoa:hover{background:var(--bege2)}
+.pessoa[aria-pressed="true"]{background:var(--preto);color:var(--bege)}
+.busca{border:1.5px solid var(--preto);background:var(--bege);padding:7px 10px;min-width:0;flex:1 1 200px;max-width:320px;margin-left:auto}
+
+/* ---------- quadro ---------- */
+.quadro{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:20px;align-items:start}
+.coluna{background:var(--bege2);border:1.5px solid var(--preto);display:flex;flex-direction:column;min-height:180px}
+.col-topo{display:flex;align-items:center;gap:8px;padding:12px 14px;border-bottom:1.5px solid var(--preto);background:var(--bege)}
+.col-topo h2{margin:0;font-family:var(--f-mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:700}
+.col-topo .bola{width:10px;height:10px;border-radius:50%;background:var(--c);flex:none;border:1.5px solid var(--preto)}
+.col-topo .qtd{font-family:var(--f-mono);font-size:12px;color:var(--suave);margin-left:auto}
+.lista{list-style:none;margin:0;padding:12px;display:grid;gap:10px;min-height:60px;align-content:start}
+.lista.alvo{background:rgba(52,76,146,.08);outline:2px dashed var(--azul);outline-offset:-6px}
+.vazio{font-size:13px;color:var(--suave);padding:6px 2px;margin:0}
+
+.card{background:var(--branco);border:1.5px solid var(--preto);padding:11px 12px 10px;cursor:grab;user-select:none;-webkit-user-select:none;touch-action:manipulation;box-shadow:3px 3px 0 var(--preto);transition:box-shadow .12s, transform .12s;position:relative}
+.card:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--laranja)}
+.card:focus-visible{outline:3px solid var(--azul);outline-offset:2px}
+.card h3{margin:0;font-family:var(--f-body);font-weight:500;font-size:15px;line-height:1.35;overflow-wrap:anywhere}
+.card .meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.card .meta:empty{display:none}
+.tag{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;border:1.5px solid var(--preto);padding:1px 6px;background:var(--bege)}
+.tag--atr{background:var(--rosa);color:#fff;border-color:var(--rosa)}
+.tag--hoje{background:var(--laranja);border-color:var(--laranja);color:var(--preto)}
+.tag--nota{border-style:dashed}
+.coluna[data-col="Concluído"] .card h3{text-decoration:line-through;text-decoration-color:var(--rosa);color:var(--suave)}
+.card.fantasma{opacity:.25;box-shadow:none;transform:none}
+.card.voando{position:fixed;z-index:80;pointer-events:none;cursor:grabbing;box-shadow:8px 8px 0 var(--laranja);transform:rotate(1.5deg);margin:0}
+body.arrastando, body.arrastando *{cursor:grabbing!important;user-select:none}
+
+.nova{border-top:1.5px dashed var(--preto);padding:10px 12px}
+.nova button.abre{background:none;border:0;padding:4px 0;cursor:pointer;font-family:var(--f-mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--azul)}
+.nova button.abre:hover{color:var(--rosa)}
+.nova form{display:grid;gap:8px}
+.nova textarea{border:1.5px solid var(--preto);background:var(--branco);padding:9px 10px;resize:none;min-height:64px;width:100%}
+.nova .linha{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.nova .dica{font-size:12px;color:var(--suave)}
+.mais{background:none;border:0;border-top:1.5px dashed var(--preto);padding:10px 12px;text-align:left;cursor:pointer;font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--suave)}
+.mais:hover{color:var(--tinta)}
+
+/* ---------- diálogo ---------- */
+dialog{border:1.5px solid var(--preto);background:var(--bege);color:var(--tinta);padding:0;width:min(620px, calc(100vw - 24px));max-height:calc(100vh - 24px);overflow:auto;box-shadow:10px 10px 0 var(--preto)}
+dialog::backdrop{background:rgba(0,0,0,.45)}
+.ficha{display:grid;gap:14px;padding:22px}
+.ficha .kicker{margin:0}
+.ficha label{display:grid;gap:6px;font-family:var(--f-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase}
+.ficha input,.ficha select,.ficha textarea{font-family:var(--f-body);font-size:15px;letter-spacing:0;text-transform:none;border:1.5px solid var(--preto);background:var(--branco);padding:9px 10px;width:100%;min-width:0}
+.ficha textarea.titulo{min-height:0;resize:none;overflow:hidden;font-family:var(--f-display);font-weight:800;font-size:24px;line-height:1.15;letter-spacing:-.01em}
+.ficha textarea{min-height:140px;resize:vertical;line-height:1.5}
+.ficha .tres{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.links{display:grid;gap:4px;margin:-6px 0 0;padding:0;list-style:none}
+.links a{color:var(--azul);font-size:14px;overflow-wrap:anywhere}
+.datas{font-family:var(--f-mono);font-size:11px;color:var(--suave);letter-spacing:.04em;margin:0}
+.ficha .rodape{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;border-top:1.5px solid var(--preto);padding-top:14px}
+.ficha .rodape div{display:flex;gap:10px;flex-wrap:wrap}
+
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom, 0px));z-index:90;background:var(--preto);color:var(--bege);font-family:var(--f-mono);font-size:12px;letter-spacing:.04em;padding:11px 16px;max-width:calc(100vw - 32px);box-shadow:4px 4px 0 var(--laranja)}
+.toast.erro{box-shadow:4px 4px 0 var(--rosa)}
+
+@media (max-width:900px){
+  .quadro{grid-template-columns:1fr}
+  .busca{margin-left:0;max-width:none}
+}
+@media (max-width:560px){
+  .ficha .tres{grid-template-columns:1fr}
+  .marca b{font-size:24px}
+}
+@media (prefers-reduced-motion:reduce){ .card,.btn{transition:none} }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="topo">
+    <div class="marca"><b>DZTI</b><span>Tarefas da equipe</span></div>
+    <div class="acoes" id="acoes" hidden>
+      <span class="status-txt" id="status" role="status" aria-live="polite"></span>
+      <a class="btn" id="link-planilha" target="_blank" rel="noopener" hidden>Planilha</a>
+      <button class="btn" type="button" id="btn-atualizar">Atualizar</button>
+      <button class="btn" type="button" id="btn-sair">Sair</button>
+    </div>
+  </header>
+
+  <p class="aviso" id="aviso-demo" hidden><strong>Demonstração</strong> · tarefas de exemplo · nada é gravado · senha: <strong>dzti</strong></p>
+
+  <form class="login" id="login" hidden>
+    <h1>Tarefas da equipe</h1>
+    <p>O quadro de atividades da equipe da mentoria.</p>
+    <label for="senha">Senha da equipe</label>
+    <div class="login-linha">
+      <input id="senha" type="password" autocomplete="current-password" required>
+      <button class="btn btn--preto" type="submit" id="btn-entrar">Entrar</button>
+    </div>
+    <span class="erro" id="login-erro" hidden></span>
+  </form>
+
+  <main id="app" hidden>
+    <section class="hero">
+      <p class="kicker">Equipe DZTI</p>
+      <h1>O que está <em>na mesa</em></h1>
+      <p>Crie um card na coluna certa, arraste quando mudar de etapa e clique para escrever as notas. Tudo fica salvo na planilha de tarefas.</p>
+    </section>
+
+    <div class="filtros">
+      <span class="rot">Mostrar</span>
+      <div class="pessoas" id="pessoas" role="group" aria-label="Filtrar por responsável"></div>
+      <input class="busca" id="busca" type="search" placeholder="Buscar tarefa" aria-label="Buscar tarefa">
+    </div>
+
+    <div class="quadro" id="quadro"></div>
+  </main>
+</div>
+
+<dialog id="dlg" aria-labelledby="dlg-titulo">
+  <form class="ficha" id="ficha" method="dialog">
+    <p class="kicker" id="dlg-titulo">Tarefa</p>
+    <textarea class="titulo" id="f-titulo" rows="1" required maxlength="300" aria-label="Título da tarefa"></textarea>
+    <div class="tres">
+      <label>Coluna<select id="f-coluna"></select></label>
+      <label>Responsável<select id="f-resp"></select></label>
+      <label>Prazo<input id="f-prazo" type="date"></label>
+    </div>
+    <label>Notas<textarea id="f-notas" maxlength="5000" placeholder="Passo a passo, links, combinados…"></textarea></label>
+    <ul class="links" id="f-links"></ul>
+    <p class="datas" id="f-datas"></p>
+    <div class="rodape">
+      <button class="btn btn--link" type="button" id="f-excluir">Excluir tarefa</button>
+      <div>
+        <button class="btn" type="button" id="f-cancelar">Cancelar</button>
+        <button class="btn btn--preto" type="submit">Salvar</button>
+      </div>
+    </div>
+  </form>
+</dialog>
+
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+const API_URL = 'https://script.google.com/macros/s/AKfycbysKP_5-o-R2ECK7TfgbFlgmch4THkdrXgfi52_LvYD2N_efZ8Vy6l_jAeathitJo5L/exec';
+const params = new URLSearchParams(location.search);
+const DEMO = !API_URL;
+const SENHA_DEMO = '';
+const COLUNAS = [
+  { nome: 'Para não esquecer', cor: '#9a8f88' },
+  { nome: 'Em andamento', cor: '#344c92' },
+  { nome: 'Concluído', cor: '#2f6b4f' },
+];
+const PESSOAS = ['Larissa', 'Alana', 'Maiara'];
+const DIAS_CONCLUIDO = 14; // concluídos mais antigos ficam recolhidos
+const DEMO_TAREFAS = [];
+
+const $ = (s, el = document) => el.querySelector(s);
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const lerLocal = (k, d) => { try { const v = localStorage.getItem(k); return v == null ? d : v; } catch (_) { return d; } };
+const gravarLocal = (k, v) => { try { localStorage.setItem(k, v); } catch (_) {} };
+
+const estado = { senha: '', tarefas: [], pessoa: lerLocal('dzti-tarefas-pessoa', ''), busca: '', verAntigos: false, abertaNova: null, editando: null, planilha: '' };
+const fila = []; let enviando = false; let ultimaSync = null;
+
+/* ---------- datas ---------- */
+const hojeISO = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+const dataCurta = (iso) => { const [a, m, d] = String(iso).split('-'); return a && m && d ? d + '/' + m : ''; };
+function tagPrazo(t) {
+  if (!t.prazo || t.coluna === 'Concluído') return t.prazo ? '<span class="tag">' + dataCurta(t.prazo) + '</span>' : '';
+  const h = hojeISO();
+  if (t.prazo < h) return '<span class="tag tag--atr">Atrasada · ' + dataCurta(t.prazo) + '</span>';
+  if (t.prazo === h) return '<span class="tag tag--hoje">Hoje</span>';
+  return '<span class="tag">Até ' + dataCurta(t.prazo) + '</span>';
+}
+
+/* ---------- renderização ---------- */
+function visivel(t) {
+  if (estado.pessoa === '-' && t.responsavel) return false;
+  if (estado.pessoa && estado.pessoa !== '-' && t.responsavel !== estado.pessoa) return false;
+  if (estado.busca) {
+    const q = estado.busca.toLowerCase();
+    if (!(t.titulo + ' ' + t.notas + ' ' + t.responsavel).toLowerCase().includes(q)) return false;
+  }
+  return true;
+}
+const ordenar = (a, b) => (a.ordem || 0) - (b.ordem || 0);
+const daColuna = (nome) => estado.tarefas.filter((t) => t.coluna === nome).sort(ordenar);
+function recente(t) {
+  if (!t.concluidoEm) return true;
+  return (Date.now() - new Date(t.concluidoEm).getTime()) / 864e5 <= DIAS_CONCLUIDO;
+}
+
+function renderPessoas() {
+  const opcoes = [['', 'Todas'], ...PESSOAS.map((p) => [p, p]), ['-', 'Sem responsável']];
+  $('#pessoas').innerHTML = opcoes.map(([v, r]) => '<button type="button" class="pessoa" data-pessoa="' + esc(v) + '" aria-pressed="' + (estado.pessoa === v) + '">' + esc(r) + '</button>').join('');
+}
+
+function cardHTML(t) {
+  const meta = (t.responsavel ? '<span class="tag">' + esc(t.responsavel) + '</span>' : '') + tagPrazo(t) + (t.notas.trim() ? '<span class="tag tag--nota" title="Tem notas">Notas</span>' : '');
+  return '<li class="card" tabindex="0" data-id="' + esc(t.id) + '" aria-label="' + esc(t.titulo) + '. Enter para abrir."><h3>' + esc(t.titulo) + '</h3><div class="meta">' + meta + '</div></li>';
+}
+
+function render() {
+  renderPessoas();
+  $('#quadro').innerHTML = COLUNAS.map((c) => {
+    let lista = daColuna(c.nome).filter(visivel);
+    let escondidos = 0;
+    if (c.nome === 'Concluído' && !estado.verAntigos) {
+      const r = lista.filter(recente); escondidos = lista.length - r.length; lista = r;
+    }
+    const nova = estado.abertaNova === c.nome
+      ? '<form class="form-nova" data-col="' + esc(c.nome) + '"><textarea name="titulo" maxlength="300" placeholder="Título da tarefa" aria-label="Título da nova tarefa" required></textarea>'
+        + '<div class="linha"><button class="btn btn--preto" type="submit">Adicionar</button><button class="btn" type="button" data-fechar-nova>Cancelar</button><span class="dica">Enter adiciona</span></div></form>'
+      : '<button type="button" class="abre" data-nova="' + esc(c.nome) + '">+ Nova tarefa</button>';
+    return '<section class="coluna" data-col="' + esc(c.nome) + '" style="--c:' + c.cor + '" aria-label="' + esc(c.nome) + '">'
+      + '<div class="col-topo"><span class="bola" aria-hidden="true"></span><h2>' + esc(c.nome) + '</h2><span class="qtd">' + (lista.length + escondidos) + '</span></div>'
+      + '<ul class="lista" data-col="' + esc(c.nome) + '">' + (lista.length ? lista.map(cardHTML).join('') : '<li class="vazio">' + (estado.busca || estado.pessoa ? 'Nada com esse filtro.' : 'Nenhuma tarefa aqui.') + '</li>') + '</ul>'
+      + (escondidos ? '<button type="button" class="mais" data-antigos>Mostrar ' + escondidos + ' concluída' + (escondidos > 1 ? 's' : '') + ' há mais de ' + DIAS_CONCLUIDO + ' dias</button>' : '')
+      + (c.nome === 'Concluído' && estado.verAntigos ? '<button type="button" class="mais" data-antigos>Esconder concluídas antigas</button>' : '')
+      + '<div class="nova">' + nova + '</div></section>';
+  }).join('');
+  if (estado.abertaNova) { const ta = $('.form-nova textarea'); if (ta) ta.focus(); }
+}
+
+/* ---------- alterações (otimistas, enviadas em fila) ---------- */
+const novoId = () => 't' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+function enfileirar(op) { fila.push(op); enviar(); }
+async function enviar() {
+  if (enviando || !fila.length) return;
+  enviando = true; status('Salvando…');
+  const ops = fila.splice(0, fila.length);
+  try {
+    const tarefas = await chamar(ops);
+    if (!fila.length) aplicarServidor(tarefas);
+    status('Salvo ' + new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }));
+  } catch (e) {
+    if (e.message === 'senha') { sair(); toast('A senha mudou. Entre de novo.', true); }
+    else { status('Não salvou', true); toast('Não foi possível salvar: ' + e.message + '. Clique em Atualizar e tente de novo.', true); }
+  } finally { enviando = false; if (fila.length) enviar(); }
+}
+function aplicarServidor(tarefas) {
+  estado.tarefas = tarefas.map((t) => Object.assign({ notas: '', responsavel: '', prazo: '', concluidoEm: '' }, t));
+  ultimaSync = Date.now();
+  if (!arraste && !$('#dlg').open && !estado.abertaNova) render();
+}
+
+function criar(coluna, titulo) {
+  const t = { id: novoId(), titulo: titulo.trim(), coluna, ordem: daColuna(coluna).length + 1, responsavel: estado.pessoa && estado.pessoa !== '-' ? estado.pessoa : '', prazo: '', notas: '', concluidoEm: coluna === 'Concluído' ? new Date().toISOString() : '' };
+  estado.tarefas.push(t);
+  enfileirar({ tipo: 'salvar', tarefa: t });
+}
+function mover(id, coluna, indice) {
+  const t = estado.tarefas.find((x) => x.id === id); if (!t) return;
+  const destino = daColuna(coluna).filter((x) => x.id !== id);
+  destino.splice(Math.max(0, Math.min(indice, destino.length)), 0, t);
+  if (t.coluna !== coluna) t.concluidoEm = coluna === 'Concluído' ? new Date().toISOString() : '';
+  t.coluna = coluna;
+  destino.forEach((x, i) => { x.ordem = i + 1; });
+  render();
+  enfileirar({ tipo: 'mover', id, coluna, ordem: destino.map((x) => x.id) });
+}
+
+/* ---------- arrastar (mouse e toque) ---------- */
+let arraste = null;
+function indiceNaLista(lista, y) {
+  const cards = [...lista.querySelectorAll('.card:not(.fantasma)')];
+  for (let i = 0; i < cards.length; i++) { const r = cards[i].getBoundingClientRect(); if (y < r.top + r.height / 2) return i; }
+  return cards.length;
+}
+function listaSob(x, y) {
+  const el = document.elementFromPoint(x, y);
+  const col = el && el.closest('.coluna');
+  return col ? col.querySelector('.lista') : null;
+}
+document.addEventListener('pointerdown', (e) => {
+  const card = e.target.closest('.card');
+  if (!card || e.button > 0) return;
+  arraste = { card, id: card.dataset.id, x0: e.clientX, y0: e.clientY, ativo: false, pid: e.pointerId, tipo: e.pointerType, t0: Date.now() };
+});
+document.addEventListener('pointermove', (e) => {
+  if (!arraste || e.pointerId !== arraste.pid) return;
+  const dx = e.clientX - arraste.x0, dy = e.clientY - arraste.y0;
+  if (!arraste.ativo) {
+    // no toque, só arrasta depois de segurar um pouco (para a página continuar rolando)
+    if (arraste.tipo === 'touch' && Date.now() - arraste.t0 < 280) { if (Math.hypot(dx, dy) > 8) arraste = null; return; }
+    if (Math.hypot(dx, dy) < 6) return;
+    const r = arraste.card.getBoundingClientRect();
+    const voando = arraste.card.cloneNode(true);
+    voando.classList.add('voando'); voando.style.width = r.width + 'px';
+    document.body.appendChild(voando);
+    arraste.card.classList.add('fantasma');
+    Object.assign(arraste, { ativo: true, voando, ox: e.clientX - r.left, oy: e.clientY - r.top });
+    document.body.classList.add('arrastando');
+  }
+  e.preventDefault();
+  arraste.voando.style.left = (e.clientX - arraste.ox) + 'px';
+  arraste.voando.style.top = (e.clientY - arraste.oy) + 'px';
+  document.querySelectorAll('.lista.alvo').forEach((l) => l.classList.remove('alvo'));
+  const lista = listaSob(e.clientX, e.clientY);
+  if (lista) {
+    lista.classList.add('alvo');
+    const cards = [...lista.querySelectorAll('.card:not(.fantasma)')];
+    const i = indiceNaLista(lista, e.clientY);
+    const vazio = lista.querySelector('.vazio'); if (vazio) vazio.remove();
+    if (cards[i]) lista.insertBefore(arraste.card, cards[i]); else lista.appendChild(arraste.card);
+  }
+  // rola a página perto das bordas
+  if (e.clientY < 60) scrollBy(0, -12); else if (e.clientY > innerHeight - 60) scrollBy(0, 12);
+}, { passive: false });
+function soltar(e) {
+  if (!arraste) return;
+  const a = arraste; arraste = null;
+  document.body.classList.remove('arrastando');
+  if (!a.ativo) return;
+  a.voando.remove();
+  document.querySelectorAll('.lista.alvo').forEach((l) => l.classList.remove('alvo'));
+  const lista = a.card.closest('.lista');
+  const ids = [...lista.querySelectorAll('.card')].map((c) => c.dataset.id);
+  const coluna = lista.dataset.col;
+  // índice entre todas as tarefas da coluna (inclusive as escondidas pelo filtro)
+  const pos = ids.indexOf(a.id);
+  const vizinho = ids[pos + 1];
+  const todas = daColuna(coluna).filter((x) => x.id !== a.id);
+  const indice = vizinho ? todas.findIndex((x) => x.id === vizinho) : todas.length;
+  a.card.classList.remove('fantasma');
+  a.arrastou = true; ultimoArraste = Date.now();
+  mover(a.id, coluna, indice < 0 ? todas.length : indice);
+}
+let ultimoArraste = 0;
+document.addEventListener('pointerup', soltar);
+document.addEventListener('pointercancel', (e) => { if (arraste && arraste.ativo) soltar(e); else arraste = null; });
+document.addEventListener('touchmove', (e) => { if (arraste && arraste.ativo) e.preventDefault(); }, { passive: false });
+
+/* ---------- cliques ---------- */
+document.addEventListener('click', (e) => {
+  const card = e.target.closest('.card');
+  if (card && Date.now() - ultimoArraste > 250) { abrir(card.dataset.id); return; }
+  const p = e.target.closest('[data-pessoa]');
+  if (p) { estado.pessoa = p.dataset.pessoa; gravarLocal('dzti-tarefas-pessoa', estado.pessoa); render(); return; }
+  const n = e.target.closest('[data-nova]');
+  if (n) { estado.abertaNova = n.dataset.nova; render(); return; }
+  if (e.target.closest('[data-fechar-nova]')) { estado.abertaNova = null; render(); return; }
+  if (e.target.closest('[data-antigos]')) { estado.verAntigos = !estado.verAntigos; render(); }
+});
+document.addEventListener('keydown', (e) => {
+  const card = e.target.closest && e.target.closest('.card');
+  if (card && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); abrir(card.dataset.id); return; }
+  const ta = e.target.closest && e.target.closest('.form-nova textarea');
+  if (ta && e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); ta.form.requestSubmit(); }
+  if (ta && e.key === 'Escape') { estado.abertaNova = null; render(); }
+});
+document.addEventListener('submit', (e) => {
+  const f = e.target.closest('.form-nova');
+  if (!f) return;
+  e.preventDefault();
+  const titulo = f.titulo.value.trim();
+  if (!titulo) return;
+  criar(f.dataset.col, titulo);
+  render(); // o formulário continua aberto para a próxima tarefa
+});
+$('#busca').addEventListener('input', (e) => { estado.busca = e.target.value.trim(); render(); });
+
+/* ---------- diálogo de edição ---------- */
+const dlg = $('#dlg');
+function linksDe(txt) { return [...new Set(String(txt).match(/https?:\/\/[^\s<>"')]+/g) || [])]; }
+function mostrarLinks() {
+  const l = linksDe($('#f-notas').value);
+  $('#f-links').innerHTML = l.map((u) => '<li><a href="' + esc(u) + '" target="_blank" rel="noopener">' + esc(u.length > 70 ? u.slice(0, 67) + '…' : u) + ' ↗</a></li>').join('');
+}
+function abrir(id) {
+  const t = estado.tarefas.find((x) => x.id === id); if (!t) return;
+  estado.editando = id;
+  $('#f-titulo').value = t.titulo;
+  $('#f-coluna').innerHTML = COLUNAS.map((c) => '<option' + (c.nome === t.coluna ? ' selected' : '') + '>' + esc(c.nome) + '</option>').join('');
+  const pessoas = PESSOAS.includes(t.responsavel) || !t.responsavel ? PESSOAS : PESSOAS.concat(t.responsavel);
+  $('#f-resp').innerHTML = '<option value="">—</option>' + pessoas.map((p) => '<option' + (p === t.responsavel ? ' selected' : '') + '>' + esc(p) + '</option>').join('');
+  $('#f-prazo').value = t.prazo || '';
+  $('#f-notas').value = t.notas || '';
+  $('#f-excluir').textContent = 'Excluir tarefa'; delete $('#f-excluir').dataset.confirmar;
+  $('#f-datas').textContent = t.concluidoEm ? 'Concluída em ' + new Date(t.concluidoEm).toLocaleDateString('pt-BR') : '';
+  mostrarLinks();
+  if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
+  ajustarTitulo(); $('#f-titulo').focus();
+}
+function fechar() { estado.editando = null; dlg.close ? dlg.close() : dlg.removeAttribute('open'); render(); }
+$('#f-notas').addEventListener('input', mostrarLinks);
+const ajustarTitulo = () => { const t = $('#f-titulo'); t.style.height = 'auto'; t.style.height = t.scrollHeight + 'px'; };
+$('#f-titulo').addEventListener('input', ajustarTitulo);
+$('#f-titulo').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); $('#ficha').requestSubmit(); } });
+$('#f-cancelar').addEventListener('click', fechar);
+dlg.addEventListener('cancel', (e) => { e.preventDefault(); fechar(); });
+$('#ficha').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const t = estado.tarefas.find((x) => x.id === estado.editando);
+  if (!t) return fechar();
+  const titulo = $('#f-titulo').value.trim();
+  if (!titulo) { $('#f-titulo').focus(); return; }
+  const coluna = $('#f-coluna').value;
+  Object.assign(t, { titulo, responsavel: $('#f-resp').value, prazo: $('#f-prazo').value, notas: $('#f-notas').value });
+  enfileirar({ tipo: 'salvar', tarefa: Object.assign({}, t) });
+  if (coluna !== t.coluna) mover(t.id, coluna, 0);
+  fechar();
+});
+$('#f-excluir').addEventListener('click', (e) => {
+  const b = e.currentTarget;
+  if (!b.dataset.confirmar) { b.dataset.confirmar = '1'; b.textContent = 'Clique de novo para excluir'; return; }
+  const id = estado.editando;
+  estado.tarefas = estado.tarefas.filter((x) => x.id !== id);
+  enfileirar({ tipo: 'excluir', id });
+  fechar(); toast('Tarefa excluída');
+});
+
+/* ---------- API, login e sincronização ---------- */
+async function chamar(ops) {
+  if (DEMO) { await new Promise((r) => setTimeout(r, 150)); return JSON.parse(JSON.stringify(estado.tarefas)); }
+  const r = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ acao: 'tarefas', senha: estado.senha, ops: ops || [] }) });
+  const res = await r.json();
+  if (!res.ok) throw new Error(res.erro === 'senha' ? 'senha' : res.erro || 'erro');
+  if (res.planilha) { estado.planilha = res.planilha; $('#link-planilha').href = res.planilha; $('#link-planilha').hidden = false; }
+  return res.tarefas || [];
+}
+function status(txt, erro) { const s = $('#status'); s.textContent = txt; s.classList.toggle('erro', !!erro); }
+let toastT;
+function toast(msg, erro) { const t = $('#toast'); t.textContent = msg; t.classList.toggle('erro', !!erro); t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, 4000); }
+function guardarSenha(s) { try { if (s) sessionStorage.setItem('dzti-senha', s); else sessionStorage.removeItem('dzti-senha'); } catch (_) {} }
+function lerSenha() { try { return sessionStorage.getItem('dzti-senha') || ''; } catch (_) { return ''; } }
+
+async function entrar(senha, silencioso) {
+  const b = $('#btn-entrar'); b.disabled = true; $('#login-erro').hidden = true;
+  try {
+    if (DEMO && senha !== SENHA_DEMO) throw new Error('senha');
+    estado.senha = senha;
+    const tarefas = DEMO ? JSON.parse(JSON.stringify(DEMO_TAREFAS)) : await chamar([]);
+    guardarSenha(senha);
+    $('#login').hidden = true; $('#app').hidden = false; $('#acoes').hidden = false;
+    aplicarServidor(tarefas); render();
+    status(DEMO ? 'Demonstração' : 'Atualizado agora');
+  } catch (e) {
+    estado.senha = '';
+    if (silencioso) { guardarSenha(''); $('#login').hidden = false; return; }
+    $('#login-erro').textContent = e.message === 'senha' ? (DEMO ? 'Senha incorreta. Na demonstração, a senha é dzti.' : 'Senha incorreta.') : 'Não foi possível carregar: ' + e.message;
+    $('#login-erro').hidden = false;
+  } finally { b.disabled = false; }
+}
+async function atualizar(silencioso) {
+  if (!estado.senha || enviando || fila.length || arraste || $('#dlg').open || estado.abertaNova) return;
+  try { aplicarServidor(await chamar([])); if (!silencioso) toast('Quadro atualizado'); status('Atualizado ' + new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })); }
+  catch (e) { if (e.message === 'senha') { sair(); toast('A senha mudou. Entre de novo.', true); } else if (!silencioso) toast('Não foi possível atualizar: ' + e.message, true); }
+}
+function sair() {
+  estado.senha = ''; estado.tarefas = []; guardarSenha('');
+  $('#app').hidden = true; $('#acoes').hidden = true; $('#login').hidden = false; $('#senha').value = '';
+}
+$('#login').addEventListener('submit', (e) => { e.preventDefault(); entrar($('#senha').value); });
+$('#btn-atualizar').addEventListener('click', () => atualizar(false));
+$('#btn-sair').addEventListener('click', sair);
+// mantém o quadro em dia quando outra pessoa mexe: a cada minuto e ao voltar para a aba
+setInterval(() => { if (!document.hidden && !DEMO) atualizar(true); }, 60000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden && !DEMO && ultimaSync && Date.now() - ultimaSync > 20000) atualizar(true); });
+window.addEventListener('beforeunload', (e) => { if (fila.length || enviando) { e.preventDefault(); e.returnValue = ''; } });
+
+if (DEMO) $('#aviso-demo').hidden = false;
+const salva = lerSenha();
+if (salva) entrar(salva, true); else $('#login').hidden = false;
+</script>
+</body>
+</html>

@@ -1,0 +1,475 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Candidaturas DZTI</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,800;1,9..144,700&family=Space+Grotesk:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap">
+<style>
+/* Layout: barra da marca; cabeçalho do aluno; 4 números do funil + alerta de follow-up;
+   faixa de distribuição por status; lista de candidaturas (linhas que viram cartões no celular);
+   editor em janela. Mesmo visual da jornada: bege, rosa de ação, bordas pretas, sombras duras. */
+:root{
+  --bege:#ebe8e3;
+  --bege2:#ddcfc7;
+  --rosa:#bb2649;
+  --laranja:#fd7528;
+  --azul:#344c92;
+  --verde:#2f6b4f;
+  --preto:#000000;
+  --tinta:#1a1716;
+  --suave:#5e5450;
+  --f-display:'Fraunces', Georgia, 'Times New Roman', serif;
+  --f-body:'Space Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --f-mono:'Space Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  color-scheme: light;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bege);color:var(--tinta);font-family:var(--f-body);font-size:15px;line-height:1.5;margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--azul);outline-offset:2px}
+a{color:inherit}
+
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:0 56px}
+
+.topo{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding-block:16px;border-bottom:1.5px solid var(--preto)}
+.marca{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.marca b{font-family:var(--f-display);font-weight:800;font-size:28px;letter-spacing:-.02em;line-height:1}
+.marca span{font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+.acoes{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.salvando{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--suave)}
+
+.btn{font-family:var(--f-mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;background:var(--bege);border:1.5px solid var(--preto);padding:9px 14px;box-shadow:3px 3px 0 var(--preto);cursor:pointer;transition:transform .12s, box-shadow .12s;text-decoration:none;display:inline-block}
+.btn:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--preto)}
+.btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--preto)}
+.btn--rosa{background:var(--rosa);color:var(--bege)}
+.btn--preto{background:var(--preto);color:var(--bege)}
+.btn--texto{box-shadow:none;border-color:transparent;background:transparent;text-decoration:underline;text-underline-offset:3px;padding-inline:4px}
+.btn--texto:hover,.btn--texto:active{transform:none;box-shadow:none}
+
+.aviso{margin:16px 0 0;border:1.5px dashed var(--azul);color:var(--azul);padding:8px 12px;font-family:var(--f-mono);font-size:12px;letter-spacing:.04em}
+.estado{margin-top:48px;font-family:var(--f-mono);font-size:13px;letter-spacing:.04em;border:1.5px solid var(--preto);padding:18px;max-width:60ch;background:var(--bege2)}
+
+/* ---------- cabeçalho ---------- */
+.hero{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px 32px;align-items:end;padding-block:32px 4px}
+.kicker{font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--azul);margin:0 0 10px}
+.hero h1{font-family:var(--f-display);font-weight:800;font-size:clamp(38px,6.5vw,72px);line-height:.98;letter-spacing:-.025em;margin:0;text-wrap:balance}
+.hero h1 em{font-style:italic;color:var(--rosa)}
+.hero p{margin:12px 0 0;font-size:16px;max-width:60ch}
+.faixa{display:inline-block;background:var(--rosa);color:var(--bege);font-family:var(--f-display);font-style:italic;font-weight:700;font-size:clamp(17px,2.2vw,22px);padding:10px 18px;transform:rotate(-2deg);white-space:nowrap}
+
+/* ---------- números ---------- */
+.numeros{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-top:28px}
+.num{border:1.5px solid var(--preto);background:var(--bege);padding:14px 16px;box-shadow:4px 4px 0 var(--preto);display:grid;gap:2px}
+.num span{font-family:var(--f-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase}
+.num b{font-family:var(--f-display);font-weight:800;font-size:44px;line-height:1;font-variant-numeric:tabular-nums}
+.num small{font-size:12.5px;color:var(--suave)}
+.num--rosa{box-shadow:6px 6px 0 var(--rosa)}
+
+.followups{margin-top:20px;border:1.5px solid var(--rosa);background:var(--bege);padding:12px 16px;display:grid;gap:6px}
+.followups strong{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--rosa)}
+.followups ul{margin:0;padding-left:18px;font-size:14px}
+.followups button{background:none;border:0;padding:0;text-decoration:underline;text-underline-offset:3px;cursor:pointer;text-align:left}
+
+.dist{margin-top:24px}
+.dist-cab{display:flex;justify-content:space-between;font-family:var(--f-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px}
+.dist-barra{display:flex;height:22px;border:1.5px solid var(--preto);background:var(--bege2);overflow:hidden}
+.dist-barra i{display:block;height:100%;border-right:1.5px solid var(--preto)}
+.dist-barra i:last-child{border-right:0}
+.legenda{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:8px;font-size:12.5px}
+.legenda span{display:inline-flex;align-items:center;gap:6px}
+.legenda i{width:12px;height:12px;border:1.5px solid var(--preto);display:inline-block}
+.g-aplicada{background:var(--bege)}
+.g-processo{background:var(--azul)}
+.g-oferta{background:var(--verde)}
+.g-reprovado{background:var(--rosa)}
+.g-semretorno{background:var(--suave)}
+
+/* ---------- barra de ferramentas e lista ---------- */
+.ferramentas{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;margin-top:28px;padding-block:12px;border-top:1.5px solid var(--preto);border-bottom:1.5px solid var(--preto)}
+.ferramentas select,.busca{border:1.5px solid var(--preto);background:var(--bege);padding:7px 10px;min-width:0}
+.busca{flex:1 1 180px;max-width:280px}
+.ferramentas label{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;display:flex;align-items:center;gap:8px}
+.ferramentas .btn{margin-left:auto}
+
+.lista{margin-top:16px;border:1.5px solid var(--preto);background:var(--bege)}
+.cab-lista,.vaga{display:grid;grid-template-columns:minmax(0,2.2fr) 150px 88px minmax(0,1fr) 70px 90px 110px;gap:12px;align-items:center;padding:10px 14px}
+.cab-lista{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;background:var(--preto);color:var(--bege)}
+.vaga{border-top:1px solid var(--bege2);width:100%;text-align:left;background:none;border-left:0;border-right:0;border-bottom:0;cursor:pointer;font-size:14px}
+.vaga:hover{background:var(--bege2)}
+.vaga:first-of-type{border-top:0}
+.vaga-titulo{min-width:0}
+.vaga-titulo b{display:block;font-family:var(--f-display);font-weight:700;font-size:17px;line-height:1.2;overflow-wrap:anywhere}
+.vaga-titulo small{color:var(--suave);font-size:13px;overflow-wrap:anywhere}
+.st{justify-self:start;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;border:1.5px solid var(--preto);padding:1px 7px;white-space:nowrap}
+.st.g-processo,.st.g-oferta,.st.g-reprovado,.st.g-semretorno{color:var(--bege);border-color:transparent}
+.cel{font-size:13px;color:var(--suave);font-variant-numeric:tabular-nums;min-width:0;overflow-wrap:anywhere}
+.cel b{color:var(--tinta);font-weight:500}
+.prio{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase}
+.prio-alta{color:var(--rosa);font-weight:700}
+.atrasado{color:var(--rosa);font-weight:700}
+.vazio{margin:0;padding:28px 18px;text-align:center;font-family:var(--f-mono);font-size:13px;color:var(--suave)}
+
+.dicas{margin-top:32px;border:1.5px solid var(--preto);background:var(--bege2)}
+.dicas summary{cursor:pointer;padding:12px 16px;font-family:var(--f-mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase}
+.dicas ol{margin:0;padding:0 24px 16px 36px;display:grid;gap:6px;font-size:14px;max-width:80ch}
+
+/* ---------- editor ---------- */
+dialog{border:1.5px solid var(--preto);background:var(--bege);color:var(--tinta);padding:0;width:min(760px, calc(100vw - 24px));max-height:calc(100vh - 24px);box-shadow:10px 10px 0 var(--preto)}
+dialog::backdrop{background:rgba(0,0,0,.45)}
+.editor{display:grid;gap:16px;padding:22px}
+.editor h2{font-family:var(--f-display);font-weight:800;font-size:30px;margin:0;letter-spacing:-.02em}
+.editor h3{font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;margin:0 0 10px;color:var(--azul)}
+.editor section{border-top:1.5px solid var(--preto);padding-top:14px}
+.campos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.campo{display:grid;gap:5px;min-width:0}
+.campo.duplo{grid-column:span 2}
+.campo.largo{grid-column:1/-1}
+.campo label{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase}
+.campo input,.campo select,.campo textarea{border:1.5px solid var(--preto);background:var(--bege);padding:8px 9px;width:100%}
+.campo textarea{resize:vertical;min-height:80px}
+.dica{font-size:12px;color:var(--suave);margin:0}
+.editor-acoes{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;position:sticky;bottom:0;background:var(--bege);padding-block:12px 0;border-top:1.5px solid var(--preto)}
+.editor-acoes div{display:flex;gap:10px;flex-wrap:wrap}
+
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom, 0px));z-index:60;background:var(--preto);color:var(--bege);font-family:var(--f-mono);font-size:12px;letter-spacing:.04em;padding:11px 16px;max-width:calc(100vw - 32px);box-shadow:4px 4px 0 var(--laranja)}
+.toast.erro{box-shadow:4px 4px 0 var(--rosa)}
+
+@media (max-width: 900px){
+  .hero{grid-template-columns:minmax(0,1fr)}
+  .faixa{justify-self:start}
+  .numeros{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .cab-lista{display:none}
+  .vaga{grid-template-columns:minmax(0,1fr) auto;gap:6px 12px}
+  .vaga .vaga-titulo{grid-column:1/-1}
+  .vaga .cel:empty{display:none}
+}
+@media (max-width: 560px){
+  .campos{grid-template-columns:minmax(0,1fr)}
+  .campo.duplo{grid-column:auto}
+  .num b{font-size:36px}
+  .ferramentas .btn{margin-left:0}
+}
+@media (prefers-reduced-motion: reduce){ *{transition:none!important} }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="topo">
+    <div class="marca"><b id="marca-sigla">DZTI</b><span id="marca-nome">Do Zero à TI · Candidaturas</span></div>
+    <div class="acoes">
+      <span class="salvando" id="salvando" hidden>Salvando…</span>
+      <a class="btn" id="link-jornada" href="#" hidden>Minha jornada</a>
+    </div>
+  </header>
+
+  <p class="aviso" id="aviso-demo" hidden><strong>Demonstração</strong> · candidaturas fictícias · as mudanças ficam só nesta tela</p>
+
+  <div id="conteudo"></div>
+</div>
+
+<dialog id="editor">
+  <form class="editor" id="form-vaga">
+    <h2 id="ed-titulo">Nova candidatura</h2>
+    <section>
+      <h3>A vaga</h3>
+      <div class="campos">
+        <div class="campo"><label for="v-empresa">Empresa</label><input id="v-empresa" required maxlength="120"></div>
+        <div class="campo duplo"><label for="v-cargo">Cargo</label><input id="v-cargo" required maxlength="160"></div>
+        <div class="campo"><label for="v-senioridade">Senioridade</label><input id="v-senioridade" list="dl-senioridade" maxlength="40"></div>
+        <div class="campo"><label for="v-tipo">Tipo de vaga</label><select id="v-tipo"></select></div>
+        <div class="campo"><label for="v-fonte">Fonte</label><select id="v-fonte"></select></div>
+        <div class="campo duplo"><label for="v-link">Link da vaga</label><input id="v-link" type="url" placeholder="https://" maxlength="600"></div>
+        <div class="campo"><label for="v-recrutador">Recrutador</label><input id="v-recrutador" maxlength="120"></div>
+      </div>
+    </section>
+    <section>
+      <h3>O processo</h3>
+      <div class="campos">
+        <div class="campo"><label for="v-data">Data da candidatura</label><input id="v-data" type="date"></div>
+        <div class="campo"><label for="v-status">Status</label><select id="v-status"></select></div>
+        <div class="campo"><label for="v-prioridade">Prioridade</label><select id="v-prioridade"></select></div>
+        <div class="campo"><label for="v-cv">CV usado</label><select id="v-cv"></select></div>
+        <div class="campo"><label for="v-match">Match com a stack (%)</label><input id="v-match" type="number" min="0" max="100" step="5" inputmode="numeric"></div>
+        <div class="campo"><label for="v-retorno">Retorno feito?</label><select id="v-retorno"></select></div>
+        <div class="campo"><label for="v-followup">Data de follow-up</label><input id="v-followup" type="date"></div>
+      </div>
+      <p class="dica">Match: o quanto o seu perfil técnico se encaixa na vaga, de 0 a 100.</p>
+    </section>
+    <section>
+      <h3>Aprendizados (opcional)</h3>
+      <div class="campos">
+        <div class="campo"><label for="v-motivo">Motivo da reprovação</label><select id="v-motivo"></select></div>
+        <div class="campo largo"><label for="v-aprendizado">Aprendizado</label><textarea id="v-aprendizado" maxlength="3000" placeholder="O que você leva desta candidatura para a próxima?"></textarea></div>
+      </div>
+    </section>
+    <div class="editor-acoes">
+      <button class="btn btn--texto" type="button" id="ed-excluir">Excluir</button>
+      <div>
+        <button class="btn" type="button" id="ed-cancelar">Cancelar</button>
+        <button class="btn btn--rosa" type="submit">Salvar</button>
+      </div>
+    </div>
+  </form>
+</dialog>
+<datalist id="dl-senioridade"><option value="Estágio"><option value="Júnior"><option value="Pleno"><option value="Sênior"><option value="Especialista"></datalist>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<script>
+/* Mesma URL do App da Web usada na jornada. Vazia = modo demonstração. */
+const API_URL = 'https://script.google.com/macros/s/AKfycbysKP_5-o-R2ECK7TfgbFlgmch4THkdrXgfi52_LvYD2N_efZ8Vy6l_jAeathitJo5L/exec';
+const PAGINA_JORNADA = '/jornada.html';
+
+const OP = {
+  fonte: ['Site da Empresa', 'LinkedIn', 'Indicação', 'Recrutador', 'Gupy', 'Outro'],
+  status: ['Aplicada', 'Triagem RH', 'Teste Técnico', 'Entrevista RH', 'Entrevista Técnica', 'Entrevista Final', 'Oferta', 'Aprovado', 'Reprovado', 'Sem Retorno'],
+  cv: ['A', 'B', 'C'],
+  tipo: ['Remoto BR', 'Remoto Internacional', 'Híbrido', 'Presencial'],
+  retorno: ['Sim', 'Não'],
+  motivo: ['Stack', 'Senioridade', 'Idioma', 'Fit Cultural', 'Outro'],
+  prioridade: ['Alta', 'Média', 'Baixa'],
+};
+const GRUPO = (st) => ({ 'Aplicada': 'aplicada', 'Oferta': 'oferta', 'Aprovado': 'oferta', 'Reprovado': 'reprovado', 'Sem Retorno': 'semretorno' }[st] || (st ? 'processo' : 'aplicada'));
+const GRUPOS = [
+  { id: 'aplicada', nome: 'Aplicadas' }, { id: 'processo', nome: 'Em processo' }, { id: 'oferta', nome: 'Oferta ou aprovado' },
+  { id: 'reprovado', nome: 'Reprovado' }, { id: 'semretorno', nome: 'Sem retorno' },
+];
+const ENCERRADA = (st) => ['Aprovado', 'Reprovado', 'Sem Retorno'].includes(st);
+const MARCAS = { dzti: { sigla: 'DZTI', nome: 'Do Zero à TI' }, dti: { sigla: 'DTI', nome: 'Destrava TI' } };
+
+let params;
+try { params = new URLSearchParams(location.search); } catch (_) { params = new URLSearchParams(''); }
+const ID = params.get('j');
+const DEMO = !API_URL;
+const DEMO_DADOS = null;
+
+const estado = { aluno: {}, vagas: [], filtroStatus: '', filtroPrio: '', busca: '' };
+const $ = (s) => document.querySelector(s);
+
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+function fmt(s) { const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(s || ''); return m ? m[3] + '/' + m[2] + '/' + m[1].slice(2) : (s || ''); }
+function hojeISO() { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+const copiar = (x) => JSON.parse(JSON.stringify(x));
+const marca = () => (/destrava/i.test(estado.aluno.programa || '') ? MARCAS.dti : MARCAS.dzti);
+const followupVencido = (v) => v.followup && v.followup <= hojeISO() && v.retorno !== 'Sim' && !ENCERRADA(v.status);
+
+let toastTimer;
+function toast(msg, erro) {
+  const t = $('#toast');
+  t.textContent = msg; t.classList.toggle('erro', !!erro); t.hidden = false;
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.hidden = true; }, erro ? 6000 : 3000);
+}
+
+/* ---------- render ---------- */
+function mostrarEstado(msg) { $('#conteudo').innerHTML = '<p class="estado">' + esc(msg) + '</p>'; }
+
+function render() {
+  const m = marca();
+  $('#marca-sigla').textContent = m.sigla;
+  $('#marca-nome').textContent = m.nome + ' · Candidaturas';
+  document.title = 'Candidaturas ' + m.sigla;
+  $('#aviso-demo').hidden = !DEMO;
+  const lj = $('#link-jornada');
+  lj.hidden = !ID;
+  if (ID) lj.href = PAGINA_JORNADA + '?j=' + encodeURIComponent(ID);
+
+  const vs = estado.vagas;
+  const total = vs.length;
+  const cont = {};
+  GRUPOS.forEach((g) => { cont[g.id] = 0; });
+  vs.forEach((v) => { cont[GRUPO(v.status)]++; });
+  const comRetorno = vs.filter((v) => v.retorno === 'Sim').length;
+  const taxa = total ? Math.round(comRetorno / total * 100) : 0;
+  const venc = vs.filter(followupVencido).sort((a, b) => a.followup.localeCompare(b.followup));
+  const nome = (estado.aluno.nome || '').split(' ')[0];
+
+  let html = '<section class="hero"><div><p class="kicker">Mentoria ' + esc(m.nome) + '</p>'
+    + '<h1>' + (nome ? esc(nome) + ', suas <em>candidaturas</em>' : 'Suas <em>candidaturas</em>') + '</h1>'
+    + '<p>Registre cada vaga que você aplicar. Assim você e a mentoria enxergam o que está funcionando e onde ajustar.</p></div>'
+    + '<span class="faixa">' + (total ? total + (total === 1 ? ' candidatura' : ' candidaturas') : 'Primeira candidatura?') + '</span></section>';
+
+  html += '<section class="numeros" aria-label="Resumo">'
+    + numero('Candidaturas', total, comRetorno + ' com retorno')
+    + numero('Em processo', cont.processo, 'triagem, testes e entrevistas', cont.processo > 0)
+    + numero('Ofertas', cont.oferta, 'oferta ou aprovado', cont.oferta > 0)
+    + numero('Taxa de retorno', taxa + '%', 'retorno feito = sim')
+    + '</section>';
+
+  if (venc.length) {
+    html += '<section class="followups"><strong>Follow-up para fazer (' + venc.length + ')</strong><ul>'
+      + venc.map((v) => '<li><button type="button" data-editar="' + esc(v.id) + '">' + esc(v.empresa) + ' · ' + esc(v.cargo) + '</button> · previsto para ' + fmt(v.followup) + '</li>').join('')
+      + '</ul></section>';
+  }
+
+  if (total) {
+    html += '<section class="dist"><div class="dist-cab"><span>Onde estão suas candidaturas</span><span>' + total + '</span></div><div class="dist-barra">'
+      + GRUPOS.filter((g) => cont[g.id]).map((g) => '<i class="g-' + g.id + '" style="width:' + (cont[g.id] / total * 100).toFixed(2) + '%" title="' + g.nome + ': ' + cont[g.id] + '"></i>').join('')
+      + '</div><div class="legenda">' + GRUPOS.map((g) => '<span><i class="g-' + g.id + '"></i>' + g.nome + ' · ' + cont[g.id] + '</span>').join('') + '</div></section>';
+  }
+
+  html += '<div class="ferramentas">'
+    + '<label for="f-status">Status <select id="f-status"><option value="">Todos</option>' + OP.status.map((s) => '<option' + (s === estado.filtroStatus ? ' selected' : '') + '>' + s + '</option>').join('') + '</select></label>'
+    + '<label for="f-prio">Prioridade <select id="f-prio"><option value="">Todas</option>' + OP.prioridade.map((s) => '<option' + (s === estado.filtroPrio ? ' selected' : '') + '>' + s + '</option>').join('') + '</select></label>'
+    + '<input class="busca" id="busca" type="search" placeholder="Buscar empresa ou cargo" aria-label="Buscar empresa ou cargo" value="' + esc(estado.busca) + '">'
+    + '<button class="btn btn--rosa" type="button" id="nova">+ Nova candidatura</button></div>';
+
+  const termo = estado.busca.trim().toLowerCase();
+  const lista = vs.filter((v) => (!estado.filtroStatus || v.status === estado.filtroStatus) && (!estado.filtroPrio || v.prioridade === estado.filtroPrio)
+    && (!termo || (v.empresa + ' ' + v.cargo).toLowerCase().includes(termo)))
+    .sort((a, b) => (b.data || '').localeCompare(a.data || ''));
+
+  html += '<section class="lista" aria-label="Candidaturas"><div class="cab-lista"><span>Empresa e cargo</span><span>Status</span><span>Data</span><span>Fonte · tipo</span><span>Match</span><span>Retorno</span><span>Follow-up</span></div>'
+    + (lista.length ? lista.map(linha).join('') : '<p class="vazio">' + (total ? 'Nenhuma candidatura com esse filtro.' : 'Você ainda não registrou candidaturas. Clique em "+ Nova candidatura" para começar.') + '</p>')
+    + '</section>';
+
+  html += '<details class="dicas"><summary>Como usar</summary><ol>'
+    + '<li>Registre uma candidatura por vaga, no dia em que você aplicar.</li>'
+    + '<li>Atualize o status a cada etapa: triagem, teste, entrevistas, oferta.</li>'
+    + '<li>Cole o link direto da vaga para voltar nela rápido antes de cada entrevista.</li>'
+    + '<li>Match com a stack é a sua autoavaliação: o quanto o seu perfil técnico se encaixa na vaga, de 0 a 100.</li>'
+    + '<li>Use CV A, B ou C para saber qual versão do seu currículo traz mais retorno.</li>'
+    + '<li>Motivo da reprovação, aprendizado e prioridade são opcionais, mas ajudam muito nas próximas candidaturas.</li>'
+    + '<li>Toda semana, revise as candidaturas sem retorno e decida se vale fazer follow-up.</li>'
+    + '</ol></details>';
+
+  $('#conteudo').innerHTML = html;
+}
+
+function numero(rotulo, valor, sub, destaque) {
+  return '<div class="num' + (destaque ? ' num--rosa' : '') + '"><span>' + rotulo + '</span><b>' + valor + '</b><small>' + sub + '</small></div>';
+}
+
+function linha(v) {
+  const g = GRUPO(v.status);
+  const venc = followupVencido(v);
+  return '<button type="button" class="vaga" data-editar="' + esc(v.id) + '">'
+    + '<span class="vaga-titulo"><b>' + esc(v.empresa || 'Sem empresa') + '</b><small>' + esc(v.cargo) + (v.senioridade ? ' · ' + esc(v.senioridade) : '')
+    + (v.prioridade ? ' · <span class="prio' + (v.prioridade === 'Alta' ? ' prio-alta' : '') + '">' + esc(v.prioridade) + '</span>' : '') + '</small></span>'
+    + '<span class="st g-' + g + '">' + esc(v.status || 'Aplicada') + '</span>'
+    + '<span class="cel">' + fmt(v.data) + '</span>'
+    + '<span class="cel">' + [v.fonte, v.tipo].filter(Boolean).map(esc).join(' · ') + '</span>'
+    + '<span class="cel">' + (v.match !== '' && v.match != null ? '<b>' + esc(v.match) + '%</b>' : '') + '</span>'
+    + '<span class="cel">' + esc(v.retorno ? 'Retorno: ' + v.retorno : '') + '</span>'
+    + '<span class="cel' + (venc ? ' atrasado' : '') + '">' + (v.followup ? (venc ? 'Follow-up ' : '') + fmt(v.followup) : '') + '</span>'
+    + '</button>';
+}
+
+/* ---------- editor ---------- */
+const dlg = $('#editor');
+let editandoId = null, confirmarTimer;
+function preencherSelect(id, opcoes, valor) {
+  $(id).innerHTML = '<option value=""></option>' + opcoes.map((o) => '<option' + (o === valor ? ' selected' : '') + '>' + esc(o) + '</option>').join('')
+    + (valor && !opcoes.includes(valor) ? '<option selected>' + esc(valor) + '</option>' : '');
+}
+function abrirEditor(id) {
+  editandoId = id;
+  const v = id ? estado.vagas.find((x) => x.id === id) : null;
+  $('#ed-titulo').textContent = v ? 'Editar candidatura' : 'Nova candidatura';
+  ['empresa', 'cargo', 'senioridade', 'link', 'recrutador', 'match', 'aprendizado'].forEach((k) => { $('#v-' + k).value = v ? (v[k] || '') : ''; });
+  $('#v-data').value = v && /^\d{4}-\d{2}-\d{2}$/.test(v.data) ? v.data : (v ? '' : hojeISO());
+  $('#v-followup').value = v && /^\d{4}-\d{2}-\d{2}$/.test(v.followup) ? v.followup : '';
+  preencherSelect('#v-fonte', OP.fonte, v ? v.fonte : '');
+  preencherSelect('#v-status', OP.status, v ? v.status : 'Aplicada');
+  preencherSelect('#v-cv', OP.cv, v ? v.cv : '');
+  preencherSelect('#v-tipo', OP.tipo, v ? v.tipo : '');
+  preencherSelect('#v-retorno', OP.retorno, v ? v.retorno : 'Não');
+  preencherSelect('#v-motivo', OP.motivo, v ? v.motivo : '');
+  preencherSelect('#v-prioridade', OP.prioridade, v ? v.prioridade : '');
+  const exc = $('#ed-excluir');
+  exc.hidden = !v; exc.textContent = 'Excluir'; delete exc.dataset.confirmar;
+  if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
+  dlg.scrollTop = 0;
+  $('#v-empresa').focus();
+}
+function fecharEditor() { if (dlg.close) dlg.close(); else dlg.removeAttribute('open'); }
+
+$('#form-vaga').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const anterior = copiar(estado.vagas);
+  const dados = {};
+  ['empresa', 'cargo', 'senioridade', 'link', 'recrutador', 'aprendizado', 'data', 'followup', 'fonte', 'status', 'cv', 'tipo', 'retorno', 'motivo', 'prioridade'].forEach((k) => { dados[k] = $('#v-' + k).value.trim(); });
+  const mv = $('#v-match').value.trim();
+  dados.match = mv === '' ? '' : String(Math.max(0, Math.min(100, Math.round(Number(mv) || 0))));
+  if (editandoId) Object.assign(estado.vagas.find((x) => x.id === editandoId), dados);
+  else estado.vagas.push(Object.assign({ id: 'v' + Date.now().toString(36) }, dados));
+  fecharEditor();
+  render();
+  salvar(anterior, editandoId ? 'Candidatura atualizada' : 'Candidatura registrada');
+});
+$('#ed-cancelar').addEventListener('click', fecharEditor);
+$('#ed-excluir').addEventListener('click', (e) => {
+  const b = e.currentTarget;
+  if (!b.dataset.confirmar) {
+    b.dataset.confirmar = '1'; b.textContent = 'Clique de novo para excluir';
+    clearTimeout(confirmarTimer);
+    confirmarTimer = setTimeout(() => { delete b.dataset.confirmar; b.textContent = 'Excluir'; }, 4000);
+    return;
+  }
+  const anterior = copiar(estado.vagas);
+  estado.vagas = estado.vagas.filter((x) => x.id !== editandoId);
+  fecharEditor(); render();
+  salvar(anterior, 'Candidatura excluída');
+});
+
+/* ---------- dados ---------- */
+async function carregar() {
+  if (DEMO) { estado.aluno = DEMO_DADOS.aluno; estado.vagas = copiar(DEMO_DADOS.vagas); render(); return; }
+  if (!ID) { mostrarEstado('Este link está incompleto. Use o link da sua jornada que a equipe da mentoria enviou.'); return; }
+  mostrarEstado('Carregando suas candidaturas…');
+  try {
+    const r = await fetch(API_URL + '?vagas=1&j=' + encodeURIComponent(ID));
+    const d = await r.json();
+    if (!d.ok) throw new Error(d.erro || 'Resposta inválida.');
+    estado.aluno = d.aluno || {};
+    estado.vagas = (d.vagas || []).map((v) => Object.assign({}, v, { id: v.id || 'v' + Math.random().toString(36).slice(2, 9) }));
+    render();
+  } catch (e) {
+    mostrarEstado('Não foi possível abrir suas candidaturas. ' + (e.message || '') + ' Recarregue a página ou fale com a equipe da mentoria.');
+  }
+}
+
+async function salvar(anterior, msg) {
+  if (DEMO) { toast(msg + ' · demonstração, nada foi gravado'); return; }
+  $('#salvando').hidden = false;
+  try {
+    const r = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ acao: 'salvarVagas', j: ID, vagas: estado.vagas }) });
+    const d = await r.json();
+    if (!d.ok) throw new Error(d.erro || 'Erro desconhecido.');
+    toast(msg + ' · salvo');
+  } catch (e) {
+    estado.vagas = anterior; render();
+    toast('Não salvou: ' + (e.message || 'sem conexão') + ' A mudança foi desfeita.', true);
+  } finally { $('#salvando').hidden = true; }
+}
+
+/* ---------- eventos ---------- */
+$('#conteudo').addEventListener('click', (e) => {
+  if (e.target.closest('#nova')) { abrirEditor(null); return; }
+  const b = e.target.closest('[data-editar]');
+  if (b) abrirEditor(b.dataset.editar);
+});
+$('#conteudo').addEventListener('change', (e) => {
+  if (e.target.id === 'f-status') { estado.filtroStatus = e.target.value; render(); }
+  if (e.target.id === 'f-prio') { estado.filtroPrio = e.target.value; render(); }
+});
+$('#conteudo').addEventListener('input', (e) => {
+  if (e.target.id === 'busca') {
+    estado.busca = e.target.value;
+    const pos = e.target.selectionStart;
+    render();
+    const nb = $('#busca'); nb.focus(); try { nb.setSelectionRange(pos, pos); } catch (_) {}
+  }
+});
+
+carregar();
+</script>
+</body>
+</html>
